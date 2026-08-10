@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;background:#F6F7F9;font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    *{box-sizing:border-box}
+    ::-webkit-scrollbar{width:9px;height:9px}
+    ::-webkit-scrollbar-thumb{background:#D3D8E0;border-radius:5px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    a{color:#1B3A5C}
+    a:hover{color:#163C6C}
+  </style>
+</helmet>
+
+<div style="display:flex;height:100vh;width:100%;overflow:hidden;color:#131B2E;font-size:14px;position:relative">
+
+  <sc-if value="{{ showSidebar }}" hint-placeholder-val="{{ false }}">
+    <div style="width:236px;flex:none;background:#0A1A30;display:flex;flex-direction:column;height:100%;padding:20px 14px">
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 8px 22px 8px">
+        <div style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;flex:none"><svg viewBox="0 0 32 32" width="22" height="22" fill="none"><path d="M11 8C6.58 8 3 11.58 3 16C3 20.42 6.58 24 11 24C15 24 17.5 21 19 18" stroke="#7FA9C9" stroke-width="3.6" stroke-linecap="round"/><path d="M21 24C25.42 24 29 20.42 29 16C29 11.58 25.42 8 21 8C17 8 14.5 11 13 14" stroke="#4FBFA0" stroke-width="3.6" stroke-linecap="round"/></svg></div>
+        <div style="color:#fff;font-weight:700;font-size:16px;letter-spacing:-0.2px">Nirantar</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="7">
+          <div onClick="{{ item.onClick }}" style="display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:8px;cursor:pointer;border-left:3px solid {{ item.borderColor }};background:{{ item.rowBg }}" style-hover="background:rgba(255,255,255,0.09)">
+            <div style="width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex:none;background:{{ item.monoBg }};color:{{ item.monoColor }}">{{ item.mono }}</div>
+            <div style="font-size:13.5px;font-weight:600;color:{{ item.textColor }}">{{ item.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="flex:1"></div>
+      <div onClick="{{ goToConnect }}" style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;cursor:pointer;border-top:1px solid rgba(255,255,255,0.08);margin-top:6px;padding-top:16px" style-hover="opacity:0.85">
+        <div style="width:26px;height:26px;border-radius:7px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.75);font-weight:700;font-size:13px;flex:none">+</div>
+        <div style="font-size:12.5px;font-weight:600;color:rgba(255,255,255,0.6)">Data sources</div>
+      </div>
+      <div style="padding:14px 10px 4px;border-top:1px solid rgba(255,255,255,0.08);margin-top:10px">
+        <div style="color:#fff;font-size:12.5px;font-weight:600">{{ currentUserName }}</div>
+        <div style="color:rgba(255,255,255,0.45);font-size:11px;margin-top:2px">{{ currentUserRole }}</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="flex:1;height:100%;overflow-y:auto;overflow-x:hidden">
+
+    <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+      <div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:48px 24px;background:#0A1A30">
+        <div style="width:100%;max-width:400px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:36px;justify-content:center">
+            <div style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex:none"><svg viewBox="0 0 32 32" width="34" height="34" fill="none"><path d="M11 8C6.58 8 3 11.58 3 16C3 20.42 6.58 24 11 24C15 24 17.5 21 19 18" stroke="#1B3A5C" stroke-width="3.6" stroke-linecap="round"/><path d="M21 24C25.42 24 29 20.42 29 16C29 11.58 25.42 8 21 8C17 8 14.5 11 13 14" stroke="#2E7D6B" stroke-width="3.6" stroke-linecap="round"/></svg></div>
+            <div style="color:#fff;font-weight:700;font-size:20px">Nirantar</div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+            <span onClick="{{ previewWrongPassword }}" style="color:#fff;background:rgba(255,255,255,0.12);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer">Preview: wrong password</span>
+            <span onClick="{{ previewLockedOut }}" style="color:#fff;background:rgba(255,255,255,0.12);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer">Preview: locked out</span>
+            <span onClick="{{ previewSessionExpired }}" style="color:#fff;background:rgba(255,255,255,0.12);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer">Preview: session expired</span>
+          </div>
+          <sc-if value="{{ showSessionExpiredBanner }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:flex-start;gap:8px;background:#EEF0F3;border:1px solid #D8DCE3;border-radius:10px;padding:12px 14px;margin-bottom:14px">
+              <span style="color:#8A94A6;font-size:13px;margin-top:1px">⊘</span>
+              <span style="font-size:12.5px;color:#5B6472;line-height:1.5">You were signed out for security. Sign back in to pick up where you left off.</span>
+            </div>
+          </sc-if>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:32px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+            <sc-if value="{{ isLockedOut }}" hint-placeholder-val="{{ false }}">
+              <h1 style="font-size:18px;font-weight:700;margin:0 0 8px;letter-spacing:-0.2px">Too many attempts</h1>
+              <p style="color:#5B6472;font-size:13.5px;margin:0 0 20px;line-height:1.5">Let's reset your password instead.</p>
+              <button onClick="{{ goToPasswordReset }}" style="width:100%;padding:12px;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;background:#1B3A5C;color:#fff">Reset password</button>
+            </sc-if>
+            <sc-if value="{{ showLoginForm }}" hint-placeholder-val="{{ true }}">
+            <h1 style="font-size:18px;font-weight:700;margin:0 0 4px;letter-spacing:-0.2px">Welcome back</h1>
+            <p style="color:#5B6472;font-size:13px;margin:0 0 22px">Your Finance &amp; Compliance workspace</p>
+
+            <div style="font-size:12px;font-weight:600;color:#131B2E;margin-bottom:6px">Work email</div>
+            <input value="{{ loginEmail }}" onInput="{{ setLoginEmail }}" placeholder="you@suryodaya-auto.com" style="width:100%;padding:10px 12px;border:1px solid #E4E7EC;border-radius:8px;font-size:13.5px;font-family:inherit;outline:none;margin-bottom:16px" style-focus="border-color:#1B3A5C"></input>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <div style="font-size:12px;font-weight:600;color:#131B2E">Password</div>
+              <a href="#" onClick="{{ goToPasswordReset }}" style="font-size:11.5px;font-weight:600;text-decoration:none">Forgot your password?</a>
+            </div>
+            <input type="password" value="{{ loginPassword }}" onInput="{{ setLoginPassword }}" placeholder="••••••••••" style="width:100%;padding:10px 12px;border:1px solid {{ passwordBorderColor }};border-radius:8px;font-size:13.5px;font-family:inherit;outline:none;margin-bottom:6px" style-focus="border-color:#1B3A5C"></input>
+            <sc-if value="{{ showWrongPassword }}" hint-placeholder-val="{{ false }}">
+              <div style="color:#B23A3A;font-size:12px;margin-bottom:10px">That password doesn't match. Give it another try.</div>
+            </sc-if>
+            <div style="{{ passwordSpacerStyle }}"></div>
+
+            <button onClick="{{ handleLogin }}" style="width:100%;padding:12px;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;background:#1B3A5C;color:#fff;margin-bottom:14px">Sign in</button>
+
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+              <div style="flex:1;height:1px;background:#E4E7EC"></div>
+              <span style="color:#8A93A3;font-size:11px;white-space:nowrap">Or continue with Single Sign-On</span>
+              <div style="flex:1;height:1px;background:#E4E7EC"></div>
+            </div>
+            <button onClick="{{ handleLogin }}" style="width:100%;padding:11px;border:1.5px solid #E4E7EC;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;background:#fff;color:#131B2E">Continue with Single Sign-On</button>
+            </sc-if>
+          </div>
+          <p style="text-align:center;color:rgba(255,255,255,0.55);font-size:11.5px;margin:18px 0 0">Trusted by Finance teams managing more than one plant.</p>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isConnect }}" hint-placeholder-val="{{ false }}">
+      <div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:48px 24px;background:linear-gradient(180deg,#0A1A30 0%,#0A1A30 260px,#F6F7F9 260px)">
+        <div style="width:100%;max-width:640px">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:28px">
+            <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex:none"><svg viewBox="0 0 32 32" width="32" height="32" fill="none"><path d="M11 8C6.58 8 3 11.58 3 16C3 20.42 6.58 24 11 24C15 24 17.5 21 19 18" stroke="#1B3A5C" stroke-width="3.6" stroke-linecap="round"/><path d="M21 24C25.42 24 29 20.42 29 16C29 11.58 25.42 8 21 8C17 8 14.5 11 13 14" stroke="#2E7D6B" stroke-width="3.6" stroke-linecap="round"/></svg></div>
+            <div style="color:#fff;font-weight:700;font-size:18px">Nirantar</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:36px;box-shadow:0 1px 2px rgba(16,24,40,0.04)">
+            <h1 style="font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-0.3px">Which plants are you connecting?</h1>
+            <p style="color:#5B6472;font-size:13.5px;line-height:1.6;margin:0 0 26px">Nirantar reads vendor master and payment data across your plants and continuously watches for changes. Read-only: Nirantar never writes back to your accounting system.</p>
+
+            <div style="font-size:12.5px;font-weight:700;color:#131B2E;margin-bottom:10px">Plants</div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px">
+              <sc-for list="{{ plants }}" as="p" hint-placeholder-count="4">
+                <div onClick="{{ p.toggle }}" style="padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid {{ p.borderColor }};background:{{ p.bg }};color:{{ p.textColor }}">
+                  {{ p.check }} {{ p.name }}
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="font-size:12.5px;font-weight:700;color:#131B2E;margin-bottom:10px">Connect from</div>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px">
+              <sc-for list="{{ systems }}" as="s" hint-placeholder-count="6">
+                <div onClick="{{ s.onSelect }}" style="border:1.5px solid {{ s.borderColor }};background:{{ s.bg }};border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px">
+                  <div style="width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;background:{{ s.monoBg }};color:{{ s.monoColor }}">{{ s.mono }}</div>
+                  <div style="font-size:12px;font-weight:600;color:#131B2E">{{ s.name }}</div>
+                  <div style="font-size:10.5px;color:#8A93A3">{{ s.desc }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <button onClick="{{ handleConnect }}" style="width:100%;padding:13px;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:{{ connectCursor }};display:flex;align-items:center;justify-content:center;gap:10px;background:{{ connectBg }};color:#fff;opacity:{{ connectOpacity }}">
+              <span>Build my Trust Profiles</span>
+            </button>
+            <p style="text-align:center;color:#8A93A3;font-size:11.5px;margin:14px 0 0">GSTIN, PAN and bank details verified independently against government sources</p>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isBuilding }}" hint-placeholder-val="{{ false }}">
+      <div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:48px 24px">
+        <div style="width:100%;max-width:520px;text-align:center">
+          <h1 style="font-size:19px;font-weight:700;margin:0 0 8px;letter-spacing:-0.2px">Building your Trust Profiles</h1>
+          <p style="color:#5B6472;font-size:13.5px;margin:0 0 18px">{{ buildingStepText }}</p>
+          <div style="height:8px;border-radius:20px;background:#EDEFF3;overflow:hidden;margin:0 0 8px">
+            <div style="height:100%;border-radius:20px;background:#1B3A5C;width:{{ buildingProgressPct }};transition:width 0.5s ease"></div>
+          </div>
+          <p style="color:#8A93A3;font-size:12px;margin:0 0 26px">{{ buildingEta }}</p>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px;text-align:left">
+            <sc-for list="{{ buildingSteps }}" as="st" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F0F2F5">
+                <span style="width:20px;height:20px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:{{ st.bg }};color:{{ st.fg }}">{{ st.icon }}</span>
+                <span style="font-size:13px;color:{{ st.textColor }};font-weight:{{ st.weight }}">{{ st.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <sc-if value="{{ showUnavailableNote }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:flex-start;gap:8px;text-align:left;background:#EEF0F3;border:1px solid #D8DCE3;border-radius:10px;padding:12px 14px;margin-top:16px">
+              <span style="color:#8A94A6;font-size:13px;margin-top:1px">⊘</span>
+              <span style="font-size:12.5px;color:#5B6472;line-height:1.5">3 vendors could not be checked and will retry automatically. Continuing with the rest.</span>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isFirstResults }}" hint-placeholder-val="{{ false }}">
+      <div style="min-height:100%;display:flex;align-items:center;justify-content:center;padding:48px 24px">
+        <div style="width:100%;max-width:560px">
+          <div style="text-align:center;margin-bottom:26px">
+            <span style="display:inline-flex;padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:700;background:#FFFBEB;color:#B45309;border:1px solid #F6DDA8">First scan complete</span>
+          </div>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:36px;text-align:center">
+            <h1 style="font-size:20px;font-weight:700;margin:0 0 14px;letter-spacing:-0.3px;line-height:1.4">We found 12 possible cross-plant duplicates and 3 vendors with unverifiable GST status.</h1>
+            <p style="color:#5B6472;font-size:13.5px;line-height:1.6;margin:0 0 26px">Checked 1,380 active vendors across 4 plants against GST, Udyam, and each other. Everything below is ready for your team to review; nothing has been changed or paid automatically.</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px">
+              <div style="border:1px solid #F0F2F5;border-radius:9px;padding:16px">
+                <div style="font-size:22px;font-weight:800">12</div>
+                <div style="color:#8A93A3;font-size:11.5px;margin-top:4px">Cross-plant duplicates</div>
+              </div>
+              <div style="border:1px solid #F0F2F5;border-radius:9px;padding:16px">
+                <div style="font-size:22px;font-weight:800">3</div>
+                <div style="color:#8A93A3;font-size:11.5px;margin-top:4px">Unverifiable GST</div>
+              </div>
+              <div style="border:1px solid #F0F2F5;border-radius:9px;padding:16px">
+                <div style="font-size:22px;font-weight:800">1,380</div>
+                <div style="color:#8A93A3;font-size:11.5px;margin-top:4px">Vendors scanned</div>
+              </div>
+            </div>
+            <button onClick="{{ goToDashboardFromResults }}" style="width:100%;padding:13px;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;background:#1B3A5C;color:#fff">Go to Dashboard</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px">
+          <div>
+            <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.3px">Dashboard</h1>
+            <div style="color:#5B6472;font-size:13px">Suryodaya Autocomponents Pvt Ltd · 186 vendors across 4 plants</div>
+          </div>
+          <div style="text-align:right">
+            <div style="color:#8A93A3;font-size:11.5px;margin-bottom:6px">Viewing as</div>
+            <div style="display:flex;gap:6px;background:#fff;border:1px solid #E4E7EC;border-radius:20px;padding:3px">
+              <sc-for list="{{ roleTabs }}" as="r" hint-placeholder-count="2">
+                <div onClick="{{ r.onClick }}" style="padding:6px 12px;border-radius:16px;font-size:12px;font-weight:700;cursor:pointer;background:{{ r.bg }};color:{{ r.fg }}">{{ r.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px">
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:20px">
+            <div style="color:#5B6472;font-size:12px;font-weight:600;margin-bottom:10px">{{ exposureLabel }}</div>
+            <div style="font-size:26px;font-weight:800;color:#131B2E;letter-spacing:-0.5px">{{ totalExposureFmt }}</div>
+            <div style="color:#5B6472;font-size:11.5px;margin-top:8px">MSME {{ msmeExposureFmt }} · Bank-detail {{ bankExposureFmt }}</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:20px">
+            <div style="color:#5B6472;font-size:12px;font-weight:600;margin-bottom:10px">Vendors needing attention</div>
+            <div style="font-size:26px;font-weight:800;color:#131B2E;letter-spacing:-0.5px">{{ needsAttentionCount }}</div>
+            <div style="color:#5B6472;font-size:12px;margin-top:8px">{{ verifiedCleanCount }} verified clean · {{ needsAttentionCount }} need review</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:20px">
+            <div style="color:#5B6472;font-size:12px;font-weight:600;margin-bottom:10px">Confirmed duplicates, this quarter</div>
+            <div style="font-size:26px;font-weight:800;color:#131B2E;letter-spacing:-0.5px">4</div>
+            <div style="color:#5B6472;font-size:12px;margin-top:8px">1 pending review, see Vishwakarma Forge</div>
+          </div>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:20px">
+            <div style="color:#5B6472;font-size:12px;font-weight:600;margin-bottom:10px">Next MSME deadline</div>
+            <div style="font-size:26px;font-weight:800;color:#B45309;letter-spacing:-0.5px">9 days</div>
+            <div onClick="{{ goToMsme }}" style="color:#1B3A5C;font-size:12px;margin-top:8px;cursor:pointer;font-weight:600">₹16.00 L at risk · Ganesh Enterprises →</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px">
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:14px">{{ attentionListTitle }}</div>
+            <sc-for list="{{ needsAttentionList }}" as="v" hint-placeholder-count="5">
+              <div onClick="{{ v.onClick }}" style="display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #F0F2F5;cursor:pointer" style-hover="background:#FAFBFC">
+                <span style="width:26px;height:26px;border-radius:7px;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:{{ v.badge.bg }};color:{{ v.badge.fg }}">{{ v.badge.icon }}</span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13.5px;font-weight:600">{{ v.name }}</div>
+                  <div style="font-size:12px;color:#8A93A3">{{ v.plant }} · {{ v.reason }}</div>
+                </div>
+                <div style="font-size:13px;font-weight:700;color:#131B2E">{{ v.exposureFmt }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:14px">Plant breakdown</div>
+            <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px 14px;font-size:12px;color:#8A93A3;font-weight:600;padding-bottom:8px;border-bottom:1px solid #F0F2F5">
+              <div>Plant</div><div>Vendors</div><div>Flagged</div>
+            </div>
+            <sc-for list="{{ plantBreakdown }}" as="p" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px 14px;font-size:13px;padding:11px 0;border-bottom:1px solid #F7F8FA;align-items:center">
+                <div style="font-weight:600">{{ p.plant }}</div>
+                <div style="color:#5B6472">{{ p.vendors }}</div>
+                <div style="font-weight:700;color:#B45309">{{ p.flagged }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isVendors }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px">
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.3px">Vendors</h1>
+        <div style="color:#5B6472;font-size:13px;margin-bottom:20px">{{ resultCount }} shown · full sync covers 186 vendors across 4 plants</div>
+
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+          <input value="{{ searchQuery }}" onInput="{{ setSearch }}" placeholder="Search by vendor name, GSTIN, or plant" style="flex:1;min-width:260px;padding:10px 14px;border:1px solid #E4E7EC;border-radius:8px;font-size:13.5px;font-family:inherit;outline:none" style-focus="border-color:#1B3A5C"></input>
+          <select value="{{ plantFilter }}" onChange="{{ setPlantFilter }}" style="padding:10px 12px;border:1px solid #E4E7EC;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:#131B2E">
+            <option value="All">All plants</option>
+            <option value="Pune">Pune</option>
+            <option value="Nashik">Nashik</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Rajkot">Rajkot</option>
+          </select>
+          <select value="{{ statusFilter }}" onChange="{{ setStatusFilterFromEvent }}" style="padding:10px 12px;border:1px solid #E4E7EC;border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:#131B2E">
+            <sc-for list="{{ statusFilters }}" as="f" hint-placeholder-count="7">
+              <option value="{{ f.label }}">{{ f.label }} · {{ f.count }}</option>
+            </sc-for>
+          </select>
+        </div>
+
+        <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 1fr;gap:10px;padding:12px 20px;font-size:11.5px;font-weight:700;color:#8A93A3;border-bottom:1px solid #E4E7EC;background:#FAFBFC">
+              <div>VENDOR</div><div>PLANT</div><div>STATUS</div><div>LAST VERIFIED</div>
+            </div>
+            <sc-for list="{{ pagedVendors }}" as="v" hint-placeholder-count="8">
+              <div onClick="{{ v.onClick }}" style="display:grid;grid-template-columns:2.2fr 1fr 1.4fr 1fr;gap:10px;padding:14px 20px;font-size:13px;border-bottom:1px solid #F0F2F5;cursor:pointer;align-items:center" style-hover="background:#FAFBFC">
+                <div>
+                  <div style="font-weight:600">{{ v.name }}</div>
+                  <div style="font-size:11.5px;color:#8A93A3;font-family:ui-monospace,monospace">{{ v.gstin }}</div>
+                </div>
+                <div style="color:#5B6472">{{ v.plant }}</div>
+                <div>
+                  <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:{{ v.badge.bg }};color:{{ v.badge.fg }};border:1px solid {{ v.badge.border }}">
+                    <span>{{ v.badge.icon }}</span>{{ v.status }}
+                  </span>
+                </div>
+                <div style="color:#8A93A3;font-size:12px">{{ v.lastVerified }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px">
+            <div style="color:#8A93A3;font-size:12.5px">{{ pageRangeLabel }}</div>
+            <div style="display:flex;gap:8px">
+              <button onClick="{{ prevPage }}" disabled="{{ isFirstPage }}" style="padding:7px 14px;border:1px solid #E4E7EC;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;background:#fff;color:#131B2E">Previous</button>
+              <button onClick="{{ nextPage }}" disabled="{{ isLastPage }}" style="padding:7px 14px;border:1px solid #E4E7EC;border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;background:#fff;color:#131B2E">Next</button>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fff;border:1px dashed #E4E7EC;border-radius:12px;padding:48px;text-align:center">
+            <div style="font-size:14px;font-weight:700;margin-bottom:6px">No vendors match your search</div>
+            <p style="color:#8A93A3;font-size:13px;margin:0 0 14px">Try a different name, GSTIN, or plant.</p>
+            <span onClick="{{ clearFilters }}" style="color:#1B3A5C;font-size:13px;font-weight:700;cursor:pointer">Clear filters</span>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px">
+        <div onClick="{{ backToVendors }}" style="display:inline-flex;align-items:center;gap:6px;color:#5B6472;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:16px">← Back to Vendors</div>
+
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px">
+          <div>
+            <h1 style="font-size:24px;font-weight:700;margin:0 0 6px;letter-spacing:-0.3px">{{ selectedVendor.name }}</h1>
+            <div style="color:#5B6472;font-size:13.5px">{{ selectedVendor.plant }} · {{ selectedVendor.category }}</div>
+          </div>
+          <span style="display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:20px;font-size:13px;font-weight:700;background:{{ selectedVendor.badge.bg }};color:{{ selectedVendor.badge.fg }};border:1px solid {{ selectedVendor.badge.border }}">
+            <span>{{ selectedVendor.badge.icon }}</span>{{ selectedVendor.status }}
+          </span>
+        </div>
+
+        <sc-if value="{{ selectedVendor.hasAlert }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ goToAlerts }}" style="display:flex;align-items:center;gap:10px;background:#EFF4FB;border:1px solid #BBD3EE;border-radius:10px;padding:12px 16px;margin-bottom:22px;cursor:pointer;font-size:13px;color:#1B3A5C;font-weight:600">
+            ⓘ This vendor has an open alert. View details in Alerts →
+          </div>
+        </sc-if>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px">
+            <div style="font-size:13px;font-weight:700;color:#131B2E;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #F0F2F5">Identity</div>
+            <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
+              <div style="display:flex;justify-content:space-between"><span style="color:#8A93A3">Legal name</span><span style="font-weight:600;text-align:right">{{ selectedVendor.name }}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#8A93A3">GSTIN</span><span style="font-weight:600;font-family:ui-monospace,monospace">{{ selectedVendor.gstin }}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#8A93A3">PAN</span><span style="font-weight:600;font-family:ui-monospace,monospace">{{ selectedVendor.pan }}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#8A93A3">Entity status</span><span style="font-weight:600;text-align:right">{{ selectedVendor.entityStatus }}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#8A93A3">Registered address</span><span style="font-weight:600;text-align:right;max-width:180px">{{ selectedVendor.address }}</span></div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px">
+            <div style="font-size:13px;font-weight:700;color:#131B2E;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #F0F2F5">Compliance</div>
+            <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
+              <div style="display:flex;justify-content:space-between"><span style="color:#8A93A3">GST status</span><span style="font-weight:600;text-align:right">{{ selectedVendor.gstStatus }}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#8A93A3">MSME / Udyam status</span><span style="font-weight:600;text-align:right">{{ selectedVendor.msmeStatus }}</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:#8A93A3">Udyam registration no.</span><span style="font-weight:600;text-align:right;max-width:180px">{{ selectedVendor.udyamNo }}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:700;color:#131B2E;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #F0F2F5">Finance context</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+            <div><div style="color:#8A93A3;font-size:12px;margin-bottom:4px">Open invoices</div><div style="font-weight:700;font-size:16px">{{ selectedVendor.openInvoices }}</div></div>
+            <div><div style="color:#8A93A3;font-size:12px;margin-bottom:4px">Invoice value</div><div style="font-weight:700;font-size:16px">{{ selectedVendor.invoiceValueFmt }}</div></div>
+            <div><div style="color:#8A93A3;font-size:12px;margin-bottom:4px">Payment status</div><div style="font-weight:700;font-size:16px">{{ selectedVendor.paymentStatus }}</div></div>
+            <div><div style="color:#8A93A3;font-size:12px;margin-bottom:4px">Payment terms</div><div style="font-weight:700;font-size:16px">{{ selectedVendor.paymentTerms }}</div></div>
+          </div>
+        </div>
+
+        <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:700;color:#131B2E;margin-bottom:6px">Verification</div>
+          <div style="color:#8A93A3;font-size:12px;margin-bottom:14px">Each attribute below is checked independently against its own source of record.</div>
+          <div style="display:grid;grid-template-columns:1.3fr 2fr 1.4fr 1fr 1.1fr;gap:10px;padding:10px 4px;font-size:11px;font-weight:700;color:#8A93A3;border-bottom:1px solid #F0F2F5">
+            <div>ATTRIBUTE</div><div>VALUE</div><div>SOURCE</div><div>VERIFIED</div><div>STATUS</div>
+          </div>
+          <sc-for list="{{ selectedVendor.verification }}" as="row" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:1.3fr 2fr 1.4fr 1fr 1.1fr;gap:10px;padding:13px 4px;font-size:12.5px;border-bottom:1px solid #F7F8FA;align-items:center">
+              <div style="font-weight:600">{{ row.attribute }}</div>
+              <div style="color:#3D4552">{{ row.value }}</div>
+              <div style="color:#8A93A3">{{ row.source }}</div>
+              <div style="color:#8A93A3">{{ row.lastVerified }}</div>
+              <div>
+                <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700;background:{{ row.badge.bg }};color:{{ row.badge.fg }};border:1px solid {{ row.badge.border }}">{{ row.badge.icon }} {{ row.status }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px">
+          <div style="font-size:13px;font-weight:700;color:#131B2E;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #F0F2F5">Change history</div>
+          <sc-for list="{{ selectedVendor.changeHistory }}" as="ch" hint-placeholder-count="3">
+            <div style="display:flex;gap:14px;padding:13px 0;border-bottom:1px solid #F7F8FA">
+              <div style="width:88px;flex:none;color:#8A93A3;font-size:12px">{{ ch.date }}</div>
+              <div style="flex:1">
+                <div style="font-size:13px;font-weight:600">{{ ch.field }} changed</div>
+                <div style="font-size:12.5px;color:#5B6472;margin-top:2px"><span style="text-decoration:line-through;color:#B0B7C3">{{ ch.oldValue }}</span> → <span style="font-weight:600;color:#131B2E">{{ ch.newValue }}</span></div>
+                <div style="font-size:11.5px;color:#8A93A3;margin-top:4px">Source: {{ ch.source }} · Action: {{ ch.action }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAlerts }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px">
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.3px">Alerts</h1>
+        <div style="color:#5B6472;font-size:13px;margin-bottom:22px">{{ openAlertCount }} changes require attention across 3 plants</div>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <sc-for list="{{ alerts }}" as="a" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:24px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+                <div style="display:flex;align-items:center;gap:10px">
+                  <span style="padding:4px 10px;border-radius:20px;font-size:11.5px;font-weight:700;background:{{ a.badge.bg }};color:{{ a.badge.fg }};border:1px solid {{ a.badge.border }}">{{ a.badge.icon }} {{ a.type }}</span>
+                  <span style="padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;background:{{ a.severity.bg }};color:{{ a.severity.fg }}">{{ a.severity.label }}</span>
+                  <span style="color:#8A93A3;font-size:12px">{{ a.detected }}</span>
+                </div>
+                <div onClick="{{ a.onOpenVendor }}" style="color:#1B3A5C;font-size:12.5px;font-weight:600;cursor:pointer">{{ a.vendorName }} · {{ a.plant }} →</div>
+              </div>
+              <div style="font-size:16px;font-weight:700;margin-bottom:10px;letter-spacing:-0.2px">{{ a.headline }}</div>
+              <p style="font-size:13.5px;line-height:1.65;color:#3D4552;margin:0 0 14px">{{ a.explanation }}</p>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:16px">
+                <span style="width:16px;height:16px;border-radius:4px;background:#F0F2F5;color:#5B6472;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center">AI</span>
+                <span style="color:#8A93A3;font-size:11.5px">Explained by AI · verified by {{ a.verifiedBy }}</span>
+              </div>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;background:#FAFBFC;border:1px solid #F0F2F5;border-radius:9px;padding:16px;margin-bottom:18px">
+                <div>
+                  <div style="color:#8A93A3;font-size:11px;font-weight:700;margin-bottom:4px">₹ EXPOSURE</div>
+                  <div style="font-weight:700;font-size:15px">{{ a.exposureFmt }}</div>
+                </div>
+                <div>
+                  <div style="color:#8A93A3;font-size:11px;font-weight:700;margin-bottom:4px">EVIDENCE</div>
+                  <div style="font-size:12.5px;color:#3D4552;line-height:1.5">{{ a.evidence }}</div>
+                </div>
+              </div>
+
+              <sc-if value="{{ a.isOpen }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+                  <button onClick="{{ a.onResolve }}" style="padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;border:none;background:#2E7D6B;color:#fff">Resolve</button>
+                  <button onClick="{{ a.onAssign }}" style="padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid #E4E7EC;background:#fff;color:#131B2E">Assign</button>
+                  <button onClick="{{ a.onEscalate }}" style="padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid #E4E7EC;background:#fff;color:#131B2E">Escalate</button>
+                  <button onClick="{{ a.onSnooze }}" style="padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid #E4E7EC;background:#fff;color:#131B2E">Snooze</button>
+                  <button onClick="{{ a.onOverrideToggle }}" style="padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;border:1.5px solid #E4E7EC;background:#fff;color:#131B2E">Override</button>
+                  <sc-if value="{{ a.isDuplicate }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ a.onCompare }}" style="padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;border:none;background:#1B3A5C;color:#fff">Compare records</button>
+                  </sc-if>
+                  <button onClick="{{ a.onNa }}" style="padding:9px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;border:none;background:none;color:#8A93A3">Mark not applicable</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ a.showOverride }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#FAFBFC;border:1px solid #E4E7EC;border-radius:9px;padding:14px;margin-bottom:6px">
+                  <div style="font-size:12px;font-weight:700;margin-bottom:8px">Reason for override (required)</div>
+                  <input value="{{ a.overrideReason }}" onInput="{{ a.onOverrideReasonChange }}" placeholder="e.g. Confirmed directly with vendor's authorized signatory by phone" style="width:100%;padding:9px 12px;border:1px solid #E4E7EC;border-radius:7px;font-size:12.5px;font-family:inherit;outline:none;margin-bottom:10px" style-focus="border-color:#1B3A5C"></input>
+                  <button onClick="{{ a.onOverrideConfirm }}" style="padding:8px 14px;border-radius:7px;font-size:12px;font-weight:700;cursor:{{ a.overrideCursor }};border:none;background:{{ a.overrideBg }};color:#fff">Confirm override</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ a.isResolved }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#2E7D6B;background:#E7F2EF;border:1px solid #B7DBD2;border-radius:8px;padding:10px 14px">✓ {{ a.actionLabel }} by You · just now</div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isDuplicate }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px">
+        <div onClick="{{ goToAlerts }}" style="display:inline-flex;align-items:center;gap:6px;color:#5B6472;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:16px">← Back to Alerts</div>
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.3px">Possible duplicate vendor</h1>
+        <p style="color:#5B6472;font-size:13px;margin:0 0 18px;max-width:640px">Two vendor records look like the same company across two plants. Nothing merges automatically; a person confirms this.</p>
+
+        <div style="display:inline-flex;align-items:center;gap:8px;background:#EEEBF4;border:1px solid #D6CEE6;border-radius:9px;padding:10px 16px;margin-bottom:22px">
+          <span style="color:#6B5B95;font-size:14px">⚑</span>
+          <span style="font-size:13.5px;font-weight:700;color:#6B5B95">High confidence, matched on GSTIN</span>
+          <span style="font-size:12.5px;color:#6B5B95;opacity:0.85">· legal name and registered address are also near-identical</span>
+        </div>
+
+        <div style="display:grid;grid-template-columns:180px 1fr 1fr;gap:0 16px;margin-bottom:24px">
+          <div></div>
+          <div style="color:#8A93A3;font-size:11px;font-weight:700;padding:0 0 8px 14px">RECORD A · PUNE · VN-0511</div>
+          <div style="color:#8A93A3;font-size:11px;font-weight:700;padding:0 0 8px 14px">RECORD B · SANAND · VN-0042</div>
+
+          <div style="font-size:12.5px;color:#8A93A3;font-weight:600;padding:12px 0;border-top:1px solid #F0F2F5">Legal name</div>
+          <div style="font-size:13.5px;font-weight:700;padding:12px 14px;border-top:1px solid #F0F2F5;background:#FBF1E1;border-radius:6px;margin:4px 0">Vishwakarma Forge Industries</div>
+          <div style="font-size:13.5px;font-weight:700;padding:12px 14px;border-top:1px solid #F0F2F5;background:#FBF1E1;border-radius:6px;margin:4px 0">Vishwakarma Forgings Pvt Ltd</div>
+
+          <div style="font-size:12.5px;color:#8A93A3;font-weight:600;padding:12px 0;border-top:1px solid #F0F2F5">GSTIN</div>
+          <div style="font-size:13px;font-weight:600;font-family:ui-monospace,monospace;padding:12px 14px;border-top:1px solid #F0F2F5;background:#E7F2EF;border-radius:6px;margin:4px 0">27AAECV2345L1Z7</div>
+          <div style="font-size:13px;font-weight:600;font-family:ui-monospace,monospace;padding:12px 14px;border-top:1px solid #F0F2F5;background:#E7F2EF;border-radius:6px;margin:4px 0">27AAECV2345L1Z7</div>
+
+          <div style="font-size:12.5px;color:#8A93A3;font-weight:600;padding:12px 0;border-top:1px solid #F0F2F5">PAN</div>
+          <div style="font-size:13px;font-weight:600;font-family:ui-monospace,monospace;padding:12px 14px;border-top:1px solid #F0F2F5;background:#E7F2EF;border-radius:6px;margin:4px 0">AAECV2345L</div>
+          <div style="font-size:13px;font-weight:600;font-family:ui-monospace,monospace;padding:12px 14px;border-top:1px solid #F0F2F5;background:#E7F2EF;border-radius:6px;margin:4px 0">AAECV2345L</div>
+
+          <div style="font-size:12.5px;color:#8A93A3;font-weight:600;padding:12px 0;border-top:1px solid #F0F2F5">Registered address</div>
+          <div style="font-size:13px;font-weight:600;padding:12px 14px;border-top:1px solid #F0F2F5;background:#E7F2EF;border-radius:6px;margin:4px 0">Chakan MIDC, Pune, MH 410501</div>
+          <div style="font-size:13px;font-weight:600;padding:12px 14px;border-top:1px solid #F0F2F5;background:#E7F2EF;border-radius:6px;margin:4px 0">Chakan MIDC, Pune, MH 410501</div>
+
+          <div style="font-size:12.5px;color:#8A93A3;font-weight:600;padding:12px 0;border-top:1px solid #F0F2F5">Open invoices</div>
+          <div style="font-size:13px;font-weight:600;padding:12px 14px;border-top:1px solid #F0F2F5">2 · ₹12.00 L</div>
+          <div style="font-size:13px;font-weight:600;padding:12px 14px;border-top:1px solid #F0F2F5">3 · ₹18.40 L</div>
+        </div>
+
+        <div style="display:flex;gap:14px;font-size:11.5px;color:#8A93A3;margin-bottom:24px">
+          <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#E7F2EF;border:1px solid #B7DBD2"></span>Matching field</div>
+          <div style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:3px;background:#FBF1E1;border:1px solid #EBD3A3"></span>Differs</div>
+        </div>
+
+        <sc-if value="{{ duplicateResolved }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#2E7D6B;background:#E7F2EF;border:1px solid #B7DBD2;border-radius:8px;padding:12px 16px">✓ {{ duplicateResolution }} · Logged to audit trail</div>
+        </sc-if>
+        <sc-if value="{{ duplicateOpen }}" hint-placeholder-val="{{ true }}">
+          <div style="background:#F7F8FA;border:1px solid #E4E7EC;border-radius:10px;padding:14px 16px;margin-bottom:16px;max-width:640px">
+            <p style="font-size:12.5px;color:#5B6472;line-height:1.6;margin:0"><strong style="color:#131B2E">If merged:</strong> both records' transaction and payment histories are preserved and combined under Record B (the older, higher-volume account). Record A is retired but stays visible in Audit Trail. Merging can be undone within 30 days.</p>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button onClick="{{ confirmMerge }}" style="padding:11px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:#1B3A5C;color:#fff">Confirm merge</button>
+            <button onClick="{{ dismissDuplicate }}" style="padding:11px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid #E4E7EC;background:#fff;color:#131B2E">Not the same vendor</button>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isMsme }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px">
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.3px">MSME payment deadlines</h1>
+        <p style="color:#5B6472;font-size:13px;margin:0 0 22px;max-width:640px">Section 43B(h) sets a hard legal clock on payments to Micro and Small enterprises; miss the deadline and compounding interest applies regardless of contract terms.</p>
+        <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:2fr 1fr 1.2fr 1fr 1fr;gap:10px;padding:12px 20px;font-size:11.5px;font-weight:700;color:#8A93A3;border-bottom:1px solid #E4E7EC;background:#FAFBFC">
+            <div>VENDOR</div><div>PLANT</div><div>AMOUNT AT RISK</div><div>DUE DATE</div><div>COUNTDOWN</div>
+          </div>
+          <sc-for list="{{ msmeDeadlines }}" as="m" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:2fr 1fr 1.2fr 1fr 1fr;gap:10px;padding:14px 20px;font-size:13px;border-bottom:1px solid #F0F2F5;align-items:center">
+              <div style="font-weight:600">{{ m.vendor }}</div>
+              <div style="color:#5B6472">{{ m.plant }}</div>
+              <div style="font-weight:700">{{ m.amountFmt }}</div>
+              <div style="color:#5B6472">{{ m.dueDate }}</div>
+              <div><span style="padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;background:{{ m.badge.bg }};color:{{ m.badge.fg }}">{{ m.countdown }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isAudit }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px">
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.3px">Audit Trail</h1>
+        <div style="color:#5B6472;font-size:13px;margin-bottom:16px">Every sync, verification and Finance decision, in order</div>
+        <div style="display:flex;gap:10px;margin-bottom:16px">
+          <input value="{{ auditQuery }}" onInput="{{ setAuditQuery }}" placeholder="Search by vendor, plant or actor" style="flex:1;max-width:360px;padding:9px 12px;border:1px solid #E4E7EC;border-radius:8px;font-size:13px;font-family:inherit;outline:none" style-focus="border-color:#1B3A5C"></input>
+        </div>
+        <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1.3fr 1fr 2fr 1.5fr 1fr;gap:10px;padding:12px 20px;font-size:11.5px;font-weight:700;color:#8A93A3;border-bottom:1px solid #E4E7EC;background:#FAFBFC">
+            <div>TIMESTAMP</div><div>ACTOR</div><div>ACTION</div><div>VENDOR</div><div>PLANT</div>
+          </div>
+          <sc-for list="{{ filteredAuditLog }}" as="e" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:1.3fr 1fr 2fr 1.5fr 1fr;gap:10px;padding:13px 20px;font-size:12.5px;border-bottom:1px solid #F7F8FA;align-items:center">
+              <div style="color:#5B6472">{{ e.time }}</div>
+              <div style="font-weight:600">{{ e.actor }}</div>
+              <div>{{ e.action }}</div>
+              <div style="color:#3D4552">{{ e.vendor }}</div>
+              <div style="color:#8A93A3">{{ e.plant }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isReports }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px">
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.3px">Export &amp; reports</h1>
+        <p style="color:#5B6472;font-size:13px;margin:0 0 22px">Pre-formatted for the filings this product is built to support.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:24px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:6px">Form 3CD, Clause 22/26</div>
+            <p style="color:#5B6472;font-size:12.5px;line-height:1.6;margin:0 0 18px">Annual tax-audit disclosure of MSME payments and interest liability, formatted per the clause structure.</p>
+            <button onClick="{{ exportReport }}" style="padding:10px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;border:none;background:#1B3A5C;color:#fff">Export Form 3CD</button>
+          </div>
+          <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:24px">
+            <div style="font-size:14px;font-weight:700;margin-bottom:6px">MCA Form MSME-1</div>
+            <p style="color:#5B6472;font-size:12.5px;line-height:1.6;margin:0 0 18px">Half-yearly return of outstanding payments to Micro and Small enterprises beyond 45 days.</p>
+            <button onClick="{{ exportReport }}" style="padding:10px 16px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;border:none;background:#1B3A5C;color:#fff">Export MSME-1</button>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px">
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.3px">Settings</h1>
+        <p style="color:#5B6472;font-size:13px;margin:0 0 22px">Connected plants, users and monitoring schedule</p>
+
+        <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:700;margin-bottom:14px">Connected plants &amp; sources</div>
+          <sc-for list="{{ settingsPlants }}" as="sp" hint-placeholder-count="4">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #F7F8FA">
+              <div style="font-weight:600;font-size:13px">{{ sp.plant }}</div>
+              <div style="color:#5B6472;font-size:12.5px">{{ sp.source }}</div>
+              <span style="padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:700;background:#E7F2EF;color:#2E7D6B">Connected</span>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:700;margin-bottom:14px">Users &amp; roles</div>
+          <div style="display:grid;grid-template-columns:1.5fr 1fr 1.2fr;gap:10px;font-size:11px;font-weight:700;color:#8A93A3;padding-bottom:8px;border-bottom:1px solid #F0F2F5">
+            <div>NAME</div><div>SCOPE</div><div>ROLE</div>
+          </div>
+          <sc-for list="{{ settingsUsers }}" as="u" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:1.5fr 1fr 1.2fr;gap:10px;padding:11px 0;border-bottom:1px solid #F7F8FA;font-size:13px;align-items:center">
+              <div style="font-weight:600">{{ u.name }}</div>
+              <div style="color:#5B6472">{{ u.scope }}</div>
+              <div style="color:#5B6472">{{ u.role }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:22px">
+          <div style="font-size:13px;font-weight:700;margin-bottom:14px">Monitoring schedule</div>
+          <div style="display:flex;flex-direction:column;gap:12px;font-size:13px">
+            <div style="display:flex;justify-content:space-between"><span style="color:#5B6472">Bank details</span><span style="font-weight:600">Every sync (daily)</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#5B6472">GST status</span><span style="font-weight:600">Weekly</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#5B6472">MSME / Udyam status</span><span style="font-weight:600">Weekly</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="color:#5B6472">Cross-vendor duplicate scan</span><span style="font-weight:600">Monthly</span></div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isStyleGuide }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:32px 40px 60px;max-width:960px">
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:-0.3px">Style Guide</h1>
+        <p style="color:#5B6472;font-size:13px;margin:0 0 30px">Internal reference only \u2014 not part of the end-user product. Keep every screen consistent with this.</p>
+
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#8A93A3;margin-bottom:12px">Color palette</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:36px">
+          <sc-for list="{{ styleguideColors }}" as="c" hint-placeholder-count="6">
+            <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;overflow:hidden">
+              <div style="height:72px;background:{{ c.hex }}"></div>
+              <div style="padding:12px 14px">
+                <div style="font-size:13px;font-weight:700">{{ c.name }}</div>
+                <div style="font-size:11.5px;color:#8A93A3;font-family:ui-monospace,monospace;margin-top:2px">{{ c.hex }}</div>
+                <div style="font-size:12px;color:#5B6472;margin-top:6px;line-height:1.4">{{ c.usage }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#8A93A3;margin-bottom:12px">Status badges</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:36px;background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:20px">
+          <sc-for list="{{ styleguideBadges }}" as="b" hint-placeholder-count="6">
+            <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700;background:{{ b.bg }};color:{{ b.fg }}">
+              <span>{{ b.icon }}</span>{{ b.label }}
+            </span>
+          </sc-for>
+        </div>
+
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#8A93A3;margin-bottom:12px">Buttons</div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:8px;background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:20px">
+          <button style="padding:11px 18px;border:none;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;background:#1B3A5C;color:#fff">Primary action</button>
+          <button style="padding:11px 18px;border:1.5px solid #1B3A5C;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;background:#fff;color:#1B3A5C">Secondary action</button>
+          <button style="padding:11px 18px;border:1.5px solid #B23A3A;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;background:#fff;color:#B23A3A">Destructive action</button>
+        </div>
+        <p style="color:#8A93A3;font-size:11.5px;margin:8px 0 36px">Destructive is always an outline, never a solid red fill. Red is reserved for Conflict / critical status only.</p>
+
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:#8A93A3;margin-bottom:12px">Typography</div>
+        <div style="background:#fff;border:1px solid #E4E7EC;border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:16px">
+          <div><div style="font-size:22px;font-weight:700;letter-spacing:-0.3px">Page title \u2014 22px / 700</div></div>
+          <div><div style="font-size:16px;font-weight:700">Section heading \u2014 16px / 700</div></div>
+          <div><div style="font-size:14px;font-weight:600">Body, emphasized \u2014 14px / 600</div></div>
+          <div><div style="font-size:13px;font-weight:400;color:#3D4552">Body, regular \u2014 13px / 400</div></div>
+          <div><div style="font-size:12px;color:#5B6472">Secondary / caption \u2014 12px / 400</div></div>
+          <div><div style="font-size:11px;font-weight:700;color:#8A93A3;text-transform:uppercase;letter-spacing:0.4px">Table header / label \u2014 11px / 700 uppercase</div></div>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 6px 20px rgba(16,24,40,0.14);background:{{ toastBg }};color:{{ toastFg }};border:1px solid {{ toastBorder }}">
+      <span>{{ toastIcon }}</span>
+      <span>{{ toastText }}</span>
+      <sc-if value="{{ toastIsError }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toastRetry }}" style="padding:6px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid #C48A2E;background:#fff;color:#C48A2E">Retry</button>
+      </sc-if>
+      <sc-if value="{{ toastAuditLink }}" hint-placeholder-val="{{ false }}">
+        <span onClick="{{ goToAuditFromToast }}" style="color:#1B3A5C;font-weight:700;cursor:pointer;text-decoration:underline">View in Audit Trail</span>
+      </sc-if>
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const PLANT_NAMES = ['Pune','Nashik','Chennai','Rajkot'];
+const SYSTEM_DEFS = [
+  {id:'tally',name:'Tally',desc:'Prime / ERP 9',mono:'T'},
+  {id:'zoho',name:'Zoho Books',desc:'Cloud accounting',mono:'Z'},
+  {id:'sap',name:'SAP Business One',desc:'ERP',mono:'S'},
+  {id:'busy',name:'Busy',desc:'Accounting software',mono:'B'},
+  {id:'marg',name:'Marg ERP',desc:'Manufacturing ERP',mono:'M'},
+  {id:'upload',name:'Upload file',desc:'CSV / Excel export',mono:'⇧'}
+];
+const STATUS_ORDER = ['All','Verified','Changed','Conflict','Stale','Unavailable','Review required'];
+const STATUS_META = {
+  'Verified':{bg:'#E7F2EF',fg:'#2E7D6B',border:'#B7DBD2',icon:'✓'},
+  'Changed':{bg:'#FBF1E1',fg:'#C48A2E',border:'#EBD3A3',icon:'⇄'},
+  'Conflict':{bg:'#F8E9E9',fg:'#B23A3A',border:'#E9BFBF',icon:'⚠'},
+  'Stale':{bg:'#EEF0F3',fg:'#8A94A6',border:'#D8DCE3',icon:'⏱'},
+  'Unavailable':{bg:'#EEF0F3',fg:'#8A94A6',border:'#D8DCE3',icon:'⊘'},
+  'Review required':{bg:'#EEEBF4',fg:'#6B5B95',border:'#D6CEE6',icon:'⚑'}
+};
+const SEVERITY_META = {
+  'Critical':{bg:'#FDEEEE',fg:'#B23A3A',label:'Critical'},
+  'High':{bg:'#FFFBEB',fg:'#B45309',label:'High'},
+  'Medium':{bg:'#EFF4FB',fg:'#1B3A5C',label:'Medium'}
+};
+
+function fmtINR(n){
+  if(n>=10000000) return '₹'+(n/10000000).toFixed(2)+' Cr';
+  if(n>=100000) return '₹'+(n/100000).toFixed(2)+' L';
+  return '₹'+n.toLocaleString('en-IN');
+}
+
+function verifValue(attr, v, status){
+  if(attr==='Legal Name Match'){
+    if(status==='Conflict') return v.name + ', 94% match with existing vendor "Vishwakarma Forgings Pvt Ltd" (VN-0042)';
+    return v.name;
+  }
+  if(attr==='GSTIN'){
+    if(status==='Unavailable') return 'Portal unreachable since 06 Aug 2026';
+    return v.gstin;
+  }
+  if(attr==='PAN') return v.pan;
+  if(attr==='Bank Account & IFSC'){
+    if(status==='Changed') return 'XXXXXX8890 · ICIC0004521 (was XXXXXX4521 · HDFC0001234)';
+    return 'XXXXXX4521 · HDFC0001234';
+  }
+  if(attr==='Registered Address'){
+    if(status==='Stale') return v.address + ', not reconfirmed in 208 days';
+    return v.address;
+  }
+  if(attr==='MSME / Udyam Registration'){
+    if(status==='Review required') return v.udyamNo + ', legal name mismatch with GSTIN record';
+    return v.registered ? v.udyamNo : 'Not registered';
+  }
+  return '—';
+}
+
+function buildVerification(v){
+  const rows = [
+    {attribute:'Legal Name Match', source:'MCA Master Data', date: v.status==='Conflict' ? '06 Aug 2026' : '20 Jul 2026'},
+    {attribute:'GSTIN', source:'GST Portal', date: v.status==='Unavailable' ? '—' : '05 Aug 2026'},
+    {attribute:'PAN', source:'Income Tax e-Filing', date:'02 Aug 2026'},
+    {attribute:'Bank Account & IFSC', source:'Bank Confirmation Letter', date: v.status==='Changed' ? '07 Aug 2026' : '14 Jun 2026'},
+    {attribute:'Registered Address', source:'GST Portal', date: v.status==='Stale' ? '12 Jan 2026' : '20 Jul 2026'},
+    {attribute:'MSME / Udyam Registration', source:'Udyam Assist Portal', date: v.status==='Review required' ? '08 Aug 2026' : '11 May 2026'}
+  ];
+  return rows.map(row=>{
+    let status='Verified';
+    if(v.status==='Conflict' && row.attribute==='Legal Name Match') status='Conflict';
+    if(v.status==='Unavailable' && row.attribute==='GSTIN') status='Unavailable';
+    if(v.status==='Changed' && row.attribute==='Bank Account & IFSC') status='Changed';
+    if(v.status==='Stale' && row.attribute==='Registered Address') status='Stale';
+    if(v.status==='Review required' && row.attribute==='MSME / Udyam Registration') status='Review required';
+    return {attribute:row.attribute, value:verifValue(row.attribute,v,status), source:row.source, lastVerified:row.date, status, badge:STATUS_META[status]};
+  });
+}
+
+function buildChangeHistory(v){
+  if(v.status==='Changed') return [{date:'07 Aug 2026', field:'Bank account & IFSC', oldValue:'XXXXXX4521 · HDFC0001234', newValue:'XXXXXX8890 · ICIC0004521', source:'Tally Sync', action:'Flagged, pending review'}];
+  if(v.status==='Conflict') return [{date:'06 Aug 2026', field:'Duplicate match detected', oldValue:'n/a', newValue:'94% match with VN-0042', source:'MCA Master Data', action:'Sent to duplicate review'}];
+  if(v.status==='Review required') return [{date:'08 Aug 2026', field:'Udyam category', oldValue:'Small', newValue:'Micro (mismatch vs GSTIN legal name)', source:'Udyam Assist Portal', action:'Flagged, pending review'}];
+  return [{date:'20 Jul 2026', field:'Registered address', oldValue:'Old address on file', newValue:v.address, source:'GST Portal', action:'Auto-verified, no action needed'}];
+}
+
+const VENDORS_RAW = [
+  {id:1,name:'Shree Balaji Fasteners',plant:'Pune',category:'Fasteners',gstin:'27AAFCB1234F1Z5',pan:'AAFCB1234F',status:'Verified',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-MH-03-0012345',msmeCat:'Micro',address:'MIDC Bhosari, Pune, MH 411026',openInvoices:4,invoiceValue:1850000,paymentStatus:'On time',paymentTerms:'Net 30',exposure:0,lastVerified:'3 days ago'},
+  {id:2,name:'Anand Precision Tools',plant:'Nashik',category:'Precision Tooling',gstin:'27AABCA5678K1Z2',pan:'AABCA5678K',status:'Changed',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-MH-26-0034567',msmeCat:'Small',address:'Ambad MIDC, Nashik, MH 422010',openInvoices:6,invoiceValue:5400000,paymentStatus:'On hold pending verification',paymentTerms:'Net 45',exposure:5400000,lastVerified:'2 hours ago',hasAlert:true},
+  {id:3,name:'Vishwakarma Forge Industries',plant:'Pune',category:'Forging',gstin:'27AAECV2345L1Z7',pan:'AAECV2345L',status:'Conflict',entityStatus:'Active, under review',gstStatus:'Active',registered:true,udyamNo:'UDYAM-MH-03-0098765',msmeCat:'Small',address:'Chakan MIDC, Pune, MH 410501',openInvoices:2,invoiceValue:1200000,paymentStatus:'Blocked',paymentTerms:'Net 30',exposure:1200000,lastVerified:'3 days ago',hasAlert:true},
+  {id:4,name:'Om Sai Rubber Components',plant:'Chennai',category:'Rubber Components',gstin:'33AACFO6789M1Z1',pan:'AACFO6789M',status:'Stale',entityStatus:'Active',gstStatus:'Active (unconfirmed 90+ days)',registered:true,udyamNo:'UDYAM-TN-33-0011223',msmeCat:'Micro',address:'Ambattur Industrial Estate, Chennai, TN 600058',openInvoices:3,invoiceValue:640000,paymentStatus:'On time',paymentTerms:'Net 30',exposure:0,lastVerified:'11 days ago'},
+  {id:5,name:'Kaveri Metal Works',plant:'Chennai',category:'Metal Trading',gstin:'33AABCK3456N1Z8',pan:'AABCK3456N',status:'Unavailable',entityStatus:'Unknown, source unreachable',gstStatus:'Unavailable',registered:false,udyamNo:'Not registered',msmeCat:'—',address:'Guindy Industrial Estate, Chennai, TN 600032',openInvoices:1,invoiceValue:210000,paymentStatus:'On hold',paymentTerms:'Net 30',exposure:210000,lastVerified:'9 days ago'},
+  {id:6,name:'Ganesh Enterprises',plant:'Rajkot',category:'Industrial Supplies',gstin:'24AAGFE7890P1Z3',pan:'AAGFE7890P',status:'Review required',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-GJ-24-0056781',msmeCat:'Micro',address:'Aji Industrial Estate, Rajkot, GJ 360003',openInvoices:5,invoiceValue:1600000,paymentStatus:'Due in 9 days',paymentTerms:'Net 45 (MSME)',exposure:1600000,lastVerified:'1 day ago',hasAlert:true},
+  {id:7,name:'Sundaram Auto Ancillaries',plant:'Rajkot',category:'Auto Ancillaries',gstin:'24AABCS4567Q1Z9',pan:'AABCS4567Q',status:'Verified',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-GJ-24-0022334',msmeCat:'Small',address:'Bhaktinagar, Rajkot, GJ 360002',openInvoices:8,invoiceValue:3200000,paymentStatus:'On time',paymentTerms:'Net 30',exposure:0,lastVerified:'5 hours ago'},
+  {id:8,name:'Bharat Bearings Co',plant:'Pune',category:'Bearings',gstin:'27AACFB8901R1Z4',pan:'AACFB8901R',status:'Verified',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-MH-03-0045678',msmeCat:'Micro',address:'Pimpri, Pune, MH 411018',openInvoices:3,invoiceValue:980000,paymentStatus:'On time',paymentTerms:'Net 30',exposure:0,lastVerified:'1 day ago'},
+  {id:9,name:'Lakshmi Casting Pvt Ltd',plant:'Nashik',category:'Casting',gstin:'27AABCL6789S1Z6',pan:'AABCL6789S',status:'Changed',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-MH-26-0067890',msmeCat:'Small',address:'Satpur MIDC, Nashik, MH 422007',openInvoices:2,invoiceValue:740000,paymentStatus:'On time',paymentTerms:'Net 30',exposure:0,lastVerified:'6 days ago'},
+  {id:10,name:'Precision Dies & Moulds',plant:'Chennai',category:'Dies & Moulds',gstin:'33AACFP2345T1Z0',pan:'AACFP2345T',status:'Verified',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-TN-33-0089012',msmeCat:'Micro',address:'Sriperumbudur, Chennai, TN 602105',openInvoices:4,invoiceValue:1450000,paymentStatus:'On time',paymentTerms:'Net 30',exposure:0,lastVerified:'2 days ago'},
+  {id:11,name:'Om Metal Traders',plant:'Rajkot',category:'Metal Trading',gstin:'24AABCO7890U1Z2',pan:'AABCO7890U',status:'Stale',entityStatus:'Active',gstStatus:'Active',registered:false,udyamNo:'Not registered',msmeCat:'—',address:'Gondal Road, Rajkot, GJ 360004',openInvoices:2,invoiceValue:390000,paymentStatus:'On time',paymentTerms:'Net 30',exposure:0,lastVerified:'14 days ago'},
+  {id:12,name:'Shivam Engineering Works',plant:'Pune',category:'Engineering',gstin:'27AACFS3456V1Z7',pan:'AACFS3456V',status:'Verified',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-MH-03-0056789',msmeCat:'Small',address:'Hinjewadi, Pune, MH 411057',openInvoices:6,invoiceValue:2100000,paymentStatus:'On time',paymentTerms:'Net 30',exposure:0,lastVerified:'4 hours ago'},
+  {id:13,name:'Krishna Wire Industries',plant:'Nashik',category:'Wire Products',gstin:'27AABCK8901W1Z9',pan:'AABCK8901W',status:'Review required',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-MH-26-0078901',msmeCat:'Medium',address:'Sinnar MIDC, Nashik, MH 422113',openInvoices:3,invoiceValue:860000,paymentStatus:'Due in 21 days',paymentTerms:'Net 45 (MSME)',exposure:860000,lastVerified:'2 days ago'},
+  {id:14,name:'Patel Hydraulics',plant:'Chennai',category:'Hydraulics',gstin:'33AACFP9012X1Z1',pan:'AACFP9012X',status:'Verified',entityStatus:'Active',gstStatus:'Active',registered:true,udyamNo:'UDYAM-TN-33-0090123',msmeCat:'Small',address:'Thirumazhisai, Chennai, TN 600124',openInvoices:5,invoiceValue:1750000,paymentStatus:'On time',paymentTerms:'Net 30',exposure:0,lastVerified:'6 hours ago'}
+];
+
+const ALERT_DEFS = [
+  {id:'al1',vendorId:2,type:'Bank detail change',relatedStatus:'Changed',severity:'Critical',isDuplicate:false,
+   headline:'Bank account details changed for Anand Precision Tools',
+   detected:'Today, 9:42 AM',
+   explanation:"Anand Precision Tools' bank account changed three days before a ₹54.00 L invoice batch is due for payment. This vendor has 6 open invoices and no prior bank changes in the last 3 years on file. Redirected payments to unverified accounts are the most common vector for vendor-impersonation fraud; confirm the new account directly with the vendor's finance contact before releasing payment.",
+   exposure:5400000,
+   evidence:'Old: XXXXXX4521 · HDFC0001234 (Bank Letter, 14 Jun 2026). New: XXXXXX8890 · ICIC0004521 (Tally Sync, 07 Aug 2026).',
+   verifiedBy:'Tally sync + Bank confirmation letter'},
+  {id:'al2',vendorId:6,type:'MSME payment risk',relatedStatus:'Changed',severity:'High',isDuplicate:false,
+   headline:'MSME payment deadline in 9 days for Ganesh Enterprises',
+   detected:'Yesterday, 4:10 PM',
+   explanation:'Ganesh Enterprises is Udyam-registered as Micro, which caps payment terms at 45 days under the MSME Act. Invoice INV-2291 falls due in 9 days; missing it triggers compounding interest at 3x the RBI bank rate, payable regardless of any contract terms.',
+   exposure:1600000,
+   evidence:'Udyam registration: Micro, dated 08 Aug 2026 (Udyam Assist Portal). Invoice INV-2291 due 17 Aug 2026 (Tally Sync).',
+   verifiedBy:'Udyam Assist Portal'},
+  {id:'al3',vendorId:3,type:'Duplicate vendor',relatedStatus:'Review required',severity:'Medium',isDuplicate:true,
+   headline:'Possible duplicate vendor: Vishwakarma Forge Industries',
+   detected:'3 days ago',
+   explanation:'Vishwakarma Forge Industries shares a 94% name match and overlapping PAN prefix with an existing vendor, Vishwakarma Forgings Pvt Ltd (VN-0042), already active in Pune. Paying both as separate vendors risks a duplicate payment against the same invoice set.',
+   exposure:1200000,
+   evidence:'Name similarity 94% (MCA Master Data). GSTIN prefix and registered address overlap with VN-0042 (GST Portal).',
+   verifiedBy:'MCA Master Data + GST Portal'}
+];
+
+const MSME_DEADLINES = [
+  {vendor:'Ganesh Enterprises',plant:'Rajkot',amount:1600000,dueDate:'17 Aug 2026',days:9},
+  {vendor:'Krishna Wire Industries',plant:'Nashik',amount:860000,dueDate:'29 Aug 2026',days:21},
+  {vendor:'Shree Balaji Fasteners',plant:'Pune',amount:1850000,dueDate:'05 Sep 2026',days:28},
+  {vendor:'Om Sai Rubber Components',plant:'Chennai',amount:640000,dueDate:'12 Sep 2026',days:35}
+];
+
+const AUDIT_BASE = [
+  {time:'07 Aug 2026, 6:14 PM',actor:'System',action:'Flagged bank detail change',vendor:'Anand Precision Tools',plant:'Nashik'},
+  {time:'07 Aug 2026, 11:02 AM',actor:'System',action:'Synced vendor master from Tally',vendor:'All vendors',plant:'All plants'},
+  {time:'06 Aug 2026, 3:40 PM',actor:'Priya Nair',action:'Marked GST re-verification complete',vendor:'Om Sai Rubber Components',plant:'Chennai'},
+  {time:'05 Aug 2026, 10:15 AM',actor:'System',action:'Detected duplicate name match',vendor:'Vishwakarma Forge Industries',plant:'Pune'},
+  {time:'04 Aug 2026, 2:00 PM',actor:'System',action:'Flagged Udyam category mismatch',vendor:'Krishna Wire Industries',plant:'Nashik'},
+  {time:'01 Aug 2026, 9:30 AM',actor:'Rahul Deshpande',action:'Resolved bank verification query',vendor:'Bharat Bearings Co',plant:'Pune'},
+  {time:'29 Jul 2026, 4:45 PM',actor:'System',action:'GST portal unreachable, marked Unavailable',vendor:'Kaveri Metal Works',plant:'Chennai'},
+  {time:'28 Jul 2026, 1:20 PM',actor:'System',action:'Synced vendor master from Tally',vendor:'All vendors',plant:'All plants'}
+];
+
+const NAV_DEFS = [
+  {view:'dashboard',label:'Dashboard',mono:'D'},
+  {view:'vendors',label:'Vendors',mono:'V'},
+  {view:'alerts',label:'Alerts',mono:'A'},
+  {view:'msme',label:'MSME Deadlines',mono:'M'},
+  {view:'audit',label:'Audit Trail',mono:'T'},
+  {view:'reports',label:'Reports',mono:'R'},
+  {view:'settings',label:'Settings',mono:'S'},
+  {view:'styleguide',label:'Style Guide',mono:'◆'}
+];
+const STYLEGUIDE_COLORS = [
+  {name:'Deep Navy',usage:'Primary: nav, headings, primary buttons',hex:'#1B3A5C'},
+  {name:'Teal',usage:'Verified / good status',hex:'#2E7D6B'},
+  {name:'Amber',usage:'Changed / needs attention',hex:'#C48A2E'},
+  {name:'Red',usage:'Conflict / critical only',hex:'#B23A3A'},
+  {name:'Purple',usage:'Review required',hex:'#6B5B95'},
+  {name:'Gray',usage:'Stale / unavailable',hex:'#8A94A6'}
+];
+const STYLEGUIDE_BADGES = [
+  {label:'Verified',icon:'✓',fg:'#2E7D6B',bg:'#E7F2EF'},
+  {label:'Changed',icon:'⇄',fg:'#C48A2E',bg:'#FBF1E1'},
+  {label:'Conflict',icon:'⚠',fg:'#B23A3A',bg:'#F8E9E9'},
+  {label:'Stale',icon:'⏱',fg:'#8A94A6',bg:'#EEF0F3'},
+  {label:'Unavailable',icon:'⊘',fg:'#8A94A6',bg:'#EEF0F3'},
+  {label:'Review required',icon:'⚑',fg:'#6B5B95',bg:'#EEEBF4'}
+];
+
+class Component extends DCLogic {
+  state = {
+    view:'login',
+    loginEmail:'',
+    loginPassword:'',
+    loginAttempts:0,
+    showWrongPassword:false,
+    isLockedOut:false,
+    sessionExpired:false,
+    selectedPlants:PLANT_NAMES.slice(),
+    selectedSystem:null,
+    buildStepIndex:0,
+    searchQuery:'',
+    plantFilter:'All',
+    statusFilter:'All',
+    vendorsPage:0,
+    selectedVendorId:2,
+    role:'cfo',
+    alertActions:{},
+    overridingAlertId:null,
+    overrideReasons:{},
+    auditQuery:'',
+    auditLog:AUDIT_BASE.slice(),
+    duplicateResolution:null,
+    toast:null
+  };
+
+  goTo(view){ this.setState({view}); }
+  preventDefault(e){ e.preventDefault(); }
+  setLoginEmail(e){ this.setState({loginEmail:e.target.value}); }
+  setLoginPassword(e){ this.setState({loginPassword:e.target.value, showWrongPassword:false}); }
+  handleLogin(){
+    if(this.state.loginPassword==='wrong'){
+      const attempts = this.state.loginAttempts+1;
+      if(attempts>=3){ this.setState({isLockedOut:true, loginAttempts:attempts}); return; }
+      this.setState({showWrongPassword:true, loginAttempts:attempts});
+      return;
+    }
+    this.setState({view:'connect'});
+  }
+  goToPasswordReset(e){ if(e&&e.preventDefault) e.preventDefault(); this.setState({isLockedOut:false, showWrongPassword:false, loginAttempts:0}); }
+  previewWrongPassword(){ this.setState({loginEmail:this.state.loginEmail||'priya.nair@suryodaya-auto.com', showWrongPassword:true, isLockedOut:false, sessionExpired:false}); }
+  previewLockedOut(){ this.setState({loginEmail:this.state.loginEmail||'priya.nair@suryodaya-auto.com', isLockedOut:true, showWrongPassword:false, sessionExpired:false}); }
+  previewSessionExpired(){ this.setState({sessionExpired:true, isLockedOut:false, showWrongPassword:false}); }
+
+  togglePlant(name){
+    this.setState(s=>{
+      const has = s.selectedPlants.includes(name);
+      return {selectedPlants: has ? s.selectedPlants.filter(p=>p!==name) : s.selectedPlants.concat(name)};
+    });
+  }
+  selectSystem(id){ this.setState({selectedSystem:id}); }
+
+  handleConnect(){
+    if(!(this.state.selectedPlants.length>0 && this.state.selectedSystem)) return;
+    this.setState({view:'building', buildStepIndex:0});
+    this.runBuildSteps();
+  }
+  runBuildSteps(){
+    const steps = 4;
+    let i = 0;
+    const tick = ()=>{
+      if(this.state.view!=='building') return;
+      i++;
+      if(i>=steps){ this.setState({view:'firstResults'}); return; }
+      this.setState({buildStepIndex:i});
+      setTimeout(tick, 700);
+    };
+    setTimeout(tick, 700);
+  }
+  goToDashboardFromResults(){ this.setState({view:'dashboard'}); }
+
+  openVendor(id){ this.setState({selectedVendorId:id, view:'profile'}); }
+  setSearch(e){ this.setState({searchQuery:e.target.value}); }
+  setPlantFilter(e){ this.setState({plantFilter:e.target.value}); }
+  setStatusFilter(s){ this.setState({statusFilter:s, vendorsPage:0}); }
+  setStatusFilterFromEvent(e){ this.setStatusFilter(e.target.value); }
+  setVendorsPage(p){ this.setState({vendorsPage:p}); }
+  clearVendorFilters(){ this.setState({searchQuery:'', plantFilter:'All', statusFilter:'All', vendorsPage:0}); }
+  setRole(r){ this.setState({role:r}); }
+  setAuditQuery(e){ this.setState({auditQuery:e.target.value}); }
+
+  showToast(text){
+    this.setState({toast:{type:'success', text, auditLink:false}});
+    setTimeout(()=>this.setState(s=> s.toast && s.toast.text===text ? {toast:null} : {}), 2600);
+  }
+  showActionResult(action){
+    const failed = Math.random() < 0.2;
+    if(failed){
+      this.setState({toast:{type:'error', text:"Couldn't save that action. Please try again.", retry:()=>{ this.setState({toast:null}); this.showActionResult(action); }}});
+      return;
+    }
+    action.apply();
+    this.setState({toast:{type:'success', text:action.successText, auditLink:true}});
+    setTimeout(()=>this.setState(s=> (s.toast && s.toast.text===action.successText) ? {toast:null} : {}), 3400);
+  }
+  goToAuditFromToast(){ this.setState({view:'audit', toast:null}); }
+
+  logAudit(action, vendorId){
+    const v = VENDORS_RAW.find(vv=>vv.id===vendorId) || {};
+    this.setState(s=>({auditLog:[{time:'Just now',actor:'You',action, vendor:v.name||'', plant:v.plant||''}].concat(s.auditLog)}));
+  }
+
+  doAlertAction(id, label){
+    const alert = ALERT_DEFS.find(a=>a.id===id);
+    this.showActionResult({
+      successText: 'Marked '+label.toLowerCase()+'. Logged to audit trail.',
+      apply: ()=>{
+        this.setState(s=>({alertActions: Object.assign({}, s.alertActions, {[id]:label})}));
+        this.logAudit(label+' alert', alert.vendorId);
+      }
+    });
+  }
+  toggleOverride(id){ this.setState(s=>({overridingAlertId: s.overridingAlertId===id ? null : id})); }
+  setOverrideReason(id, e){ this.setState(s=>({overrideReasons: Object.assign({}, s.overrideReasons, {[id]:e.target.value})})); }
+  confirmOverride(id){
+    const reason = (this.state.overrideReasons[id]||'').trim();
+    if(!reason) return;
+    const alert = ALERT_DEFS.find(a=>a.id===id);
+    this.showActionResult({
+      successText: 'Override recorded. Logged to audit trail.',
+      apply: ()=>{
+        this.setState(s=>({alertActions: Object.assign({}, s.alertActions, {[id]:'Overridden'}), overridingAlertId:null}));
+        this.logAudit('Overridden alert, reason: '+reason, alert.vendorId);
+      }
+    });
+  }
+
+  confirmMerge(){
+    this.setState({duplicateResolution:'Merged. Transaction history preserved on both records'});
+    this.logAudit('Confirmed duplicate merge', 3);
+    this.showToast('Marked resolved. Logged to audit trail.');
+  }
+  dismissDuplicate(){
+    this.setState({duplicateResolution:'Dismissed, confirmed as distinct vendors'});
+    this.logAudit('Dismissed duplicate match', 3);
+    this.showToast('Marked resolved. Logged to audit trail.');
+  }
+
+  exportReport(){ this.showToast('Export ready. Check your downloads.'); }
+
+  renderVals(){
+    const s = this.state;
+    const navItems = NAV_DEFS.map(n=>{
+      const active = s.view===n.view || (s.view==='profile' && n.view==='vendors') || (s.view==='duplicate' && n.view==='alerts');
+      return {
+        label:n.label, mono:n.mono, onClick:()=>this.goTo(n.view),
+        rowBg: active ? 'rgba(255,255,255,0.1)' : 'transparent',
+        borderColor: active ? '#5EC8BE' : 'transparent',
+        textColor: active ? '#fff' : 'rgba(255,255,255,0.65)',
+        monoBg: active ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)',
+        monoColor: active ? '#fff' : 'rgba(255,255,255,0.7)'
+      };
+    });
+
+    const plants = PLANT_NAMES.map(name=>{
+      const sel = s.selectedPlants.includes(name);
+      return {name, check: sel?'☑':'☐', toggle:()=>this.togglePlant(name),
+        borderColor: sel?'#1B3A5C':'#E4E7EC', bg: sel?'#EFF4FB':'#fff', textColor: sel?'#1B3A5C':'#5B6472'};
+    });
+    const systems = SYSTEM_DEFS.map(sys=>{
+      const sel = s.selectedSystem===sys.id;
+      return {id:sys.id, name:sys.name, desc:sys.desc, mono:sys.mono, onSelect:()=>this.selectSystem(sys.id),
+        borderColor: sel?'#1B3A5C':'#E4E7EC', bg: sel?'#EFF4FB':'#fff', monoBg: sel?'#1B3A5C':'#F0F2F5', monoColor: sel?'#fff':'#5B6472'};
+    });
+    const canConnect = s.selectedPlants.length>0 && !!s.selectedSystem;
+
+    const BUILD_LABELS = ['Checking 1,380 active vendors against GST records','Checking Udyam / MSME registration status','Cross-matching vendor names and GSTINs across plants','Finalizing Trust Profiles'];
+    const buildingSteps = BUILD_LABELS.map((label,i)=>{
+      const done = i < s.buildStepIndex;
+      const current = i === s.buildStepIndex;
+      return {label, icon: done?'✓':(i+1), bg: done?'#E7F2EF':(current?'#EFF4FB':'#F4F4F5'), fg: done?'#2E7D6B':(current?'#1B3A5C':'#8A93A3'),
+        textColor: done||current ? '#131B2E' : '#8A93A3', weight: current ? '700':'500'};
+    });
+
+    const vendors = VENDORS_RAW.map(v=>Object.assign({}, v, {badge:STATUS_META[v.status]}));
+    const statusCounts = {}; STATUS_ORDER.forEach(k=>statusCounts[k]=0);
+    vendors.forEach(v=>{ statusCounts['All']++; statusCounts[v.status]++; });
+
+    const q = s.searchQuery.trim().toLowerCase();
+    let filteredVendorsBase = vendors.filter(v=>{
+      const matchesQ = !q || v.name.toLowerCase().includes(q) || v.gstin.toLowerCase().includes(q) || v.plant.toLowerCase().includes(q);
+      const matchesStatus = s.statusFilter==='All' || v.status===s.statusFilter;
+      const matchesPlant = s.plantFilter==='All' || v.plant===s.plantFilter;
+      return matchesQ && matchesStatus && matchesPlant;
+    });
+    const ATTENTION_RANK = {'Conflict':0,'Review required':1,'Changed':2,'Stale':3,'Unavailable':4,'Verified':5};
+    filteredVendorsBase = filteredVendorsBase.slice().sort((a,b)=> (ATTENTION_RANK[a.status]-ATTENTION_RANK[b.status]) || a.name.localeCompare(b.name));
+    const filteredVendors = filteredVendorsBase.map(v=>Object.assign({}, v, {onClick:()=>this.openVendor(v.id)}));
+    const VENDORS_PAGE_SIZE = 8;
+    const vendorsPageCount = Math.max(1, Math.ceil(filteredVendors.length/VENDORS_PAGE_SIZE));
+    const vendorsPageClamped = Math.min(s.vendorsPage, vendorsPageCount-1);
+    const pagedVendors = filteredVendors.slice(vendorsPageClamped*VENDORS_PAGE_SIZE, vendorsPageClamped*VENDORS_PAGE_SIZE+VENDORS_PAGE_SIZE);
+    const pageRangeLabel = filteredVendors.length===0 ? '' : `${vendorsPageClamped*VENDORS_PAGE_SIZE+1}\u2013${Math.min(filteredVendors.length,(vendorsPageClamped+1)*VENDORS_PAGE_SIZE)} of ${filteredVendors.length}`;
+
+    const statusFilters = STATUS_ORDER.map(st=>{
+      const active = s.statusFilter===st;
+      const meta = st==='All' ? {bg:'#131B2E',fg:'#fff',border:'#131B2E'} : STATUS_META[st];
+      return {label:st, count:statusCounts[st], onClick:()=>this.setStatusFilter(st),
+        bgColor: active?meta.bg:'#fff', textColor: active?meta.fg:'#5B6472', borderColor: active?meta.border:'#E4E7EC'};
+    });
+
+    const scopePlant = s.role==='plant' ? 'Nashik' : null;
+    const scopedVendors = scopePlant ? vendors.filter(v=>v.plant===scopePlant) : vendors;
+    const needsAttention = scopedVendors.filter(v=>v.status!=='Verified').sort((a,b)=>b.exposure-a.exposure).slice(0,5).map(v=>({
+      name:v.name, plant:v.plant, badge: v.status==='Conflict' ? STATUS_META['Review required'] : v.status==='Review required' ? STATUS_META['Changed'] : v.badge,
+      reason: v.status==='Changed'?'Bank details changed' : v.status==='Conflict'?'Possible duplicate vendor' : v.status==='Review required'?'MSME/Udyam mismatch' : v.status==='Stale'?'Not reconfirmed recently' : 'Source unreachable',
+      exposureFmt: v.exposure>0 ? fmtINR(v.exposure) : '—', onClick:()=>this.openVendor(v.id)
+    }));
+
+    const totalExposure = scopedVendors.reduce((sum,v)=>sum+v.exposure,0);
+    const msmeExposure = scopedVendors.filter(v=>v.status==='Review required').reduce((sum,v)=>sum+v.exposure,0);
+    const bankExposure = scopedVendors.filter(v=>v.status==='Changed').reduce((sum,v)=>sum+v.exposure,0);
+
+    const plantAgg = {'Pune':{total:62,flagged:0},'Nashik':{total:48,flagged:0},'Chennai':{total:41,flagged:0},'Rajkot':{total:35,flagged:0}};
+    vendors.forEach(v=>{ if(v.status!=='Verified' && plantAgg[v.plant]) plantAgg[v.plant].flagged++; });
+    const plantBreakdown = (scopePlant ? [scopePlant] : PLANT_NAMES).map(p=>({plant:p, vendors:plantAgg[p].total, flagged:plantAgg[p].flagged}));
+
+    const roleTabs = [
+      {key:'cfo', label:'CFO · Company-wide'},
+      {key:'plant', label:'Priya · Nashik Plant'}
+    ].map(r=>({label:r.label, onClick:()=>this.setRole(r.key), bg: s.role===r.key?'#1B3A5C':'transparent', fg: s.role===r.key?'#fff':'#5B6472'}));
+
+    const selectedVendorRaw = VENDORS_RAW.find(v=>v.id===s.selectedVendorId) || VENDORS_RAW[0];
+    const selectedVendor = Object.assign({}, selectedVendorRaw, {
+      badge: STATUS_META[selectedVendorRaw.status],
+      msmeStatus: selectedVendorRaw.registered ? ('Registered, '+selectedVendorRaw.msmeCat) : 'Not registered',
+      invoiceValueFmt: fmtINR(selectedVendorRaw.invoiceValue),
+      verification: buildVerification(selectedVendorRaw),
+      changeHistory: buildChangeHistory(selectedVendorRaw)
+    });
+
+    const alerts = ALERT_DEFS.map(a=>{
+      const vendor = VENDORS_RAW.find(v=>v.id===a.vendorId);
+      const actionLabel = s.alertActions[a.id];
+      const overriding = s.overridingAlertId===a.id;
+      const reason = s.overrideReasons[a.id]||'';
+      return Object.assign({}, a, {
+        badge: STATUS_META[a.relatedStatus], severity: SEVERITY_META[a.severity],
+        vendorName: vendor.name, plant: vendor.plant,
+        exposureFmt: fmtINR(a.exposure),
+        isOpen: !actionLabel, isResolved: !!actionLabel, actionLabel,
+        showOverride: overriding && !actionLabel,
+        overrideReason: reason,
+        overrideBg: reason.trim() ? '#1B3A5C' : '#C7CDD6',
+        overrideCursor: reason.trim() ? 'pointer' : 'not-allowed',
+        onOverrideReasonChange:(e)=>this.setOverrideReason(a.id,e),
+        onOverrideConfirm:()=>this.confirmOverride(a.id),
+        onOverrideToggle:()=>this.toggleOverride(a.id),
+        onOpenVendor:()=>this.openVendor(vendor.id),
+        onCompare:()=>this.goTo('duplicate'),
+        onResolve:()=>this.doAlertAction(a.id,'Resolved'),
+        onAssign:()=>this.doAlertAction(a.id,'Assigned'),
+        onEscalate:()=>this.doAlertAction(a.id,'Escalated'),
+        onSnooze:()=>this.doAlertAction(a.id,'Snoozed'),
+        onNa:()=>this.doAlertAction(a.id,'Marked not applicable')
+      });
+    });
+
+    const msmeDeadlines = MSME_DEADLINES.map(m=>{
+      const urgent = m.days<=10, warn = m.days<=25;
+      return {vendor:m.vendor, plant:m.plant, amountFmt:fmtINR(m.amount), dueDate:m.dueDate, countdown:m.days+' days',
+        badge: urgent ? {bg:'#FDEEEE',fg:'#B23A3A'} : warn ? {bg:'#FFFBEB',fg:'#B45309'} : {bg:'#E7F2EF',fg:'#2E7D6B'}};
+    });
+
+    const aq = s.auditQuery.trim().toLowerCase();
+    const filteredAuditLog = s.auditLog.filter(e=> !aq || e.vendor.toLowerCase().includes(aq) || e.plant.toLowerCase().includes(aq) || e.actor.toLowerCase().includes(aq));
+
+    return {
+      showSidebar: s.view!=='login' && s.view!=='connect' && s.view!=='building' && s.view!=='firstResults',
+      isLogin: s.view==='login', isConnect: s.view==='connect', isBuilding: s.view==='building', isFirstResults: s.view==='firstResults',
+      isDashboard: s.view==='dashboard', isVendors: s.view==='vendors', isProfile: s.view==='profile',
+      isAlerts: s.view==='alerts', isDuplicate: s.view==='duplicate', isMsme: s.view==='msme', isAudit: s.view==='audit',
+      isReports: s.view==='reports', isSettings: s.view==='settings', isStyleGuide: s.view==='styleguide',
+      styleguideColors: STYLEGUIDE_COLORS, styleguideBadges: STYLEGUIDE_BADGES,
+      currentUserName: s.role==='plant' ? 'Priya Nair' : 'Arjun Mehta',
+      currentUserRole: s.role==='plant' ? 'Plant Finance · Nashik' : 'Compliance Lead · Group',
+      navItems, goToConnect:()=>this.goTo('connect'), goToAlerts:()=>this.goTo('alerts'), goToMsme:()=>this.goTo('msme'), backToVendors:()=>this.goTo('vendors'),
+      preventDefault:(e)=>this.preventDefault(e),
+      loginEmail:s.loginEmail, setLoginEmail:(e)=>this.setLoginEmail(e), loginPassword:s.loginPassword, setLoginPassword:(e)=>this.setLoginPassword(e), handleLogin:()=>this.handleLogin(),
+      showWrongPassword: s.showWrongPassword, isLockedOut: s.isLockedOut, showLoginForm: !s.isLockedOut,
+      goToPasswordReset:(e)=>this.goToPasswordReset(e), showSessionExpiredBanner: s.sessionExpired,
+      passwordBorderColor: s.showWrongPassword ? '#B23A3A' : '#E4E7EC', passwordSpacerStyle: s.showWrongPassword ? 'height:6px' : 'height:16px',
+      previewWrongPassword:()=>this.previewWrongPassword(), previewLockedOut:()=>this.previewLockedOut(), previewSessionExpired:()=>this.previewSessionExpired(),
+      plants, systems, handleConnect:()=>this.handleConnect(),
+      connectBg: canConnect ? '#1B3A5C' : '#C7CDD6', connectCursor: canConnect ? 'pointer':'not-allowed', connectOpacity: canConnect ? '1':'0.75',
+      buildingStepText: BUILD_LABELS[Math.min(s.buildStepIndex, BUILD_LABELS.length-1)], buildingSteps,
+      buildingProgressPct: Math.round((Math.min(s.buildStepIndex,BUILD_LABELS.length)/BUILD_LABELS.length)*100)+'%',
+      buildingEta: 'About '+Math.max(1, (BUILD_LABELS.length-s.buildStepIndex))+' seconds remaining',
+      showUnavailableNote: s.buildStepIndex>=2,
+      goToDashboardFromResults:()=>this.goToDashboardFromResults(),
+      searchQuery:s.searchQuery, setSearch:(e)=>this.setSearch(e), plantFilter:s.plantFilter, setPlantFilter:(e)=>this.setPlantFilter(e),
+      statusFilters, filteredVendors, pagedVendors, resultCount: filteredVendors.length, hasResults: filteredVendors.length>0, noResults: filteredVendors.length===0,
+      setStatusFilterFromEvent:(e)=>this.setStatusFilterFromEvent(e), clearFilters:()=>this.clearVendorFilters(),
+      pageRangeLabel, isFirstPage: vendorsPageClamped<=0, isLastPage: vendorsPageClamped>=vendorsPageCount-1,
+      prevPage:()=>this.setVendorsPage(Math.max(0,vendorsPageClamped-1)), nextPage:()=>this.setVendorsPage(Math.min(vendorsPageCount-1,vendorsPageClamped+1)),
+      roleTabs, exposureLabel: scopePlant ? 'Nashik plant exposure' : 'Total exposure across plants',
+      totalExposureFmt: fmtINR(totalExposure), msmeExposureFmt: fmtINR(msmeExposure), bankExposureFmt: fmtINR(bankExposure),
+      needsAttentionList: needsAttention, needsAttentionCount: needsAttention.length, verifiedCleanCount: scopedVendors.length-needsAttention.length,
+      attentionListTitle: scopePlant ? 'Escalated to you' : 'Needs your attention',
+      plantBreakdown,
+      selectedVendor, alerts, openAlertCount: alerts.filter(a=>a.isOpen).length,
+      confirmMerge:()=>this.confirmMerge(), dismissDuplicate:()=>this.dismissDuplicate(),
+      duplicateOpen: !s.duplicateResolution, duplicateResolved: !!s.duplicateResolution, duplicateResolution: s.duplicateResolution,
+      msmeDeadlines,
+      auditQuery: s.auditQuery, setAuditQuery:(e)=>this.setAuditQuery(e), filteredAuditLog,
+      exportReport:()=>this.exportReport(),
+      settingsPlants: [{plant:'Pune',source:'Tally'},{plant:'Nashik',source:'Zoho Books'},{plant:'Chennai',source:'Tally'},{plant:'Rajkot',source:'SAP Business One'}],
+      settingsUsers: [{name:'Arjun Mehta',scope:'Group',role:'Compliance Lead'},{name:'Rohan Kapoor',scope:'Group',role:'CFO'},{name:'Priya Nair',scope:'Nashik',role:'Plant Finance'}],
+      hasToast: !!s.toast, toastText: s.toast?s.toast.text:'', toastIsError: !!(s.toast && s.toast.type==='error'),
+      toastAuditLink: !!(s.toast && s.toast.auditLink), toastRetry: s.toast?s.toast.retry:null,
+      goToAuditFromToast:()=>this.goToAuditFromToast(),
+      toastBg: (s.toast && s.toast.type==='error') ? '#FBF1E1' : '#131B2E',
+      toastFg: (s.toast && s.toast.type==='error') ? '#8A5A15' : '#fff',
+      toastBorder: (s.toast && s.toast.type==='error') ? '#EBD3A3' : '#131B2E',
+      toastIcon: (s.toast && s.toast.type==='error') ? '⚠' : '✓'
+    };
+  }
+}
+
+</script>
+</body>
+</html>
+
