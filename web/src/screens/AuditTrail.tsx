@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { Building2, Bell, FileBarChart2, UserCircle2, ShieldCheck, type LucideIcon } from 'lucide-react';
 import Dropdown from '../components/Dropdown';
+import { colors, radius, shadow, type } from '../theme';
 
 type EntityType = 'vendor' | 'alert' | 'export' | 'user';
 
@@ -67,22 +68,22 @@ export default function AuditTrail() {
   const filtered = filter === 'all' ? entries : entries.filter((e) => e.entity_type === filter);
 
   return (
-    <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>Audit Trail</h1>
-      <p style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>Every action taken on a vendor, alert, or export, in one place.</p>
+    <div style={{ padding: '36px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <h1 style={{ ...type.h1, margin: '0 0 6px', color: colors.ink }}>Audit Trail</h1>
+      <p style={{ color: colors.muted, fontSize: 13.5, marginBottom: 24 }}>Every action taken on a vendor, alert, or export, in one place.</p>
 
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: 10,
-          background: '#EFF4FB',
-          border: '1px solid #BBD3EE',
-          borderRadius: 12,
+          background: colors.primary[50],
+          border: `1px solid ${colors.primary[100]}`,
+          borderRadius: radius.md,
           padding: '12px 16px',
           marginBottom: 20,
           fontSize: 13,
-          color: '#1B3A5C',
+          color: colors.primary[700],
           fontWeight: 600,
         }}
       >
@@ -94,18 +95,18 @@ export default function AuditTrail() {
         <Dropdown value={filter} onChange={(v) => setFilter(v as 'all' | EntityType)} options={FILTERS} minWidth={220} />
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ background: colors.surface, borderRadius: radius.lg, overflow: 'hidden', boxShadow: shadow.card }}>
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: '1.2fr 1.8fr 1fr 1.6fr 2fr',
             gap: 10,
-            padding: '12px 20px',
+            padding: '14px 24px',
             fontSize: 11.5,
             fontWeight: 700,
-            color: '#8A93A3',
-            borderBottom: '1px solid #E4E7EC',
-            background: '#FAFBFC',
+            color: colors.faint,
+            borderBottom: `1px solid ${colors.border}`,
+            background: colors.surfaceSunk,
           }}
         >
           <div>TIMESTAMP</div>
@@ -124,42 +125,42 @@ export default function AuditTrail() {
                 display: 'grid',
                 gridTemplateColumns: '1.2fr 1.8fr 1fr 1.6fr 2fr',
                 gap: 10,
-                padding: '13px 20px',
+                padding: '15px 24px',
                 fontSize: 12.5,
-                borderBottom: '1px solid #F0F2F5',
+                borderBottom: `1px solid ${colors.borderSubtle}`,
                 alignItems: 'center',
               }}
             >
-              <div style={{ color: '#8A93A3' }}>{e.timestamp}</div>
+              <div style={{ color: colors.faint }}>{e.timestamp}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Icon size={14} strokeWidth={2.25} style={{ color: '#8A93A3', flex: 'none' }} />
-                <span style={{ fontWeight: 600, color: '#131B2E' }}>{e.entity_label}</span>
+                <Icon size={14} strokeWidth={2.25} style={{ color: colors.faint, flex: 'none' }} />
+                <span style={{ fontWeight: 600, color: colors.ink }}>{e.entity_label}</span>
               </div>
               <div>
                 <span
                   style={{
                     display: 'inline-block',
                     padding: '3px 9px',
-                    borderRadius: 20,
+                    borderRadius: radius.pill,
                     fontSize: 11.5,
                     fontWeight: 600,
-                    background: '#EEF0F3',
-                    color: '#5B6472',
+                    background: colors.surfaceSunk,
+                    color: colors.muted,
                   }}
                 >
                   {ACTION_LABEL[e.action] ?? e.action}
                 </span>
               </div>
-              <div style={{ color: '#3D4552' }}>{e.performed_by}</div>
-              <div style={{ color: '#8A93A3' }}>{e.reason ?? '—'}</div>
+              <div style={{ color: colors.slate }}>{e.performed_by}</div>
+              <div style={{ color: colors.faint }}>{e.reason ?? '—'}</div>
             </div>
           );
         })}
 
         {filtered.length === 0 && (
           <div style={{ padding: 48, textAlign: 'center' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>No entries match this filter</div>
-            <p style={{ color: '#8A93A3', fontSize: 13, margin: 0 }}>Try a different entity type.</p>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6, color: colors.ink }}>No entries match this filter</div>
+            <p style={{ color: colors.faint, fontSize: 13, margin: 0 }}>Try a different entity type.</p>
           </div>
         )}
       </div>
