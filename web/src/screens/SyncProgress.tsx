@@ -11,6 +11,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check } from 'lucide-react';
 import { markSyncedThisSession } from '../syncSession';
+import Card from '../components/Card';
+import { colors, radius, type } from '../theme';
 
 const STEPS = [
   'Checking active vendors against GST records',
@@ -46,31 +48,31 @@ export default function SyncProgress() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '48px 24px',
-        background: '#F6F7F9',
+        background: colors.page,
         fontFamily: "'Inter', system-ui, sans-serif",
         boxSizing: 'border-box',
       }}
     >
       <div style={{ width: '100%', maxWidth: 520, textAlign: 'center' }}>
-        <h1 style={{ fontSize: 19, fontWeight: 700, margin: '0 0 8px', letterSpacing: '-0.2px', color: '#131B2E' }}>
+        <h1 style={{ ...type.h2, fontSize: 20, margin: '0 0 8px', color: colors.ink }}>
           Building your Trust Profiles
         </h1>
-        <p style={{ color: '#5B6472', fontSize: 13.5, margin: '0 0 18px' }}>{currentLabel}</p>
+        <p style={{ color: colors.muted, fontSize: 13.5, margin: '0 0 18px' }}>{currentLabel}</p>
 
-        <div style={{ height: 8, borderRadius: 20, background: '#EDEFF3', overflow: 'hidden', marginBottom: 8 }}>
+        <div style={{ height: 8, borderRadius: radius.pill, background: '#EDEFF3', overflow: 'hidden', marginBottom: 8 }}>
           <div
             style={{
               height: '100%',
-              borderRadius: 20,
-              background: '#1B3A5C',
+              borderRadius: radius.pill,
+              background: colors.primary.gradient,
               width: `${progressPct}%`,
               transition: 'width 0.5s ease',
             }}
           />
         </div>
-        <p style={{ color: '#8A93A3', fontSize: 12, margin: '0 0 26px' }}>This usually takes a few seconds</p>
+        <p style={{ color: colors.faint, fontSize: 12, margin: '0 0 26px' }}>This usually takes a few seconds</p>
 
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, textAlign: 'left' }}>
+        <Card padding={22} style={{ textAlign: 'left' }} hoverLift={false}>
           {STEPS.map((label, i) => {
             const done = i < stepIndex;
             const current = i === stepIndex;
@@ -82,7 +84,7 @@ export default function SyncProgress() {
                   alignItems: 'center',
                   gap: 10,
                   padding: '9px 0',
-                  borderBottom: i < STEPS.length - 1 ? '1px solid #F0F2F5' : 'none',
+                  borderBottom: i < STEPS.length - 1 ? `1px solid ${colors.borderSubtle}` : 'none',
                 }}
               >
                 <span
@@ -96,19 +98,20 @@ export default function SyncProgress() {
                     justifyContent: 'center',
                     fontSize: 11,
                     fontWeight: 700,
-                    background: done ? '#E7F2EF' : current ? '#EFF4FB' : '#F4F4F5',
-                    color: done ? '#2E7D6B' : current ? '#1B3A5C' : '#8A93A3',
+                    background: done ? '#E7F2EF' : current ? colors.primary[50] : '#F4F4F5',
+                    color: done ? colors.success : current ? colors.primary[600] : colors.faint,
+                    transition: 'background 0.2s, color 0.2s',
                   }}
                 >
                   {done ? <Check size={12} strokeWidth={3} /> : i + 1}
                 </span>
-                <span style={{ fontSize: 13, color: done || current ? '#131B2E' : '#8A93A3', fontWeight: current ? 700 : 500 }}>
+                <span style={{ fontSize: 13, color: done || current ? colors.ink : colors.faint, fontWeight: current ? 700 : 500 }}>
                   {label}
                 </span>
               </div>
             );
           })}
-        </div>
+        </Card>
       </div>
     </div>
   );

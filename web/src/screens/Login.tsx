@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth';
 import { ApiError } from '../api';
 import { hasSyncedThisSession } from '../syncSession';
+import { colors, radius, shadow, transition } from '../theme';
 
 export default function Login() {
   const { login } = useAuth();
@@ -12,6 +13,8 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -39,7 +42,7 @@ export default function Login() {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '48px 24px',
-        background: '#0A1A30',
+        background: colors.primary.sidebarGradient,
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
     >
@@ -47,62 +50,65 @@ export default function Login() {
         <form
           onSubmit={handleSubmit}
           style={{
-            background: '#fff',
-            border: '1px solid #E4E7EC',
-            borderRadius: 12,
-            padding: 32,
-            boxShadow: '0 1px 2px rgba(16,24,40,0.04)',
+            background: colors.surface,
+            borderRadius: radius.lg,
+            padding: 36,
+            boxShadow: shadow.popover,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'center', marginBottom: 28 }}>
             <svg viewBox="0 0 32 32" width="46" height="46" fill="none">
               <path
                 d="M11 8C6.58 8 3 11.58 3 16C3 20.42 6.58 24 11 24C15 24 17.5 21 19 18"
-                stroke="#1B3A5C"
+                stroke={colors.primary[600]}
                 strokeWidth="3.6"
                 strokeLinecap="round"
               />
               <path
                 d="M21 24C25.42 24 29 20.42 29 16C29 11.58 25.42 8 21 8C17 8 14.5 11 13 14"
-                stroke="#2E7D6B"
+                stroke={colors.success}
                 strokeWidth="3.6"
                 strokeLinecap="round"
               />
             </svg>
-            <div style={{ color: '#1B3A5C', fontWeight: 700, fontSize: 24 }}>Nirantar</div>
+            <div style={{ color: colors.primary[600], fontWeight: 700, fontSize: 24 }}>Nirantar</div>
           </div>
 
-          <h1 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.2px', color: '#131B2E', textAlign: 'center' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 4px', letterSpacing: '-0.3px', color: colors.ink, textAlign: 'center' }}>
             Welcome back
           </h1>
-          <p style={{ color: '#5B6472', fontSize: 13, margin: '0 0 22px', textAlign: 'center' }}>Your Finance &amp; Compliance workspace</p>
+          <p style={{ color: colors.muted, fontSize: 13, margin: '0 0 22px', textAlign: 'center' }}>Your Finance &amp; Compliance workspace</p>
 
-          <div style={{ fontSize: 12, fontWeight: 600, color: '#131B2E', marginBottom: 6 }}>Work email</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: colors.ink, marginBottom: 6 }}>Work email</div>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onFocus={() => setEmailFocused(true)}
+            onBlur={() => setEmailFocused(false)}
             placeholder="you@suryodaya-auto.com"
             style={{
               width: '100%',
               padding: '10px 12px',
-              border: '1px solid #E4E7EC',
-              borderRadius: 8,
+              border: `1px solid ${emailFocused ? colors.primary[600] : colors.border}`,
+              borderRadius: radius.sm,
               fontSize: 13.5,
               fontFamily: 'inherit',
               outline: 'none',
               marginBottom: 16,
               boxSizing: 'border-box',
+              boxShadow: emailFocused ? `0 0 0 3px ${colors.primary[100]}` : 'none',
+              transition: `border-color ${transition.base}, box-shadow ${transition.base}`,
             }}
           />
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: '#131B2E' }}>Password</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: colors.ink }}>Password</div>
             <button
               type="button"
               onClick={() => setNotice('Contact your workspace admin to reset your password.')}
-              style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer', color: '#1B3A5C', fontSize: 12, fontWeight: 600 }}
+              style={{ border: 'none', background: 'none', padding: 0, cursor: 'pointer', color: colors.primary[600], fontSize: 12, fontWeight: 600 }}
             >
               Forgot password?
             </button>
@@ -112,20 +118,24 @@ export default function Login() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onFocus={() => setPasswordFocused(true)}
+            onBlur={() => setPasswordFocused(false)}
             placeholder="••••••••••"
             style={{
               width: '100%',
               padding: '10px 12px',
-              border: `1px solid ${error ? '#B23A3A' : '#E4E7EC'}`,
-              borderRadius: 8,
+              border: `1px solid ${error ? colors.danger : passwordFocused ? colors.primary[600] : colors.border}`,
+              borderRadius: radius.sm,
               fontSize: 13.5,
               fontFamily: 'inherit',
               outline: 'none',
               marginBottom: 6,
               boxSizing: 'border-box',
+              boxShadow: passwordFocused && !error ? `0 0 0 3px ${colors.primary[100]}` : 'none',
+              transition: `border-color ${transition.base}, box-shadow ${transition.base}`,
             }}
           />
-          {error && <div style={{ color: '#B23A3A', fontSize: 12, marginBottom: 10 }}>{error}</div>}
+          {error && <div style={{ color: colors.danger, fontSize: 12, marginBottom: 10 }}>{error}</div>}
           <div style={{ height: error ? 0 : 16 }} />
 
           <button
@@ -135,11 +145,11 @@ export default function Login() {
               width: '100%',
               padding: 12,
               border: 'none',
-              borderRadius: 9,
+              borderRadius: radius.sm + 1,
               fontSize: 14,
               fontWeight: 700,
               cursor: submitting ? 'default' : 'pointer',
-              background: 'linear-gradient(135deg, #1B3A5C 0%, #2E5C87 100%)',
+              background: colors.primary.gradient,
               color: '#fff',
               opacity: submitting ? 0.7 : 1,
             }}
@@ -148,9 +158,9 @@ export default function Login() {
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '18px 0' }}>
-            <div style={{ flex: 1, height: 1, background: '#E4E7EC' }} />
-            <span style={{ color: '#8A93A3', fontSize: 11.5, fontWeight: 600 }}>OR</span>
-            <div style={{ flex: 1, height: 1, background: '#E4E7EC' }} />
+            <div style={{ flex: 1, height: 1, background: colors.border }} />
+            <span style={{ color: colors.faint, fontSize: 11.5, fontWeight: 600 }}>OR</span>
+            <div style={{ flex: 1, height: 1, background: colors.border }} />
           </div>
 
           <button
@@ -159,19 +169,19 @@ export default function Login() {
             style={{
               width: '100%',
               padding: 11,
-              border: '1px solid #E4E7EC',
-              borderRadius: 9,
+              border: `1px solid ${colors.border}`,
+              borderRadius: radius.sm + 1,
               fontSize: 13.5,
               fontWeight: 600,
               cursor: 'pointer',
               background: '#fff',
-              color: '#131B2E',
+              color: colors.ink,
             }}
           >
             Continue with Single Sign-On
           </button>
 
-          {notice && <div style={{ color: '#5B6472', fontSize: 12, marginTop: 14, textAlign: 'center' }}>{notice}</div>}
+          {notice && <div style={{ color: colors.muted, fontSize: 12, marginTop: 14, textAlign: 'center' }}>{notice}</div>}
         </form>
         <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.55)', fontSize: 11.5, margin: '18px 0 0' }}>
           Trusted by Finance teams managing more than one plant.

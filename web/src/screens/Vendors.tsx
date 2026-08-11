@@ -7,6 +7,7 @@ import StatusBadge, { STATUS_META } from '../components/StatusBadge';
 import Dropdown from '../components/Dropdown';
 import ActionMenu from '../components/ActionMenu';
 import { fmtRelative } from '../format';
+import { colors, radius, shadow, type, transition, tableHeader } from '../theme';
 
 const PLANTS = ['Pune', 'Nashik', 'Chennai', 'Rajkot'];
 const STATUSES: VendorStatus[] = ['verified', 'changed', 'conflict', 'stale', 'unavailable', 'review_required'];
@@ -21,6 +22,8 @@ export default function Vendors() {
   const [page, setPage] = useState(0);
   const [verifyingId, setVerifyingId] = useState<number | null>(null);
   const [toast, setToast] = useState<{ variant: 'success' | 'error'; message: string } | null>(null);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
 
   useEffect(() => {
     getVendors().then(setVendors);
@@ -67,27 +70,31 @@ export default function Vendors() {
   }
 
   return (
-    <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>Vendors</h1>
-      <div style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>
+    <div style={{ padding: '36px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
+      <h1 style={{ ...type.h1, margin: '0 0 6px', color: colors.ink }}>Vendors</h1>
+      <div style={{ color: colors.muted, fontSize: 13.5, marginBottom: 24 }}>
         {vendors ? `${filtered.length} shown` : 'Loading…'}
       </div>
 
-      <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: 260 }}>
           <input
             value={search}
             onChange={(e) => updateFilter(setSearch, e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
             placeholder="Search by vendor name or GSTIN"
             style={{
               width: '100%',
               padding: '10px 36px 10px 14px',
-              border: '1px solid #E4E7EC',
-              borderRadius: 8,
+              border: `1px solid ${searchFocused ? colors.primary[600] : colors.border}`,
+              borderRadius: radius.sm,
               fontSize: 13.5,
               fontFamily: 'inherit',
               outline: 'none',
               boxSizing: 'border-box',
+              boxShadow: searchFocused ? `0 0 0 3px ${colors.primary[100]}` : 'none',
+              transition: `border-color ${transition.base}, box-shadow ${transition.base}`,
             }}
           />
           {search ? (
@@ -104,7 +111,7 @@ export default function Vendors() {
                 padding: 2,
                 cursor: 'pointer',
                 display: 'flex',
-                color: '#8A93A3',
+                color: colors.faint,
               }}
             >
               <X size={16} strokeWidth={2.25} />
@@ -113,7 +120,7 @@ export default function Vendors() {
             <Search
               size={16}
               strokeWidth={2.25}
-              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#8A93A3', pointerEvents: 'none' }}
+              style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: colors.faint, pointerEvents: 'none' }}
             />
           )}
         </div>
@@ -136,18 +143,14 @@ export default function Vendors() {
 
       {vendors && filtered.length > 0 && (
         <>
-          <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, overflow: 'hidden' }}>
+          <div style={{ background: colors.surface, borderRadius: radius.lg, overflow: 'hidden', boxShadow: shadow.card }}>
             <div
               style={{
                 display: 'grid',
                 gridTemplateColumns: '2fr 1.3fr 0.9fr 1.3fr 1fr 0.3fr',
                 gap: 10,
-                padding: '12px 20px',
-                fontSize: 11.5,
-                fontWeight: 700,
-                color: '#8A93A3',
-                borderBottom: '1px solid #E4E7EC',
-                background: '#FAFBFC',
+                padding: '14px 24px',
+                ...tableHeader,
               }}
             >
               <div>VENDOR</div>
@@ -161,24 +164,28 @@ export default function Vendors() {
               <div
                 key={v.id}
                 onClick={() => navigate(`/vendors/${v.id}`)}
+                onMouseEnter={() => setHoveredRow(v.id)}
+                onMouseLeave={() => setHoveredRow(null)}
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '2fr 1.3fr 0.9fr 1.3fr 1fr 0.3fr',
                   gap: 10,
-                  padding: '14px 20px',
+                  padding: '15px 24px',
                   fontSize: 13,
-                  borderBottom: '1px solid #F0F2F5',
+                  borderBottom: `1px solid ${colors.borderSubtle}`,
                   cursor: 'pointer',
                   alignItems: 'center',
+                  background: hoveredRow === v.id ? colors.primary[50] : 'transparent',
+                  transition: `background ${transition.base}`,
                 }}
               >
                 <div style={{ fontWeight: 600 }}>{v.legal_name}</div>
-                <div style={{ fontSize: 12, color: '#5B6472' }}>{v.primary_gstin ?? '—'}</div>
-                <div style={{ color: '#5B6472' }}>{v.plant}</div>
+                <div style={{ fontSize: 12, color: colors.muted }}>{v.primary_gstin ?? '—'}</div>
+                <div style={{ color: colors.muted }}>{v.plant}</div>
                 <div>
                   <StatusBadge status={v.status} />
                 </div>
-                <div style={{ color: '#8A93A3', fontSize: 12 }}>{fmtRelative(v.last_verified_at)}</div>
+                <div style={{ color: colors.faint, fontSize: 12 }}>{fmtRelative(v.last_verified_at)}</div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <ActionMenu
                     items={[
@@ -202,9 +209,9 @@ export default function Vendors() {
       )}
 
       {vendors && filtered.length === 0 && (
-        <div style={{ background: '#fff', border: '1px dashed #E4E7EC', borderRadius: 12, padding: 48, textAlign: 'center' }}>
-          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>No vendors match your search</div>
-          <p style={{ color: '#8A93A3', fontSize: 13, margin: '0 0 14px' }}>Try a different name, GSTIN, or plant.</p>
+        <div style={{ background: colors.surface, border: `1px dashed ${colors.border}`, borderRadius: radius.lg, padding: 48, textAlign: 'center' }}>
+          <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6, color: colors.ink }}>No vendors match your search</div>
+          <p style={{ color: colors.faint, fontSize: 13, margin: '0 0 14px' }}>Try a different name, GSTIN, or plant.</p>
           <span
             onClick={() => {
               setSearch('');
@@ -212,7 +219,7 @@ export default function Vendors() {
               setStatusFilter('All');
               setPage(0);
             }}
-            style={{ color: '#1B3A5C', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
+            style={{ color: colors.primary[600], fontSize: 13, fontWeight: 700, cursor: 'pointer' }}
           >
             Clear filters
           </span>
@@ -229,13 +236,13 @@ export default function Vendors() {
             alignItems: 'center',
             gap: 8,
             background: toast.variant === 'success' ? '#E7F2EF' : '#F8E9E9',
-            color: toast.variant === 'success' ? '#2E7D6B' : '#B23A3A',
+            color: toast.variant === 'success' ? colors.success : colors.danger,
             border: `1px solid ${toast.variant === 'success' ? '#B7DBD2' : '#E9BFBF'}`,
             padding: '12px 18px',
-            borderRadius: 9,
+            borderRadius: radius.sm + 1,
             fontSize: 13,
             fontWeight: 600,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            boxShadow: shadow.popover,
             maxWidth: 340,
           }}
         >
@@ -278,10 +285,11 @@ function Pagination({ currentPage, pageCount, onChange }: { currentPage: number;
           width: 30,
           height: 30,
           border: 'none',
-          borderRadius: 6,
-          background: hovered === 'prev' && currentPage !== 0 ? '#F0F2F5' : 'transparent',
-          color: currentPage === 0 ? '#C7CCD4' : '#5B6472',
+          borderRadius: radius.sm - 2,
+          background: hovered === 'prev' && currentPage !== 0 ? colors.primary[50] : 'transparent',
+          color: currentPage === 0 ? '#C7CCD4' : colors.muted,
           cursor: currentPage === 0 ? 'default' : 'pointer',
+          transition: `background ${transition.base}`,
         }}
       >
         <ChevronLeft size={16} strokeWidth={2.25} />
@@ -289,7 +297,7 @@ function Pagination({ currentPage, pageCount, onChange }: { currentPage: number;
 
       {pages.map((p, i) =>
         p === 'ellipsis' ? (
-          <span key={`e${i}`} style={{ padding: '0 6px', color: '#8A93A3', fontSize: 13 }}>
+          <span key={`e${i}`} style={{ padding: '0 6px', color: colors.faint, fontSize: 13 }}>
             …
           </span>
         ) : (
@@ -303,15 +311,14 @@ function Pagination({ currentPage, pageCount, onChange }: { currentPage: number;
               height: 30,
               padding: '0 4px',
               border: 'none',
-              borderRadius: 6,
-              background: hovered === p && p !== currentPage ? '#F0F2F5' : 'transparent',
-              color: p === currentPage ? '#131B2E' : '#5B6472',
+              borderRadius: radius.sm - 2,
+              background: p === currentPage ? colors.primary[600] : hovered === p ? colors.primary[50] : 'transparent',
+              color: p === currentPage ? '#fff' : colors.muted,
               fontWeight: p === currentPage ? 700 : 400,
-              textDecoration: p === currentPage ? 'underline' : 'none',
-              textUnderlineOffset: 3,
               fontSize: 13,
               cursor: 'pointer',
               fontFamily: 'inherit',
+              transition: `background ${transition.base}, color ${transition.base}`,
             }}
           >
             {p + 1}
@@ -332,10 +339,11 @@ function Pagination({ currentPage, pageCount, onChange }: { currentPage: number;
           width: 30,
           height: 30,
           border: 'none',
-          borderRadius: 6,
-          background: hovered === 'next' && currentPage < pageCount - 1 ? '#F0F2F5' : 'transparent',
-          color: currentPage >= pageCount - 1 ? '#C7CCD4' : '#5B6472',
+          borderRadius: radius.sm - 2,
+          background: hovered === 'next' && currentPage < pageCount - 1 ? colors.primary[50] : 'transparent',
+          color: currentPage >= pageCount - 1 ? '#C7CCD4' : colors.muted,
           cursor: currentPage >= pageCount - 1 ? 'default' : 'pointer',
+          transition: `background ${transition.base}`,
         }}
       >
         <ChevronRight size={16} strokeWidth={2.25} />

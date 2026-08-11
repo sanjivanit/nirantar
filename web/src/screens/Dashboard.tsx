@@ -4,19 +4,19 @@
 // any backend. Real Alerts/MSME logic is out of scope for tonight's build;
 // see the full Alerts and MSME Deadlines screens for their own data.
 import { useEffect, useState } from 'react';
-import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, AlertTriangle, CalendarClock, Building2, Bell, TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
+import { ArrowRight, AlertTriangle, Building2, Bell, TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
 import { getVendors } from '../api';
 import type { Vendor } from '../types';
 import { useAuth } from '../auth';
+import Card from '../components/Card';
+import Badge from '../components/Badge';
+import { SEVERITY_META } from './Alerts';
+import { colors, radius, type, chart, tableHeader } from '../theme';
 
+// Reuses Alerts' SEVERITY_META rather than keeping a second copy of
+// severity colors/icons — this panel only ever shows critical/high.
 type RecentAlertSeverity = 'critical' | 'high';
-
-const SEVERITY_STYLE: Record<RecentAlertSeverity, { label: string; chipBg: string; iconColor: string; pillBg: string; pillColor: string; pillBorder: string }> = {
-  critical: { label: 'Critical', chipBg: '#B23A3A', iconColor: '#fff', pillBg: '#B23A3A', pillColor: '#fff', pillBorder: '#B23A3A' },
-  high: { label: 'High', chipBg: '#FBF1E1', iconColor: '#C48A2E', pillBg: '#FBF1E1', pillColor: '#C48A2E', pillBorder: '#EBD3A3' },
-};
 
 const recentAlerts: Array<{ id: number; vendor_name: string; plant: string; severity: RecentAlertSeverity }> = [
   { id: 1, vendor_name: 'Anand Precision Tools', plant: 'Nashik', severity: 'critical' },
@@ -46,13 +46,9 @@ const msmeExposureAmount = msmeOverdueAmount + msmeUpcomingAmount;
 const msmeExposureTotal = `₹${msmeExposureAmount.toLocaleString('en-IN')}`;
 const msmeOverdueCount = 2;
 
-function Card({ children }: { children: ReactNode }) {
-  return <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>{children}</div>;
-}
-
 function IconChip({ icon: Icon, bg, color }: { icon: LucideIcon; bg: string; color: string }) {
   return (
-    <div style={{ width: 32, height: 32, borderRadius: 9, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
+    <div style={{ width: 34, height: 34, borderRadius: radius.sm, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 'none' }}>
       <Icon size={16} strokeWidth={2.25} color={color} />
     </div>
   );
@@ -60,7 +56,7 @@ function IconChip({ icon: Icon, bg, color }: { icon: LucideIcon; bg: string; col
 
 function Trend({ direction, label, good }: { direction: 'up' | 'down'; label: string; good: boolean }) {
   const Icon = direction === 'up' ? TrendingUp : TrendingDown;
-  const color = good ? '#2E7D6B' : '#B23A3A';
+  const color = good ? colors.success : colors.danger;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: 11.5, fontWeight: 700, color }}>
       <Icon size={12} strokeWidth={2.5} />
@@ -120,201 +116,176 @@ export default function Dashboard() {
   const firstName = user?.name?.split(' ')[0] ?? '';
 
   return (
-    <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+    <div style={{ padding: '36px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <h1 style={{ ...type.h1, margin: '0 0 6px', color: colors.ink }}>
         Welcome back{firstName ? `, ${firstName}` : ''}
       </h1>
-      <p style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>Suryodaya Autocomponents · Pune, Nashik, Chennai, Rajkot</p>
+      <p style={{ color: colors.muted, fontSize: 13.5, marginBottom: 24 }}>Suryodaya Autocomponents · Pune, Nashik, Chennai, Rajkot</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 20, marginBottom: 28 }}>
         <Card>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <IconChip icon={AlertTriangle} bg="#FBF1E1" color="#C48A2E" />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <IconChip icon={AlertTriangle} bg="#FBF1E1" color={colors.warning} />
             <Trend {...needsAttentionTrend} />
           </div>
-          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Vendors needing attention</div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.5px' }}>
+          <div style={{ ...type.label, color: colors.muted, marginBottom: 6 }}>Vendors needing attention</div>
+          <div style={{ ...type.stat, color: colors.ink }}>
             {vendors ? needsAttention : '—'}
           </div>
-          <div style={{ color: '#5B6472', fontSize: 12, marginTop: 8 }}>{vendors ? `${verifiedClean} verified clean` : 'Loading…'}</div>
+          <div style={{ color: colors.muted, fontSize: 12, marginTop: 8 }}>{vendors ? `${verifiedClean} verified clean` : 'Loading…'}</div>
         </Card>
         <Card>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <IconChip icon={Building2} bg="#EEF1F5" color="#1B3A5C" />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <IconChip icon={Building2} bg={colors.primary[50]} color={colors.primary[600]} />
             <Trend {...totalVendorsTrend} />
           </div>
-          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Total vendors</div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.5px' }}>{vendors ? vendors.length : '—'}</div>
-          <Link to="/vendors" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#1B3A5C', fontSize: 12, marginTop: 8, fontWeight: 600, textDecoration: 'none' }}>
+          <div style={{ ...type.label, color: colors.muted, marginBottom: 6 }}>Total vendors</div>
+          <div style={{ ...type.stat, color: colors.ink }}>{vendors ? vendors.length : '—'}</div>
+          <Link to="/vendors" style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: colors.primary[600], fontSize: 12, marginTop: 8, fontWeight: 600, textDecoration: 'none' }}>
             View all <ArrowRight size={13} strokeWidth={2.25} />
           </Link>
         </Card>
         <Card>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <IconChip icon={Bell} bg="#F8E9E9" color="#B23A3A" />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+            <IconChip icon={Bell} bg="#F8E9E9" color={colors.danger} />
             <Trend {...openAlertsTrend} />
           </div>
-          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>Open alerts</div>
-          <div style={{ fontSize: 26, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.5px' }}>{openAlertCount}</div>
-          <div style={{ color: '#B23A3A', fontSize: 12, marginTop: 8, fontWeight: 700 }}>{criticalOpenAlertCount} critical</div>
+          <div style={{ ...type.label, color: colors.muted, marginBottom: 6 }}>Open alerts</div>
+          <div style={{ ...type.stat, color: colors.ink }}>{openAlertCount}</div>
+          <div style={{ color: colors.danger, fontSize: 12, marginTop: 8, fontWeight: 700 }}>{criticalOpenAlertCount} critical</div>
         </Card>
 
-        <div style={{ gridColumn: 'span 2', background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
-          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 16 }}>MSME payments at risk</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-            <SemicircleGauge
-              segments={[
-                { fraction: overdueFraction, color: '#B23A3A' },
-                { fraction: upcomingFraction, color: '#C48A2E' },
-              ]}
-              size={140}
-            />
-            <div style={{ flex: 1, minWidth: 0, borderLeft: '1px solid #F0F2F5', paddingLeft: 28 }}>
-              <div style={{ fontSize: 28, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.5px', marginBottom: 12 }}>
-                {msmeExposureTotal}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 12.5 }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#B23A3A', fontWeight: 700 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#B23A3A' }} />
-                  {msmeOverdueCount} overdue
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#C48A2E', fontWeight: 700 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#C48A2E' }} />
-                  1 upcoming
-                </span>
+        <div style={{ gridColumn: 'span 2' }}>
+          <Card>
+            <div style={{ marginBottom: 14, paddingBottom: 12, borderBottom: `1px solid ${colors.borderSubtle}` }}>
+              <div style={{ ...type.cardTitle, color: colors.ink }}>MSME payments at risk</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+              <SemicircleGauge
+                segments={[
+                  { fraction: overdueFraction, color: colors.danger },
+                  { fraction: upcomingFraction, color: colors.warning },
+                ]}
+                size={chart.gaugeSize}
+              />
+              <div style={{ flex: 1, minWidth: 0, borderLeft: `1px solid ${colors.borderSubtle}`, paddingLeft: 28 }}>
+                <div style={{ ...type.stat, color: colors.ink, marginBottom: 12 }}>
+                  {msmeExposureTotal}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 12.5 }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: colors.danger, fontWeight: 700 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: colors.danger }} />
+                    {msmeOverdueCount} overdue
+                  </span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: colors.warning, fontWeight: 700 }}>
+                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: colors.warning }} />
+                    1 upcoming
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E' }}>Recent alerts</div>
-            <Link to="/alerts" style={{ color: '#1B3A5C', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+        <Card padding={22}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, paddingBottom: 12, borderBottom: `1px solid ${colors.borderSubtle}` }}>
+            <div style={{ ...type.cardTitle, color: colors.ink }}>Recent alerts</div>
+            <Link to="/alerts" style={{ color: colors.primary[600], fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
               View all
             </Link>
           </div>
           {recentAlerts.map((a) => {
-            const sev = SEVERITY_STYLE[a.severity];
+            const sev = SEVERITY_META[a.severity];
             return (
-              <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: '1px solid #F7F8FA' }}>
-                <div
-                  style={{
-                    width: 26,
-                    height: 26,
-                    borderRadius: 7,
-                    background: sev.chipBg,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flex: 'none',
-                  }}
-                >
-                  <AlertTriangle size={13} strokeWidth={2.5} color={sev.iconColor} />
-                </div>
+              <div key={a.id} className="row-hover" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: `1px solid ${colors.divider}` }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 13 }}>{a.vendor_name}</div>
-                  <div style={{ color: '#8A93A3', fontSize: 12 }}>{a.plant}</div>
+                  <div style={{ color: colors.faint, fontSize: 12 }}>{a.plant}</div>
                 </div>
-                <span
-                  style={{
-                    padding: '3px 9px',
-                    borderRadius: 20,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    flex: 'none',
-                    background: sev.pillBg,
-                    color: sev.pillColor,
-                    border: `1px solid ${sev.pillBorder}`,
-                  }}
-                >
-                  {sev.label}
-                </span>
+                <Badge {...sev} compact />
               </div>
             );
           })}
-        </div>
+        </Card>
 
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E' }}>Upcoming MSME deadlines</div>
-            <Link to="/msme" style={{ color: '#1B3A5C', fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
+        <Card padding={22}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, paddingBottom: 12, borderBottom: `1px solid ${colors.borderSubtle}` }}>
+            <div style={{ ...type.cardTitle, color: colors.ink }}>Upcoming MSME deadlines</div>
+            <Link to="/msme" style={{ color: colors.primary[600], fontSize: 12, fontWeight: 600, textDecoration: 'none' }}>
               View all
             </Link>
           </div>
           {upcomingMsme.map((i) => {
-            const urgent = i.overdue ? '#B23A3A' : '#C48A2E';
+            const urgent = i.overdue ? colors.danger : colors.warning;
             return (
               <div
                 key={i.id}
+                className="row-hover"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1.6fr 1.2fr auto',
                   gap: 10,
                   alignItems: 'center',
                   padding: '11px 0',
-                  borderBottom: '1px solid #F7F8FA',
+                  borderBottom: `1px solid ${colors.divider}`,
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
-                  <CalendarClock size={15} strokeWidth={2.25} color={urgent} style={{ flex: 'none' }} />
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{i.vendor_name}</div>
-                    <div style={{ color: '#8A93A3', fontSize: 11.5 }}>{i.plant}</div>
-                  </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{i.vendor_name}</div>
+                  <div style={{ color: colors.faint, fontSize: 11.5 }}>{i.plant}</div>
                 </div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: urgent }}>{i.when}</div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', textAlign: 'right' }}>{i.amount}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: colors.ink, textAlign: 'right' }}>{i.amount}</div>
               </div>
             );
           })}
-        </div>
+        </Card>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginTop: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
-          Plant breakdown
-        </div>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr 1fr',
-            gap: 10,
-            fontSize: 11.5,
-            fontWeight: 700,
-            color: '#8A93A3',
-            paddingBottom: 8,
-            borderBottom: '1px solid #F0F2F5',
-          }}
-        >
-          <div>PLANT</div>
-          <div>VENDORS</div>
-          <div>FLAGGED</div>
-        </div>
-        {PLANTS.map((plant) => {
-          const plantVendors = vendors?.filter((v) => v.plant === plant) ?? [];
-          const flagged = plantVendors.filter((v) => v.status !== 'verified').length;
-          return (
-            <div
-              key={plant}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr',
-                gap: 10,
-                fontSize: 13,
-                padding: '12px 0',
-                borderBottom: '1px solid #F7F8FA',
-                alignItems: 'center',
-              }}
-            >
-              <div style={{ fontWeight: 600 }}>{plant}</div>
-              <div style={{ color: '#5B6472' }}>{vendors ? plantVendors.length : '—'}</div>
-              <div style={{ fontWeight: 700, color: flagged > 0 ? '#C48A2E' : '#8A93A3' }}>{vendors ? flagged : '—'}</div>
-            </div>
-          );
-        })}
+      <div style={{ marginTop: 20 }}>
+        <Card padding={22}>
+          <div style={{ ...type.cardTitle, color: colors.ink, marginBottom: 14, paddingBottom: 12, borderBottom: `1px solid ${colors.borderSubtle}` }}>
+            Plant breakdown
+          </div>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr 1fr',
+              gap: 10,
+              padding: '10px 4px',
+              ...tableHeader,
+            }}
+          >
+            <div>PLANT</div>
+            <div>VENDORS</div>
+            <div>FLAGGED</div>
+          </div>
+          {PLANTS.map((plant) => {
+            const plantVendors = vendors?.filter((v) => v.plant === plant) ?? [];
+            const flagged = plantVendors.filter((v) => v.status !== 'verified').length;
+            return (
+              <div
+                key={plant}
+                className="row-hover"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr',
+                  gap: 10,
+                  fontSize: 13,
+                  padding: '12px 0',
+                  borderBottom: `1px solid ${colors.divider}`,
+                  alignItems: 'center',
+                }}
+              >
+                <div style={{ fontWeight: 600 }}>{plant}</div>
+                <div style={{ color: colors.muted }}>{vendors ? plantVendors.length : '—'}</div>
+                <div style={{ fontWeight: 700, color: flagged > 0 ? colors.warning : colors.faint }}>{vendors ? flagged : '—'}</div>
+              </div>
+            );
+          })}
+        </Card>
       </div>
     </div>
   );

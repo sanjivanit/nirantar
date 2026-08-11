@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { colors, radius, shadow, transition } from '../theme';
 
 export interface DropdownOption {
   value: string;
@@ -43,13 +44,15 @@ export default function Dropdown({
           justifyContent: 'space-between',
           gap: 10,
           padding: '10px 10px 10px 12px',
-          border: `1px solid ${open ? '#1B3A5C' : '#E4E7EC'}`,
-          borderRadius: 8,
+          border: `1px solid ${open ? colors.primary[600] : colors.border}`,
+          borderRadius: radius.sm,
           fontSize: 13,
           fontFamily: 'inherit',
           background: '#fff',
-          color: '#131B2E',
+          color: colors.ink,
           cursor: 'pointer',
+          boxShadow: open ? `0 0 0 3px ${colors.primary[100]}` : 'none',
+          transition: `border-color ${transition.base}, box-shadow ${transition.base}`,
         }}
       >
         <span>{selected?.label ?? ''}</span>
@@ -57,10 +60,10 @@ export default function Dropdown({
           size={14}
           strokeWidth={2.25}
           style={{
-            color: '#8A93A3',
+            color: colors.faint,
             flex: 'none',
             transform: open ? 'rotate(180deg)' : 'none',
-            transition: 'transform 0.15s',
+            transition: `transform ${transition.base}`,
           }}
         />
       </button>
@@ -71,10 +74,9 @@ export default function Dropdown({
             top: 'calc(100% + 4px)',
             left: 0,
             right: 0,
-            background: '#fff',
-            border: '1px solid #E4E7EC',
-            borderRadius: 8,
-            boxShadow: '0 8px 20px rgba(16,24,40,0.10)',
+            background: colors.surface,
+            borderRadius: radius.sm,
+            boxShadow: shadow.popover,
             padding: 6,
             zIndex: 20,
             maxHeight: 280,
@@ -95,12 +97,13 @@ export default function Dropdown({
                 onMouseLeave={() => setHovered(null)}
                 style={{
                   padding: '8px 10px',
-                  borderRadius: 6,
+                  borderRadius: radius.sm - 2,
                   fontSize: 13,
                   cursor: 'pointer',
                   fontWeight: isSelected ? 600 : 400,
-                  color: isSelected ? '#131B2E' : '#3D4552',
-                  background: isSelected ? '#EEF1F5' : isHovered ? '#F6F7F9' : 'transparent',
+                  color: isSelected ? colors.primary[600] : colors.slate,
+                  background: isSelected ? colors.primary[50] : isHovered ? colors.divider : 'transparent',
+                  transition: `background ${transition.base}`,
                 }}
               >
                 {o.label}

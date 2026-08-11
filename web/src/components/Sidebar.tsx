@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Building2, Bell, CalendarClock, FileClock, FileBarChart2, Settings as SettingsIcon, type LucideIcon } from 'lucide-react';
+import { colors, transition } from '../theme';
 
 const NAV_DEFS: Array<{ to: string; label: string; icon: LucideIcon }> = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -17,7 +18,7 @@ export default function Sidebar() {
       style={{
         width: 236,
         flex: 'none',
-        background: 'linear-gradient(180deg, #0A1A30 0%, #16294A 100%)',
+        background: colors.primary.sidebarGradient,
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -70,9 +71,10 @@ export default function Sidebar() {
                 padding: '9px 10px',
                 borderRadius: 8,
                 cursor: 'pointer',
-                borderLeft: `3px solid ${isActive ? '#4FBFA0' : 'transparent'}`,
-                background: isActive ? 'rgba(255,255,255,0.14)' : 'transparent',
+                borderLeft: `3px solid ${isActive ? '#fff' : 'transparent'}`,
+                background: isActive ? 'rgba(255,255,255,0.16)' : 'transparent',
                 textDecoration: 'none',
+                transition: `background ${transition.base}`,
               })}
             >
               {({ isActive }) => (
@@ -86,8 +88,9 @@ export default function Sidebar() {
                       alignItems: 'center',
                       justifyContent: 'center',
                       flex: 'none',
-                      background: isActive ? 'rgba(79,191,160,0.2)' : 'rgba(255,255,255,0.08)',
-                      color: isActive ? '#4FBFA0' : 'rgba(255,255,255,0.75)',
+                      background: isActive ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.08)',
+                      color: isActive ? '#fff' : 'rgba(255,255,255,0.75)',
+                      transition: `background ${transition.base}, color ${transition.base}`,
                     }}
                   >
                     <Icon size={15} strokeWidth={2.25} />
