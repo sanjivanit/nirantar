@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { Search, Bell } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Bell, UserCircle2, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../auth';
 import { mockAlerts } from '../screens/Alerts';
-import { colors, transition } from '../theme';
+import { colors, radius, shadow, transition } from '../theme';
 
 // Notification bell count comes from mockAlerts (Alerts.tsx) — the app's
 // one source of truth for alert state. There is no live alerts API yet
@@ -25,9 +26,33 @@ function initials(name: string): string {
 }
 
 export default function Header() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<'profile' | 'logout' | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  function handleLogout() {
+    logout();
+    navigate('/login', { replace: true });
+  }
+
+  function handleProfile() {
+    setMenuOpen(false);
+    setNotice('Profile editing is not available yet.');
+    setTimeout(() => setNotice(null), 4000);
+  }
 
   const openAlertCount = mockAlerts.filter((a) => a.status === 'open' || a.status === 'escalated').length;
 
@@ -105,31 +130,138 @@ export default function Header() {
         </div>
 
         {user && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E' }}>{user.name}</div>
-              <div style={{ fontSize: 11.5, color: '#8A93A3' }}>{ROLE_LABEL[user.role] ?? user.role}</div>
-            </div>
-            <div
+          <div ref={menuRef} style={{ position: 'relative' }}>
+            <button
+              type="button"
+              onClick={() => setMenuOpen((o) => !o)}
               style={{
-                width: 34,
-                height: 34,
-                borderRadius: '50%',
-                background: colors.primary.gradient,
-                color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 13,
-                fontWeight: 700,
-                flex: 'none',
+                gap: 10,
+                border: 'none',
+                background: 'none',
+                padding: '4px 6px',
+                borderRadius: radius.sm,
+                cursor: 'pointer',
               }}
             >
-              {initials(user.name)}
-            </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E' }}>{user.name}</div>
+                <div style={{ fontSize: 11.5, color: '#8A93A3' }}>{ROLE_LABEL[user.role] ?? user.role}</div>
+              </div>
+              <div
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: '50%',
+                  background: colors.primary.gradient,
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  flex: 'none',
+                }}
+              >
+                {initials(user.name)}
+              </div>
+              <ChevronDown
+                size={14}
+                strokeWidth={2.25}
+                style={{
+                  color: colors.faint,
+                  flex: 'none',
+                  transform: menuOpen ? 'rotate(180deg)' : 'none',
+                  transition: `transform ${transition.base}`,
+                }}
+              />
+            </button>
+
+            {menuOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 6px)',
+                  right: 0,
+                  minWidth: 180,
+                  background: colors.surface,
+                  borderRadius: radius.sm,
+                  boxShadow: shadow.popover,
+                  padding: 6,
+                  zIndex: 30,
+                }}
+              >
+                <div
+                  onClick={handleProfile}
+                  onMouseEnter={() => setHoveredItem('profile')}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '8px 10px',
+                    borderRadius: radius.sm - 2,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    color: colors.slate,
+                    background: hoveredItem === 'profile' ? colors.primary[50] : 'transparent',
+                    transition: `background ${transition.base}`,
+                  }}
+                >
+                  <UserCircle2 size={14} strokeWidth={2.25} />
+                  Profile
+                </div>
+                <div
+                  onClick={handleLogout}
+                  onMouseEnter={() => setHoveredItem('logout')}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '8px 10px',
+                    borderRadius: radius.sm - 2,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    color: colors.danger,
+                    background: hoveredItem === 'logout' ? '#F8E9E9' : 'transparent',
+                    transition: `background ${transition.base}`,
+                  }}
+                >
+                  <LogOut size={14} strokeWidth={2.25} />
+                  Log out
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
+
+      {notice && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: colors.primary[50],
+            color: colors.primary[700],
+            border: `1px solid ${colors.primary[100]}`,
+            padding: '12px 18px',
+            borderRadius: radius.sm + 1,
+            fontSize: 13,
+            fontWeight: 600,
+            boxShadow: shadow.popover,
+            maxWidth: 340,
+          }}
+        >
+          <UserCircle2 size={16} strokeWidth={2.25} />
+          {notice}
+        </div>
+      )}
     </div>
   );
 }
