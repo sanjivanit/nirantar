@@ -10,7 +10,7 @@ import { getVendors } from '../api';
 import type { Vendor } from '../types';
 import { useAuth } from '../auth';
 import Card from '../components/Card';
-import { colors, radius, type } from '../theme';
+import { colors, radius, type, chart } from '../theme';
 
 type RecentAlertSeverity = 'critical' | 'high';
 
@@ -158,14 +158,16 @@ export default function Dashboard() {
 
         <div style={{ gridColumn: 'span 2' }}>
           <Card>
-            <div style={{ ...type.label, color: colors.muted, marginBottom: 18 }}>MSME payments at risk</div>
+            <div style={{ marginBottom: 14, paddingBottom: 12, borderBottom: `1px solid ${colors.borderSubtle}` }}>
+              <div style={{ ...type.cardTitle, color: colors.ink }}>MSME payments at risk</div>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
               <SemicircleGauge
                 segments={[
                   { fraction: overdueFraction, color: colors.danger },
                   { fraction: upcomingFraction, color: colors.warning },
                 ]}
-                size={140}
+                size={chart.gaugeSize}
               />
               <div style={{ flex: 1, minWidth: 0, borderLeft: `1px solid ${colors.borderSubtle}`, paddingLeft: 28 }}>
                 <div style={{ ...type.stat, color: colors.ink, marginBottom: 12 }}>

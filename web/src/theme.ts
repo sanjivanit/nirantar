@@ -71,6 +71,12 @@ export const spacing = {
   cardGap: 20,
 };
 
+// Standard size for chart/gauge visuals inside a card, so any future chart
+// card starts from the same footprint instead of a page-local magic number.
+export const chart = {
+  gaugeSize: 140,
+};
+
 // Consistent type scale used across every screen.
 export const type = {
   h1: { fontSize: 26, fontWeight: 800, letterSpacing: '-0.4px' },
