@@ -72,44 +72,67 @@ export default function VendorProfile() {
         Back to Vendors
       </Link>
 
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, gap: 16 }}>
         <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: '0 0 6px', letterSpacing: '-0.3px' }}>{vendor.legal_name}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, letterSpacing: '-0.3px' }}>{vendor.legal_name}</h1>
+            <StatusBadge status={vendor.status} />
+          </div>
           <div style={{ color: '#5B6472', fontSize: 13.5 }}>{vendor.plant}</div>
         </div>
-        <StatusBadge status={vendor.status} />
+        <button
+          onClick={handleVerify}
+          disabled={verifying}
+          style={{
+            padding: '11px 18px',
+            border: 'none',
+            borderRadius: 9,
+            fontSize: 13.5,
+            fontWeight: 700,
+            cursor: verifying ? 'default' : 'pointer',
+            background: '#1B3A5C',
+            color: '#fff',
+            opacity: verifying ? 0.7 : 1,
+            flex: 'none',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {verifying ? 'Re-verifying…' : 'Re-verify against GST'}
+        </button>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginBottom: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
-          Identity
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
+            Identity
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13 }}>
+            <Row label="Legal name" value={vendor.legal_name} />
+            <Row label="GSTIN" value={vendor.primary_gstin} mono />
+            <Row label="PAN" value={vendor.pan} mono />
+            <Row label="Entity status" value={vendor.entity_status} />
+            <Row label="Registered address" value={vendor.registered_address} />
+          </div>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13 }}>
-          <Row label="Legal name" value={vendor.legal_name} />
-          <Row label="GSTIN" value={vendor.primary_gstin} mono />
-          <Row label="PAN" value={vendor.pan} mono />
-          <Row label="Entity status" value={vendor.entity_status} />
-          <Row label="Registered address" value={vendor.registered_address} />
-        </div>
-      </div>
 
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginBottom: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
-          Compliance
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-            <span style={{ color: '#8A93A3' }}>GST status</span>
-            {gstinAttr ? <StatusBadge status={gstinAttr.status} compact /> : <span>—</span>}
+        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
+            Compliance
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-            <span style={{ color: '#8A93A3' }}>MSME / Udyam status</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontWeight: 600 }}>{udyamAttr?.value ?? '—'}</span>
-              {udyamAttr && <StatusBadge status={udyamAttr.status} compact />}
-            </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+              <span style={{ color: '#8A93A3' }}>GST status</span>
+              {gstinAttr ? <StatusBadge status={gstinAttr.status} compact /> : <span>—</span>}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+              <span style={{ color: '#8A93A3' }}>MSME / Udyam status</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontWeight: 600 }}>{udyamAttr?.value ?? '—'}</span>
+                {udyamAttr && <StatusBadge status={udyamAttr.status} compact />}
+              </span>
+            </div>
+            <Row label="Udyam registration number" value={vendor.udyam_registration_number} mono />
           </div>
-          <Row label="Udyam registration number" value={vendor.udyam_registration_number} mono />
         </div>
       </div>
 
@@ -213,30 +236,6 @@ export default function VendorProfile() {
           Finance context
         </div>
         <p style={{ color: '#8A93A3', fontSize: 13, margin: 0 }}>No invoices imported for this vendor yet.</p>
-      </div>
-
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 6 }}>Re-verify</div>
-        <p style={{ color: '#8A93A3', fontSize: 12, marginBottom: 14 }}>
-          Re-checks this vendor's GSTIN against Setu's sandbox and updates the row above.
-        </p>
-        <button
-          onClick={handleVerify}
-          disabled={verifying}
-          style={{
-            padding: '11px 18px',
-            border: 'none',
-            borderRadius: 9,
-            fontSize: 13.5,
-            fontWeight: 700,
-            cursor: verifying ? 'default' : 'pointer',
-            background: '#1B3A5C',
-            color: '#fff',
-            opacity: verifying ? 0.7 : 1,
-          }}
-        >
-          {verifying ? 'Re-verifying…' : 'Re-verify against GST'}
-        </button>
       </div>
 
       {toast && (
