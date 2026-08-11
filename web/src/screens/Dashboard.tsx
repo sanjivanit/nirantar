@@ -40,7 +40,6 @@ const PLANTS = ['Pune', 'Nashik', 'Chennai', 'Rajkot'];
 const needsAttentionTrend = { direction: 'down' as const, label: '2 vs last week', good: true };
 const totalVendorsTrend = { direction: 'up' as const, label: '1 this month', good: true };
 const openAlertsTrend = { direction: 'up' as const, label: '1 vs yesterday', good: false };
-const msmeExposureTrend = { direction: 'down' as const, label: '4% vs last week', good: true };
 const msmeOverdueAmount = 5400000 + 1200000; // Anand Precision Tools + Vishwakarma Forge Industries, see MsmeDeadlines.tsx
 const msmeUpcomingAmount = 1600000; // Ganesh Enterprises
 const msmeExposureAmount = msmeOverdueAmount + msmeUpcomingAmount;
@@ -67,32 +66,6 @@ function Trend({ direction, label, good }: { direction: 'up' | 'down'; label: st
       <Icon size={12} strokeWidth={2.5} />
       {label}
     </div>
-  );
-}
-
-function TrendPill({ direction, label, good }: { direction: 'up' | 'down'; label: string; good: boolean }) {
-  const Icon = direction === 'up' ? TrendingUp : TrendingDown;
-  const color = good ? '#2E7D6B' : '#B23A3A';
-  const bg = good ? '#E7F2EF' : '#F8E9E9';
-  const border = good ? '#B7DBD2' : '#E9BFBF';
-  return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 3,
-        padding: '2px 8px',
-        borderRadius: 20,
-        fontSize: 11,
-        fontWeight: 700,
-        background: bg,
-        color,
-        border: `1px solid ${border}`,
-      }}
-    >
-      <Icon size={10} strokeWidth={3} />
-      {label}
-    </span>
   );
 }
 
@@ -153,7 +126,7 @@ export default function Dashboard() {
       </h1>
       <p style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>Suryodaya Autocomponents · Pune, Nashik, Chennai, Rajkot</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, marginBottom: 28, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, marginBottom: 28 }}>
         <Card>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <IconChip icon={AlertTriangle} bg="#FBF1E1" color="#C48A2E" />
@@ -197,13 +170,10 @@ export default function Dashboard() {
               size={140}
             />
             <div style={{ flex: 1, minWidth: 0, borderLeft: '1px solid #F0F2F5', paddingLeft: 28 }}>
-              <div style={{ fontSize: 28, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.5px', marginBottom: 8 }}>
+              <div style={{ fontSize: 28, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.5px', marginBottom: 12 }}>
                 {msmeExposureTotal}
               </div>
-              <div style={{ marginBottom: 16 }}>
-                <TrendPill {...msmeExposureTrend} />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12.5 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 12.5 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#B23A3A', fontWeight: 700 }}>
                   <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#B23A3A' }} />
                   {msmeOverdueCount} overdue
