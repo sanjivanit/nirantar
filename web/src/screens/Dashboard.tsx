@@ -8,8 +8,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, AlertTriangle, CalendarClock, Building2, Bell, TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
 import { getVendors } from '../api';
-import type { Vendor, VendorStatus } from '../types';
-import { STATUS_META } from '../components/StatusBadge';
+import type { Vendor } from '../types';
 import { useAuth } from '../auth';
 
 type RecentAlertSeverity = 'critical' | 'high';
@@ -96,8 +95,6 @@ function TrendPill({ direction, label, good }: { direction: 'up' | 'down'; label
     </span>
   );
 }
-
-const BREAKDOWN_STATUSES: VendorStatus[] = ['verified', 'changed', 'review_required'];
 
 // Semicircle built from stacked colored segments, each a fraction of the
 // whole (must sum to <= 1). Colors are passed in by the caller — all drawn
@@ -207,31 +204,13 @@ export default function Dashboard() {
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-            <SemicircleGauge
-              segments={[
-                { fraction: overdueFraction, color: '#B23A3A' },
-                { fraction: upcomingFraction, color: '#C48A2E' },
-              ]}
-              size={100}
-            />
-            <div style={{ flex: 1, minWidth: 0, borderLeft: '1px solid #F0F2F5', paddingLeft: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#8A93A3', marginBottom: 8 }}>VENDOR STATUS</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
-                {BREAKDOWN_STATUSES.map((s) => {
-                  const meta = STATUS_META[s];
-                  const count = vendors ? vendors.filter((v) => v.status === s).length : 0;
-                  return (
-                    <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, whiteSpace: 'nowrap' }}>
-                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: meta.fg, flex: 'none' }} />
-                      <span style={{ color: '#5B6472' }}>{meta.label}</span>
-                      <span style={{ color: meta.fg, fontWeight: 700, marginLeft: 'auto' }}>{vendors ? count : '—'}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+          <SemicircleGauge
+            segments={[
+              { fraction: overdueFraction, color: '#B23A3A' },
+              { fraction: upcomingFraction, color: '#C48A2E' },
+            ]}
+            size={100}
+          />
         </div>
       </div>
 

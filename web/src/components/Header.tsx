@@ -44,7 +44,7 @@ export default function Header() {
         fontFamily: "'Inter', system-ui, sans-serif",
       }}
     >
-      <div style={{ position: 'relative', width: 320, maxWidth: '40vw' }}>
+      <div style={{ position: 'relative', flex: 1, minWidth: 240, maxWidth: 560 }}>
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
