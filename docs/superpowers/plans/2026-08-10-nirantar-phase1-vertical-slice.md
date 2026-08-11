@@ -249,6 +249,8 @@ nirantar/
 
 ### Task 5: Auth (hashing, JWT, login route) — with tests
 
+> **Note (2026-08-11):** Tasks 1–4 were actually implemented against the normalized schema in `docs/spec.md` (`public.users`, `public.companies`, `public.plants`, roles `plant_finance/group_compliance/group_procurement/cfo/admin`), not the flat `app_users`/`vendors` schema this plan originally sketched. Task 5 below was built against that real schema: JWT payload is `{sub, email, role, company_id, plant_id}` (per spec.md's `/auth/login` response), routes stay under Fastify's `/api` prefix. Treat the code snippets in Tasks 5–8 below as directional, not literal — verify against the actual schema in `server/db/001_init.sql` before using them.
+
 **Files:**
 - Create: `server/src/auth.ts`, `server/src/app.ts`, `server/src/index.ts`, `server/src/routes/auth.routes.ts`, `server/test/auth.test.ts`
 
@@ -259,10 +261,10 @@ nirantar/
   - `POST /api/auth/login {email,password} -> {token, user}` (401 on bad creds).
   - `GET /api/auth/me -> {user}` (401 without valid bearer).
 
-- [ ] **Step 1: `auth.ts`** — `bcryptjs.compare`, `jsonwebtoken.sign/verify` with `env.JWT_SECRET`, `requireAuth` hook reading `Authorization: Bearer`.
-- [ ] **Step 2: `auth.routes.ts`** — login looks up `app_users` by email, compares hash, returns token + safe user (no hash). `/me` returns `req.user`.
-- [ ] **Step 3: `app.ts`/`index.ts`** — `buildApp` registers routes + CORS (allow `http://localhost:5173`); `index.ts` listens on `:8787`.
-- [ ] **Step 4: Write failing `auth.test.ts`** using `app.inject`:
+- [x] **Step 1: `auth.ts`** — `bcryptjs.compare`, `jsonwebtoken.sign/verify` with `env.JWT_SECRET`, `requireAuth` hook reading `Authorization: Bearer`.
+- [x] **Step 2: `auth.routes.ts`** — login looks up `app_users` by email, compares hash, returns token + safe user (no hash). `/me` returns `req.user`.
+- [x] **Step 3: `app.ts`/`index.ts`** — `buildApp` registers routes + CORS (allow `http://localhost:5173`); `index.ts` listens on `:8787`.
+- [x] **Step 4: Write failing `auth.test.ts`** using `app.inject`:
     ```ts
     it('rejects bad password', async () => {
       const app = buildApp();
@@ -281,8 +283,8 @@ nirantar/
       expect(me.json().user.role).toBe('cfo');
     });
     ```
-- [ ] **Step 5: Run** `npm test --workspace server` → PASS (requires seed from Task 4).
-- [ ] **Step 6: Commit** `feat(server): app-level auth with JWT`.
+- [x] **Step 5: Run** `npm test --workspace server` → PASS (requires seed from Task 4).
+- [x] **Step 6: Commit** `feat(server): app-level auth with JWT`.
 
 ---
 
