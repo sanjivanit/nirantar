@@ -189,6 +189,7 @@ export default function Reports() {
         {history.map((h) => (
           <div
             key={h.id}
+            className="row-hover"
             style={{
               display: 'grid',
               gridTemplateColumns: '1.6fr 1.4fr 1.4fr 1.6fr',

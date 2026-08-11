@@ -199,7 +199,7 @@ export default function Dashboard() {
           {recentAlerts.map((a) => {
             const sev = SEVERITY_META[a.severity];
             return (
-              <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: `1px solid ${colors.divider}` }}>
+              <div key={a.id} className="row-hover" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: `1px solid ${colors.divider}` }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 13 }}>{a.vendor_name}</div>
                   <div style={{ color: colors.faint, fontSize: 12 }}>{a.plant}</div>
@@ -222,6 +222,7 @@ export default function Dashboard() {
             return (
               <div
                 key={i.id}
+                className="row-hover"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1.6fr 1.2fr auto',
@@ -270,6 +271,7 @@ export default function Dashboard() {
             return (
               <div
                 key={plant}
+                className="row-hover"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1fr 1fr 1fr',

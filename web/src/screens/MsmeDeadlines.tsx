@@ -239,7 +239,7 @@ export default function MsmeDeadlines() {
           const meta = STATUS_META[r.status];
           const label = meta.label + (r.status === 'overdue' ? ` · ${r.days_overdue}d` : '');
           return (
-            <div key={r.id} style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
+            <div key={r.id} className="row-hover" style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
               <div
                 style={{
                   display: 'grid',

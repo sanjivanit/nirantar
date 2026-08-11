@@ -165,6 +165,7 @@ export default function VendorProfile() {
           {vendor.verification_attributes.map((a) => (
             <div
               key={a.attribute_type}
+              className="row-hover"
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1.3fr 2fr 1.4fr 1fr 1.1fr',
@@ -215,6 +216,7 @@ export default function VendorProfile() {
               {vendor.changes.map((c) => (
                 <div
                   key={c.id}
+                  className="row-hover"
                   style={{
                     display: 'grid',
                     gridTemplateColumns: '1.3fr 1.6fr 1.6fr 1.4fr 1.2fr',

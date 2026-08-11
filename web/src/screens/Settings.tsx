@@ -172,6 +172,7 @@ export default function Settings() {
             return (
               <div
                 key={u.id}
+                className="row-hover"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1.6fr 1.8fr 1.4fr 1fr 0.8fr',
