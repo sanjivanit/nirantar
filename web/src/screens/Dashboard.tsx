@@ -10,14 +10,13 @@ import { getVendors } from '../api';
 import type { Vendor } from '../types';
 import { useAuth } from '../auth';
 import Card from '../components/Card';
+import Badge from '../components/Badge';
+import { SEVERITY_META } from './Alerts';
 import { colors, radius, type, chart } from '../theme';
 
+// Reuses Alerts' SEVERITY_META rather than keeping a second copy of
+// severity colors/icons — this panel only ever shows critical/high.
 type RecentAlertSeverity = 'critical' | 'high';
-
-const SEVERITY_STYLE: Record<RecentAlertSeverity, { label: string; chipBg: string; iconColor: string; pillBg: string; pillColor: string; pillBorder: string }> = {
-  critical: { label: 'Critical', chipBg: '#B23A3A', iconColor: '#fff', pillBg: '#B23A3A', pillColor: '#fff', pillBorder: '#B23A3A' },
-  high: { label: 'High', chipBg: '#FBF1E1', iconColor: '#C48A2E', pillBg: '#FBF1E1', pillColor: '#C48A2E', pillBorder: '#EBD3A3' },
-};
 
 const recentAlerts: Array<{ id: number; vendor_name: string; plant: string; severity: RecentAlertSeverity }> = [
   { id: 1, vendor_name: 'Anand Precision Tools', plant: 'Nashik', severity: 'critical' },
@@ -198,7 +197,8 @@ export default function Dashboard() {
             </Link>
           </div>
           {recentAlerts.map((a) => {
-            const sev = SEVERITY_STYLE[a.severity];
+            const sev = SEVERITY_META[a.severity];
+            const SevIcon = sev.icon;
             return (
               <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: `1px solid ${colors.divider}` }}>
                 <div
@@ -206,33 +206,20 @@ export default function Dashboard() {
                     width: 26,
                     height: 26,
                     borderRadius: radius.sm - 1,
-                    background: sev.chipBg,
+                    background: sev.bg,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flex: 'none',
                   }}
                 >
-                  <AlertTriangle size={13} strokeWidth={2.5} color={sev.iconColor} />
+                  <SevIcon size={13} strokeWidth={2.5} color={sev.fg} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 13 }}>{a.vendor_name}</div>
                   <div style={{ color: colors.faint, fontSize: 12 }}>{a.plant}</div>
                 </div>
-                <span
-                  style={{
-                    padding: '3px 9px',
-                    borderRadius: radius.pill,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    flex: 'none',
-                    background: sev.pillBg,
-                    color: sev.pillColor,
-                    border: `1px solid ${sev.pillBorder}`,
-                  }}
-                >
-                  {sev.label}
-                </span>
+                <Badge {...sev} compact />
               </div>
             );
           })}
