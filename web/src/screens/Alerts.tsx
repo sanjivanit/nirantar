@@ -41,8 +41,11 @@ const ALERT_TYPE_META: Record<AlertType, { label: string; icon: LucideIcon }> = 
   deregistration: { label: 'Vendor deregistration', icon: Ban },
 };
 
+// Critical is filled solid (white text on red) to read as more urgent than a
+// light tint — matches the Recent alerts treatment on the Dashboard. Every
+// other severity keeps the light bg/fg/border pill used across the app.
 export const SEVERITY_META: Record<Severity, { label: string; bg: string; fg: string; border: string }> = {
-  critical: { label: 'Critical', bg: '#F8E9E9', fg: '#B23A3A', border: '#E9BFBF' },
+  critical: { label: 'Critical', bg: '#B23A3A', fg: '#fff', border: '#B23A3A' },
   high: { label: 'High', bg: '#FBF1E1', fg: '#C48A2E', border: '#EBD3A3' },
   medium: { label: 'Medium', bg: '#EEEBF4', fg: '#6B5B95', border: '#D6CEE6' },
   low: { label: 'Low', bg: '#EEF0F3', fg: '#8A94A6', border: '#D8DCE3' },

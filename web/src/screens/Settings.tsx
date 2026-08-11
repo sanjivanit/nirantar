@@ -8,7 +8,8 @@
 // record only has a name. Real user/role management is a later phase.
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { Building2, ShieldCheck, Mail, Bell, Plug, type LucideIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Building2, ShieldCheck, Mail, Bell, Plug, Database, RefreshCw, type LucideIcon } from 'lucide-react';
 
 type Role = 'plant_finance' | 'group_compliance' | 'group_procurement' | 'cfo' | 'admin';
 
@@ -100,6 +101,7 @@ function SectionCard({ icon: Icon, title, children }: { icon: LucideIcon; title:
 }
 
 export default function Settings() {
+  const navigate = useNavigate();
   const [notifCritical, setNotifCritical] = useState(true);
   const [notifDigest, setNotifDigest] = useState(true);
   const [notifMsme, setNotifMsme] = useState(false);
@@ -267,6 +269,38 @@ export default function Settings() {
           >
             Connected
           </span>
+        </div>
+      </SectionCard>
+
+      <SectionCard icon={Database} title="Data sources">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600 }}>Vendor master sync</div>
+            <div style={{ fontSize: 12, color: '#8A93A3' }}>
+              Re-checks every vendor against GST and Udyam, and re-runs cross-plant duplicate matching. Last run: 5 hours ago.
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/sync')}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '10px 16px',
+              border: 'none',
+              borderRadius: 8,
+              fontSize: 12.5,
+              fontWeight: 700,
+              cursor: 'pointer',
+              background: '#1B3A5C',
+              color: '#fff',
+              flex: 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <RefreshCw size={13} strokeWidth={2.25} />
+            Re-scan all vendors
+          </button>
         </div>
       </SectionCard>
     </div>

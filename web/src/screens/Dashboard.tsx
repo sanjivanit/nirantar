@@ -25,9 +25,9 @@ const recentAlerts: Array<{ id: number; vendor_name: string; plant: string; seve
 ];
 
 const upcomingMsme = [
-  { id: 1, vendor_name: 'Anand Precision Tools', amount: '₹54,00,000', when: '7 days overdue', overdue: true },
-  { id: 2, vendor_name: 'Vishwakarma Forge Industries', amount: '₹12,00,000', when: '11 days overdue', overdue: true },
-  { id: 3, vendor_name: 'Ganesh Enterprises', amount: '₹16,00,000', when: 'Due in 9 days', overdue: false },
+  { id: 1, vendor_name: 'Anand Precision Tools', plant: 'Nashik', amount: '₹54,00,000', when: '7 days overdue', overdue: true },
+  { id: 2, vendor_name: 'Vishwakarma Forge Industries', plant: 'Pune', amount: '₹12,00,000', when: '11 days overdue', overdue: true },
+  { id: 3, vendor_name: 'Ganesh Enterprises', plant: 'Rajkot', amount: '₹16,00,000', when: 'Due in 9 days', overdue: false },
 ];
 
 const openAlertCount = 4;
@@ -258,17 +258,32 @@ export default function Dashboard() {
               View all
             </Link>
           </div>
-          {upcomingMsme.map((i) => (
-            <div key={i.id} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, padding: '10px 0', borderBottom: '1px solid #F7F8FA' }}>
-              <CalendarClock size={15} strokeWidth={2.25} color={i.overdue ? '#B23A3A' : '#C48A2E'} style={{ marginTop: 1, flex: 'none' }} />
-              <div>
-                <div style={{ fontWeight: 600, fontSize: 13 }}>{i.vendor_name}</div>
-                <div style={{ color: '#8A93A3', fontSize: 12 }}>
-                  {i.when} · {i.amount}
+          {upcomingMsme.map((i) => {
+            const urgent = i.overdue ? '#B23A3A' : '#C48A2E';
+            return (
+              <div
+                key={i.id}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1.6fr 1.2fr auto',
+                  gap: 10,
+                  alignItems: 'center',
+                  padding: '11px 0',
+                  borderBottom: '1px solid #F7F8FA',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
+                  <CalendarClock size={15} strokeWidth={2.25} color={urgent} style={{ flex: 'none' }} />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 600, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{i.vendor_name}</div>
+                    <div style={{ color: '#8A93A3', fontSize: 11.5 }}>{i.plant}</div>
+                  </div>
                 </div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: urgent }}>{i.when}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', textAlign: 'right' }}>{i.amount}</div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 

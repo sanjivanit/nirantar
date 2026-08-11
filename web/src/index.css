@@ -1,0 +1,20 @@
+/* Global hover feedback for every <button> in the app. The rest of the
+   codebase is deliberately inline-styled with no CSS files — this is the
+   one exception, because threading onMouseEnter/onMouseLeave state into
+   every button across every screen for a single hover effect would be a
+   large, repetitive change where one CSS rule does the same job. Buttons
+   that already have their own JS-driven hover state (Alerts actions,
+   Pagination, Dropdown/ActionMenu items) are unaffected in spirit — this
+   just adds the same subtle darken on top, which reads as one consistent
+   hover language everywhere. */
+button:not(:disabled) {
+  transition: filter 0.12s ease, opacity 0.12s ease;
+}
+
+button:not(:disabled):hover {
+  filter: brightness(0.94);
+}
+
+button:disabled {
+  cursor: default;
+}

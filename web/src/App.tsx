@@ -10,7 +10,9 @@ import MsmeDeadlines from './screens/MsmeDeadlines';
 import AuditTrail from './screens/AuditTrail';
 import Reports from './screens/Reports';
 import Settings from './screens/Settings';
+import SyncProgress from './screens/SyncProgress';
 import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -23,7 +25,10 @@ function AppShell({ children }: { children: ReactNode }) {
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100%', overflow: 'hidden', color: '#131B2E', fontSize: 14 }}>
       <Sidebar />
-      <div style={{ flex: 1, height: '100%', overflowY: 'auto', overflowX: 'hidden', background: '#F6F7F9' }}>{children}</div>
+      <div style={{ flex: 1, height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <Header />
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#F6F7F9' }}>{children}</div>
+      </div>
     </div>
   );
 }
@@ -32,6 +37,14 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route
+        path="/sync"
+        element={
+          <RequireAuth>
+            <SyncProgress />
+          </RequireAuth>
+        }
+      />
       <Route
         path="/*"
         element={

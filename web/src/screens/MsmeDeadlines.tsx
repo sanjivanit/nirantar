@@ -131,8 +131,11 @@ const rows: MsmeRow[] = [
   },
 ];
 
+// Overdue is filled solid (white on red) as the most urgent state — same
+// treatment as "Critical" severity on Alerts/Dashboard. Upcoming stays the
+// lighter amber tint, matching "High" severity's urgency level.
 const STATUS_META: Record<RowStatus, { label: string; bg: string; fg: string; border: string; icon: typeof CircleAlert }> = {
-  overdue: { label: 'Overdue', bg: '#F8E9E9', fg: '#B23A3A', border: '#E9BFBF', icon: CircleAlert },
+  overdue: { label: 'Overdue', bg: '#B23A3A', fg: '#fff', border: '#B23A3A', icon: CircleAlert },
   upcoming: { label: 'Upcoming', bg: '#FBF1E1', fg: '#C48A2E', border: '#EBD3A3', icon: CircleDashed },
   paid: { label: 'Paid on time', bg: '#E7F2EF', fg: '#2E7D6B', border: '#B7DBD2', icon: CircleCheck },
   not_applicable: { label: 'Not applicable', bg: '#EEF0F3', fg: '#8A94A6', border: '#D8DCE3', icon: CircleSlash },
@@ -217,7 +220,7 @@ export default function MsmeDeadlines() {
         >
           <div>VENDOR</div>
           <div>CLASSIFICATION</div>
-          <div>AMOUNT</div>
+          <div style={{ textAlign: 'right' }}>AMOUNT</div>
           <div>DUE DATE</div>
           <div>DEADLINE</div>
           <div>STATUS</div>
@@ -245,7 +248,7 @@ export default function MsmeDeadlines() {
                   </div>
                 </div>
                 <div style={{ color: '#5B6472' }}>{r.classification}</div>
-                <div style={{ fontWeight: 600 }}>{fmtINR(r.amount)}</div>
+                <div style={{ fontWeight: 600, textAlign: 'right' }}>{fmtINR(r.amount)}</div>
                 <div style={{ color: '#5B6472', fontSize: 12.5 }}>{r.due_date ?? '—'}</div>
                 <div style={{ color: '#8A93A3', fontSize: 12.5 }}>{r.deadline_days ? `${r.deadline_days} days` : '—'}</div>
                 <div>

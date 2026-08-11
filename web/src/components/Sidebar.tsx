@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, Building2, Bell, CalendarClock, FileClock, FileBarChart2, Settings as SettingsIcon, type LucideIcon } from 'lucide-react';
-import { useAuth } from '../auth';
 
 const NAV_DEFS: Array<{ to: string; label: string; icon: LucideIcon }> = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -12,17 +11,7 @@ const NAV_DEFS: Array<{ to: string; label: string; icon: LucideIcon }> = [
   { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ];
 
-const ROLE_LABEL: Record<string, string> = {
-  plant_finance: 'Plant Finance',
-  group_compliance: 'Group Compliance',
-  group_procurement: 'Group Procurement',
-  cfo: 'CFO',
-  admin: 'Admin',
-};
-
 export default function Sidebar() {
-  const { user } = useAuth();
-
   return (
     <div
       style={{
@@ -108,13 +97,6 @@ export default function Sidebar() {
       </div>
 
       <div style={{ flex: 1 }} />
-
-      <div style={{ padding: '14px 10px 4px', borderTop: '1px solid rgba(255,255,255,0.08)', marginTop: 10 }}>
-        <div style={{ color: '#fff', fontSize: 12.5, fontWeight: 600 }}>{user?.name}</div>
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, marginTop: 2 }}>
-          {user ? (ROLE_LABEL[user.role] ?? user.role) : ''}
-        </div>
-      </div>
     </div>
   );
 }
