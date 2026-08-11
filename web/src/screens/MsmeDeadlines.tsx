@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import { CircleAlert, CircleCheck, CircleDashed, CircleSlash } from 'lucide-react';
 import Card from '../components/Card';
+import Badge from '../components/Badge';
 import { colors, radius, shadow, type, transition } from '../theme';
 
 type Classification = 'Micro' | 'Small' | 'Medium' | 'Unknown';
@@ -133,15 +134,16 @@ const rows: MsmeRow[] = [
   },
 ];
 
-// Overdue is filled solid (white on red) as the most urgent state — same
-// treatment as "Critical" severity on Alerts/Dashboard. Upcoming stays the
-// lighter amber tint, matching "High" severity's urgency level.
+// Overdue previously rendered filled-solid (white on red) while every other
+// row status used the light tinted pill — same inconsistency fixed on
+// Alerts' severity pills, fixed here the same way: overdue now uses the
+// same tinted bg/fg/border treatment as the rest, just with its own color.
 // insufficient_data previously shared the old review_required purple
 // (#6B5B95) — moved to the same teal used for Alerts' "medium" severity so
 // this app-wide "purple = ambiguous/unclassified" meaning stays consistent
 // without colliding with the new indigo primary.
 const STATUS_META: Record<RowStatus, { label: string; bg: string; fg: string; border: string; icon: typeof CircleAlert }> = {
-  overdue: { label: 'Overdue', bg: '#B23A3A', fg: '#fff', border: '#B23A3A', icon: CircleAlert },
+  overdue: { label: 'Overdue', bg: '#F8E9E9', fg: '#B23A3A', border: '#E9BFBF', icon: CircleAlert },
   upcoming: { label: 'Upcoming', bg: '#FBF1E1', fg: '#C48A2E', border: '#EBD3A3', icon: CircleDashed },
   paid: { label: 'Paid on time', bg: '#E7F2EF', fg: '#2E7D6B', border: '#B7DBD2', icon: CircleCheck },
   not_applicable: { label: 'Not applicable', bg: '#EEF0F3', fg: '#8A94A6', border: '#D8DCE3', icon: CircleSlash },
@@ -235,7 +237,7 @@ export default function MsmeDeadlines() {
 
         {filtered.map((r) => {
           const meta = STATUS_META[r.status];
-          const Icon = meta.icon;
+          const label = meta.label + (r.status === 'overdue' ? ` · ${r.days_overdue}d` : '');
           return (
             <div key={r.id} style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
               <div
@@ -259,24 +261,7 @@ export default function MsmeDeadlines() {
                 <div style={{ color: colors.muted, fontSize: 12.5 }}>{r.due_date ?? '—'}</div>
                 <div style={{ color: colors.faint, fontSize: 12.5 }}>{r.deadline_days ? `${r.deadline_days} days` : '—'}</div>
                 <div>
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 5,
-                      padding: '3px 9px',
-                      borderRadius: radius.pill,
-                      fontSize: 11.5,
-                      fontWeight: 500,
-                      background: meta.bg,
-                      color: meta.fg,
-                      border: `1px solid ${meta.border}`,
-                    }}
-                  >
-                    <Icon size={12} strokeWidth={2.25} />
-                    {meta.label}
-                    {r.status === 'overdue' ? ` · ${r.days_overdue}d` : ''}
-                  </span>
+                  <Badge {...meta} label={label} compact />
                 </div>
               </div>
               <div style={{ padding: '0 24px 15px', fontSize: 12, color: colors.faint, lineHeight: 1.5 }}>{r.note}</div>
