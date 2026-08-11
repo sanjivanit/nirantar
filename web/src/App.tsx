@@ -6,6 +6,7 @@ import Dashboard from './screens/Dashboard';
 import Vendors from './screens/Vendors';
 import VendorProfile from './screens/VendorProfile';
 import Alerts from './screens/Alerts';
+import MsmeDeadlines from './screens/MsmeDeadlines';
 import ComingSoon from './screens/ComingSoon';
 import Sidebar from './components/Sidebar';
 
@@ -39,7 +40,7 @@ function AppRoutes() {
                 <Route path="/vendors" element={<Vendors />} />
                 <Route path="/vendors/:id" element={<VendorProfile />} />
                 <Route path="/alerts" element={<Alerts />} />
-                <Route path="/msme" element={<ComingSoon label="MSME Deadlines" />} />
+                <Route path="/msme" element={<MsmeDeadlines />} />
                 <Route path="/audit" element={<ComingSoon label="Audit Trail" />} />
                 <Route path="/reports" element={<ComingSoon label="Reports" />} />
                 <Route path="/settings" element={<ComingSoon label="Settings" />} />
