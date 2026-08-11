@@ -15,9 +15,13 @@ import {
   Clock,
   X,
   Sparkles,
+  AlertOctagon,
+  AlertCircle,
+  Info,
   type LucideIcon,
 } from 'lucide-react';
 import Card from '../components/Card';
+import Badge from '../components/Badge';
 import { colors, radius, shadow, type, transition } from '../theme';
 
 type AlertType = 'bank_mismatch' | 'possible_duplicate' | 'msme_deadline' | 'gst_status_change' | 'deregistration';
@@ -45,19 +49,21 @@ const ALERT_TYPE_META: Record<AlertType, { label: string; icon: LucideIcon }> = 
   deregistration: { label: 'Vendor deregistration', icon: Ban },
 };
 
-// Critical is filled solid (white text on red) to read as more urgent than a
-// light tint — matches the Recent alerts treatment on the Dashboard. Every
-// other severity keeps the light bg/fg/border pill used across the app.
+// Critical previously rendered filled-solid (white on red) while every other
+// severity used the light tinted pill — two different pill structures for
+// the same kind of indicator, plus severity pills had no icon at all. Both
+// fixed: every severity now uses the same tinted bg/fg/border/icon treatment
+// as the six vendor states (StatusBadge) and alert status below, just with
+// different colors and icons per level.
 // `medium` previously used the same muted purple as the old
 // review_required status (#6B5B95) — moved to teal, since that purple now
 // reads as "primary" once indigo is the brand color and would be too close
-// to distinguish from it at a glance. critical/high/low keep their existing
-// severity-coded colors untouched.
-export const SEVERITY_META: Record<Severity, { label: string; bg: string; fg: string; border: string }> = {
-  critical: { label: 'Critical', bg: '#B23A3A', fg: '#fff', border: '#B23A3A' },
-  high: { label: 'High', bg: '#FBF1E1', fg: '#C48A2E', border: '#EBD3A3' },
-  medium: { label: 'Medium', bg: '#E3F1F3', fg: '#1E7A8C', border: '#BFE1E6' },
-  low: { label: 'Low', bg: '#EEF0F3', fg: '#8A94A6', border: '#D8DCE3' },
+// to distinguish from it at a glance.
+export const SEVERITY_META: Record<Severity, { label: string; bg: string; fg: string; border: string; icon: LucideIcon }> = {
+  critical: { label: 'Critical', bg: '#F8E9E9', fg: '#B23A3A', border: '#E9BFBF', icon: AlertOctagon },
+  high: { label: 'High', bg: '#FBF1E1', fg: '#C48A2E', border: '#EBD3A3', icon: AlertTriangle },
+  medium: { label: 'Medium', bg: '#E3F1F3', fg: '#1E7A8C', border: '#BFE1E6', icon: AlertCircle },
+  low: { label: 'Low', bg: '#EEF0F3', fg: '#8A94A6', border: '#D8DCE3', icon: Info },
 };
 
 const STATUS_META: Record<AlertStatus, { label: string; bg: string; fg: string; border: string; icon: LucideIcon }> = {
@@ -178,28 +184,6 @@ const STATUS_FILTERS: Array<{ value: 'all' | AlertStatus; label: string }> = [
   { value: 'dismissed', label: 'Dismissed' },
 ];
 
-function Badge({ bg, fg, border, icon: Icon, label }: { bg: string; fg: string; border: string; icon?: LucideIcon; label: string }) {
-  return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 5,
-        padding: '3px 9px',
-        borderRadius: radius.pill,
-        fontSize: 11.5,
-        fontWeight: 500,
-        background: bg,
-        color: fg,
-        border: `1px solid ${border}`,
-      }}
-    >
-      {Icon && <Icon size={12} strokeWidth={2.25} />}
-      {label}
-    </span>
-  );
-}
-
 export default function Alerts() {
   const [alerts, setAlerts] = useState<MockAlert[]>(mockAlerts);
   const [statusFilter, setStatusFilter] = useState<'all' | AlertStatus>('all');
@@ -283,8 +267,8 @@ export default function Alerts() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 6, flex: 'none' }}>
-                  <Badge {...sev} label={sev.label} />
-                  <Badge {...st} icon={st.icon} label={st.label} />
+                  <Badge {...sev} compact />
+                  <Badge {...st} compact />
                 </div>
               </div>
 
