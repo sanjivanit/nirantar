@@ -198,23 +198,8 @@ export default function Dashboard() {
           </div>
           {recentAlerts.map((a) => {
             const sev = SEVERITY_META[a.severity];
-            const SevIcon = sev.icon;
             return (
               <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: `1px solid ${colors.divider}` }}>
-                <div
-                  style={{
-                    width: 26,
-                    height: 26,
-                    borderRadius: radius.sm - 1,
-                    background: sev.bg,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flex: 'none',
-                  }}
-                >
-                  <SevIcon size={13} strokeWidth={2.5} color={sev.fg} />
-                </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 600, fontSize: 13 }}>{a.vendor_name}</div>
                   <div style={{ color: colors.faint, fontSize: 12 }}>{a.plant}</div>
