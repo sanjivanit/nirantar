@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, Bell } from 'lucide-react';
 import { useAuth } from '../auth';
 import { mockAlerts } from '../screens/Alerts';
+import { colors, transition } from '../theme';
 
 // Notification bell count comes from mockAlerts (Alerts.tsx) — the app's
 // one source of truth for alert state. There is no live alerts API yet
@@ -26,6 +27,7 @@ function initials(name: string): string {
 export default function Header() {
   const { user } = useAuth();
   const [search, setSearch] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const openAlertCount = mockAlerts.filter((a) => a.status === 'open' || a.status === 'escalated').length;
 
@@ -48,18 +50,22 @@ export default function Header() {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+          onFocus={() => setSearchFocused(true)}
+          onBlur={() => setSearchFocused(false)}
           placeholder="Search vendors, GSTINs, alerts…"
           style={{
             width: '100%',
             padding: '9px 14px 9px 36px',
-            border: '1px solid #E4E7EC',
+            border: `1px solid ${searchFocused ? colors.primary[600] : colors.border}`,
             borderRadius: 8,
             fontSize: 13,
             fontFamily: 'inherit',
             outline: 'none',
             boxSizing: 'border-box',
-            background: '#F6F7F9',
-            color: '#131B2E',
+            background: searchFocused ? '#fff' : colors.page,
+            color: colors.ink,
+            boxShadow: searchFocused ? `0 0 0 3px ${colors.primary[100]}` : 'none',
+            transition: `border-color ${transition.base}, box-shadow ${transition.base}, background ${transition.base}`,
           }}
         />
         <Search
@@ -109,7 +115,7 @@ export default function Header() {
                 width: 34,
                 height: 34,
                 borderRadius: '50%',
-                background: '#1B3A5C',
+                background: colors.primary.gradient,
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
