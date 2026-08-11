@@ -129,7 +129,7 @@ export default function Reports() {
                     fontSize: 13,
                     fontWeight: 700,
                     cursor: isGenerating ? 'default' : 'pointer',
-                    background: '#1B3A5C',
+                    background: 'linear-gradient(135deg, #1B3A5C 0%, #2E5C87 100%)',
                     color: '#fff',
                     opacity: isGenerating ? 0.7 : 1,
                   }}

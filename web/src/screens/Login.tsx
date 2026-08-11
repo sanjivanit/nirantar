@@ -139,7 +139,7 @@ export default function Login() {
               fontSize: 14,
               fontWeight: 700,
               cursor: submitting ? 'default' : 'pointer',
-              background: '#1B3A5C',
+              background: 'linear-gradient(135deg, #1B3A5C 0%, #2E5C87 100%)',
               color: '#fff',
               opacity: submitting ? 0.7 : 1,
             }}

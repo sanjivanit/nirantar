@@ -17,7 +17,7 @@ export default function Sidebar() {
       style={{
         width: 236,
         flex: 'none',
-        background: '#0A1A30',
+        background: 'linear-gradient(180deg, #0A1A30 0%, #16294A 100%)',
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
@@ -71,26 +71,32 @@ export default function Sidebar() {
                 borderRadius: 8,
                 cursor: 'pointer',
                 borderLeft: `3px solid ${isActive ? '#4FBFA0' : 'transparent'}`,
-                background: isActive ? 'rgba(255,255,255,0.09)' : 'transparent',
+                background: isActive ? 'rgba(255,255,255,0.14)' : 'transparent',
                 textDecoration: 'none',
               })}
             >
-              <div
-                style={{
-                  width: 26,
-                  height: 26,
-                  borderRadius: 7,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flex: 'none',
-                  background: 'rgba(255,255,255,0.08)',
-                  color: 'rgba(255,255,255,0.75)',
-                }}
-              >
-                <Icon size={15} strokeWidth={2.25} />
-              </div>
-              <div style={{ fontSize: 13.5, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{item.label}</div>
+              {({ isActive }) => (
+                <>
+                  <div
+                    style={{
+                      width: 26,
+                      height: 26,
+                      borderRadius: 7,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flex: 'none',
+                      background: isActive ? 'rgba(79,191,160,0.2)' : 'rgba(255,255,255,0.08)',
+                      color: isActive ? '#4FBFA0' : 'rgba(255,255,255,0.75)',
+                    }}
+                  >
+                    <Icon size={15} strokeWidth={2.25} />
+                  </div>
+                  <div style={{ fontSize: 13.5, fontWeight: isActive ? 700 : 600, color: isActive ? '#fff' : 'rgba(255,255,255,0.85)' }}>
+                    {item.label}
+                  </div>
+                </>
+              )}
             </NavLink>
           );
         })}

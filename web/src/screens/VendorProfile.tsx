@@ -90,7 +90,7 @@ export default function VendorProfile() {
             fontSize: 13.5,
             fontWeight: 700,
             cursor: verifying ? 'default' : 'pointer',
-            background: '#1B3A5C',
+            background: 'linear-gradient(135deg, #1B3A5C 0%, #2E5C87 100%)',
             color: '#fff',
             opacity: verifying ? 0.7 : 1,
             flex: 'none',

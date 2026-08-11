@@ -169,15 +169,15 @@ export default function MsmeDeadlines() {
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 24, maxWidth: 700 }}>
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 18 }}>
+        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
           <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Overdue</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: '#B23A3A' }}>{overdueRows.length}</div>
         </div>
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 18 }}>
+        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
           <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Upcoming</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: '#C48A2E' }}>{upcomingRows.length}</div>
         </div>
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 18 }}>
+        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
           <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Amount at risk</div>
           <div style={{ fontSize: 22, fontWeight: 800, color: '#131B2E' }}>{fmtINR(totalExposure)}</div>
         </div>

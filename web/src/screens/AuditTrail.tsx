@@ -78,7 +78,7 @@ export default function AuditTrail() {
           gap: 10,
           background: '#EFF4FB',
           border: '1px solid #BBD3EE',
-          borderRadius: 10,
+          borderRadius: 12,
           padding: '12px 16px',
           marginBottom: 20,
           fontSize: 13,

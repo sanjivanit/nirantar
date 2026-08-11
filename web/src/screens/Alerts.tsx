@@ -14,6 +14,7 @@ import {
   ArrowUpCircle,
   Clock,
   X,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -29,6 +30,7 @@ interface MockAlert {
   severity: Severity;
   status: AlertStatus;
   ai_explanation: string;
+  source: string;
   created: string;
   escalation_deadline: string;
 }
@@ -69,6 +71,7 @@ export const mockAlerts: MockAlert[] = [
     status: 'open',
     ai_explanation:
       "The bank account on file changed 2 hours ago. This vendor has 6 open invoices worth ₹54,00,000 on Net 45 terms, currently on hold pending verification. Recommend confirming the new account directly with the vendor before releasing any payment.",
+    source: 'Bank Confirmation Letter',
     created: '2 hours ago',
     escalation_deadline: 'Escalates in 22 hours if untouched',
   },
@@ -81,6 +84,7 @@ export const mockAlerts: MockAlert[] = [
     status: 'escalated',
     ai_explanation:
       "This vendor's GSTIN source has been unreachable for 9 days and the vendor is not registered under Udyam. One invoice worth ₹2,10,000 is on hold. Escalated automatically after 24 hours with no action taken.",
+    source: 'GST Portal',
     created: '9 days ago',
     escalation_deadline: 'Escalated to Group Compliance',
   },
@@ -93,6 +97,7 @@ export const mockAlerts: MockAlert[] = [
     status: 'open',
     ai_explanation:
       "This vendor's legal name does not cleanly match the name on file with the GST source of record, flagged as a conflict rather than an automatic match. 2 open invoices worth ₹12,00,000 are currently blocked pending review. This is a possible-match flag only — no merge happens automatically.",
+    source: 'GST Portal',
     created: '3 days ago',
     escalation_deadline: 'Escalates in 5 hours if untouched',
   },
@@ -105,6 +110,7 @@ export const mockAlerts: MockAlert[] = [
     status: 'open',
     ai_explanation:
       'This vendor is Udyam-registered as Micro with Net 45 (MSME) terms. 5 open invoices worth ₹16,00,000 are due in 9 days. Micro and Small vendor payments are capped at a 45-day deadline regardless of contract terms.',
+    source: 'Udyam Assist Portal',
     created: '1 day ago',
     escalation_deadline: 'Escalates in 3 days if untouched',
   },
@@ -117,6 +123,7 @@ export const mockAlerts: MockAlert[] = [
     status: 'resolved',
     ai_explanation:
       'IFSC code on file was updated to reflect a bank branch migration reported by the vendor. Confirmed directly with the vendor\'s finance contact; no payment was affected.',
+    source: 'Bank Confirmation Letter',
     created: '6 days ago',
     escalation_deadline: 'Resolved before deadline',
   },
@@ -129,6 +136,7 @@ export const mockAlerts: MockAlert[] = [
     status: 'snoozed',
     ai_explanation:
       "This vendor's GST status has been unconfirmed for over 90 days, though it last reported as Active. No invoices are currently overdue for this vendor.",
+    source: 'GST Portal',
     created: '11 days ago',
     escalation_deadline: 'Snoozed until next verification cycle',
   },
@@ -141,6 +149,7 @@ export const mockAlerts: MockAlert[] = [
     status: 'dismissed',
     ai_explanation:
       'Shared registered address only with another vendor record, no shared GSTIN or PAN. Group Procurement confirmed these are separate legal entities operating from the same industrial estate.',
+    source: 'GST Portal',
     created: '2 weeks ago',
     escalation_deadline: 'Dismissed, no further action',
   },
@@ -271,7 +280,15 @@ export default function Alerts() {
                 </div>
               </div>
 
-              <p style={{ fontSize: 13, color: '#3D4552', lineHeight: 1.5, margin: '0 0 12px' }}>{a.ai_explanation}</p>
+              <div style={{ background: '#F7F6FB', border: '1px solid #EAE6F3', borderRadius: 9, padding: '10px 12px', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                  <Sparkles size={12} strokeWidth={2.25} color="#6B5B95" />
+                  <span style={{ fontSize: 10.5, fontWeight: 700, color: '#6B5B95', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                    Explained by AI · Verified by {a.source}
+                  </span>
+                </div>
+                <p style={{ fontSize: 13, color: '#3D4552', lineHeight: 1.5, margin: 0 }}>{a.ai_explanation}</p>
+              </div>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
                 <div style={{ color: '#8A93A3', fontSize: 11.5 }}>{a.escalation_deadline}</div>
@@ -342,7 +359,7 @@ export default function Alerts() {
                         fontSize: 12.5,
                         fontWeight: 700,
                         cursor: reason.trim() ? 'pointer' : 'default',
-                        background: '#1B3A5C',
+                        background: 'linear-gradient(135deg, #1B3A5C 0%, #2E5C87 100%)',
                         color: '#fff',
                         opacity: reason.trim() ? 1 : 0.5,
                       }}

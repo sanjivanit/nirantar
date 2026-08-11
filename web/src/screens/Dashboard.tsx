@@ -10,6 +10,7 @@ import { ArrowRight, AlertTriangle, CalendarClock, Building2, Bell, TrendingUp, 
 import { getVendors } from '../api';
 import type { Vendor, VendorStatus } from '../types';
 import { STATUS_META } from '../components/StatusBadge';
+import { useAuth } from '../auth';
 
 type RecentAlertSeverity = 'critical' | 'high';
 
@@ -40,6 +41,7 @@ const PLANTS = ['Pune', 'Nashik', 'Chennai', 'Rajkot'];
 const needsAttentionTrend = { direction: 'down' as const, label: '2 vs last week', good: true };
 const totalVendorsTrend = { direction: 'up' as const, label: '1 this month', good: true };
 const openAlertsTrend = { direction: 'up' as const, label: '1 vs yesterday', good: false };
+const msmeExposureTrend = { direction: 'down' as const, label: '4% vs last week', good: true };
 const msmeOverdueAmount = 5400000 + 1200000; // Anand Precision Tools + Vishwakarma Forge Industries, see MsmeDeadlines.tsx
 const msmeUpcomingAmount = 1600000; // Ganesh Enterprises
 const msmeExposureAmount = msmeOverdueAmount + msmeUpcomingAmount;
@@ -66,6 +68,32 @@ function Trend({ direction, label, good }: { direction: 'up' | 'down'; label: st
       <Icon size={12} strokeWidth={2.5} />
       {label}
     </div>
+  );
+}
+
+function TrendPill({ direction, label, good }: { direction: 'up' | 'down'; label: string; good: boolean }) {
+  const Icon = direction === 'up' ? TrendingUp : TrendingDown;
+  const color = good ? '#2E7D6B' : '#B23A3A';
+  const bg = good ? '#E7F2EF' : '#F8E9E9';
+  const border = good ? '#B7DBD2' : '#E9BFBF';
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 3,
+        padding: '2px 8px',
+        borderRadius: 20,
+        fontSize: 11,
+        fontWeight: 700,
+        background: bg,
+        color,
+        border: `1px solid ${border}`,
+      }}
+    >
+      <Icon size={10} strokeWidth={3} />
+      {label}
+    </span>
   );
 }
 
@@ -108,6 +136,7 @@ function SemicircleGauge({ segments, size = 168 }: { segments: Array<{ fraction:
 }
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [vendors, setVendors] = useState<Vendor[] | null>(null);
 
   useEffect(() => {
@@ -121,7 +150,9 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>Dashboard</h1>
+      <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>
+        Welcome back{user?.name ? `, ${user.name}` : ''}
+      </h1>
       <p style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>Suryodaya Autocomponents · Pune, Nashik, Chennai, Rajkot</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, marginBottom: 28 }}>
@@ -158,22 +189,22 @@ export default function Dashboard() {
         </Card>
 
         <div style={{ gridColumn: 'span 2', background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
-          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>MSME payments at risk</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-            <div style={{ position: 'relative', flex: 'none' }}>
-              <SemicircleGauge
-                segments={[
-                  { fraction: overdueFraction, color: '#B23A3A' },
-                  { fraction: upcomingFraction, color: '#C48A2E' },
-                ]}
-              />
-              <div style={{ position: 'absolute', left: 0, right: 0, bottom: 6, textAlign: 'center' }}>
-                <div style={{ fontSize: 17, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.3px' }}>{msmeExposureTotal}</div>
-                <div style={{ fontSize: 10.5, color: '#8A93A3', fontWeight: 600 }}>at risk</div>
+          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 12 }}>MSME payments at risk</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+            <SemicircleGauge
+              segments={[
+                { fraction: overdueFraction, color: '#B23A3A' },
+                { fraction: upcomingFraction, color: '#C48A2E' },
+              ]}
+              size={104}
+            />
+            <div style={{ flex: 'none' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.3px' }}>{msmeExposureTotal}</div>
+                <TrendPill {...msmeExposureTrend} />
               </div>
-            </div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#8A93A3', fontWeight: 600, marginTop: 2 }}>at risk</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, marginTop: 10 }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#B23A3A', fontWeight: 700 }}>
                   <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#B23A3A' }} />
                   {msmeOverdueCount} overdue
@@ -183,7 +214,9 @@ export default function Dashboard() {
                   1 upcoming
                 </span>
               </div>
-              <div style={{ fontSize: 11, fontWeight: 700, color: '#8A93A3', marginBottom: 6 }}>VENDOR STATUS</div>
+            </div>
+            <div style={{ flex: 1, minWidth: 0, borderLeft: '1px solid #F0F2F5', paddingLeft: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: '#8A93A3', marginBottom: 8 }}>VENDOR STATUS</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {BREAKDOWN_STATUSES.map((s) => {
                   const meta = STATUS_META[s];

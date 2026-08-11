@@ -139,7 +139,7 @@ export default function Settings() {
       </SectionCard>
 
       <SectionCard icon={ShieldCheck} title="Users &amp; roles">
-        <div style={{ border: '1px solid #E4E7EC', borderRadius: 10, overflow: 'hidden' }}>
+        <div style={{ border: '1px solid #E4E7EC', borderRadius: 12, overflow: 'hidden' }}>
           <div
             style={{
               display: 'grid',
@@ -292,7 +292,7 @@ export default function Settings() {
               fontSize: 12.5,
               fontWeight: 700,
               cursor: 'pointer',
-              background: '#1B3A5C',
+              background: 'linear-gradient(135deg, #1B3A5C 0%, #2E5C87 100%)',
               color: '#fff',
               flex: 'none',
               whiteSpace: 'nowrap',
