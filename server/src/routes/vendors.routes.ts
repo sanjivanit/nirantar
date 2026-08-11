@@ -98,6 +98,7 @@ export async function vendorsRoutes(app: FastifyInstance) {
 
     const vendorResult = await pool.query(
       `select v.id, v.legal_name, v.primary_gstin, v.pan, v.entity_status,
+              v.registered_address, v.udyam_registration_number,
               p.id as plant_id, p.name as plant
        from public.vendors v
        left join lateral (
@@ -120,10 +121,28 @@ export async function vendorsRoutes(app: FastifyInstance) {
       [id],
     );
 
+    // Source isn't stored on `changes` itself (spec §2); it's carried by
+    // whichever verification_attributes row currently tracks that attribute.
+    const changesResult = await pool.query(
+      `select c.id, c.attribute_type, c.old_value, c.new_value,
+              c.detected_at, c.verification_status, va.source
+       from public.changes c
+       left join public.verification_attributes va
+         on va.vendor_id = c.vendor_id and va.attribute_type = c.attribute_type
+       where c.vendor_id = $1
+       order by c.detected_at desc`,
+      [id],
+    );
+
     const status =
       attrsResult.rows.find((a) => a.status !== 'verified')?.status ?? 'verified';
 
-    return reply.send({ ...vendor, status, verification_attributes: attrsResult.rows });
+    return reply.send({
+      ...vendor,
+      status,
+      verification_attributes: attrsResult.rows,
+      changes: changesResult.rows,
+    });
   });
 
   app.post<{ Params: { id: string } }>('/api/vendors/:id/verify', async (req, reply) => {
@@ -146,11 +165,14 @@ export async function vendorsRoutes(app: FastifyInstance) {
     const result = await verifyGst(vendor.primary_gstin);
 
     if (result.ok) {
+      // value is the checked datum (the GSTIN itself), not Setu's pass/fail
+      // flag -- result.verification ("success"/etc.) only decides the row's
+      // status, it was never meant to overwrite the displayed value.
       await pool.query(
         `update public.verification_attributes
          set status = 'verified', value = $1, source = 'Setu GST Sandbox', last_verified_at = now()
          where vendor_id = $2 and attribute_type = 'gstin_status'`,
-        [result.verification, id],
+        [vendor.primary_gstin, id],
       );
       await pool.query(
         `insert into public.audit_log (entity_type, entity_id, action, performed_by)

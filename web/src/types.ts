@@ -23,6 +23,8 @@ export interface Vendor {
   primary_gstin: string | null;
   pan: string | null;
   entity_status: string | null;
+  registered_address: string | null;
+  udyam_registration_number: string | null;
   plant_id: number | null;
   plant: string | null;
   status: VendorStatus;
@@ -37,8 +39,19 @@ export interface VerificationAttribute {
   status: VendorStatus;
 }
 
+export interface VendorChange {
+  id: number;
+  attribute_type: string;
+  old_value: string | null;
+  new_value: string | null;
+  detected_at: string;
+  verification_status: string | null;
+  source: string | null;
+}
+
 export interface VendorDetail extends Vendor {
   verification_attributes: VerificationAttribute[];
+  changes: VendorChange[];
 }
 
 export interface VerifyResult {

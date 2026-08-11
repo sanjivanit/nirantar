@@ -7,10 +7,12 @@ import StatusBadge from '../components/StatusBadge';
 import { fmtRelative } from '../format';
 
 const ATTRIBUTE_LABEL: Record<string, string> = {
+  legal_name_match: 'Legal name match',
   gstin_status: 'GSTIN',
-  udyam_status: 'MSME / Udyam registration',
+  pan_status: 'PAN',
   bank_account: 'Bank account & IFSC',
-  entity_status: 'Entity status',
+  registered_address: 'Registered address',
+  udyam_status: 'MSME / Udyam registration',
 };
 
 type ToastVariant = 'success' | 'attention' | 'error';
@@ -57,6 +59,8 @@ export default function VendorProfile() {
   }
 
   const ToastIcon = toast ? TOAST_META[toast.variant].icon : null;
+  const gstinAttr = vendor.verification_attributes.find((a) => a.attribute_type === 'gstin_status');
+  const udyamAttr = vendor.verification_attributes.find((a) => a.attribute_type === 'udyam_status');
 
   return (
     <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
@@ -85,6 +89,27 @@ export default function VendorProfile() {
           <Row label="GSTIN" value={vendor.primary_gstin} mono />
           <Row label="PAN" value={vendor.pan} mono />
           <Row label="Entity status" value={vendor.entity_status} />
+          <Row label="Registered address" value={vendor.registered_address} />
+        </div>
+      </div>
+
+      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginBottom: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
+          Compliance
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            <span style={{ color: '#8A93A3' }}>GST status</span>
+            {gstinAttr ? <StatusBadge status={gstinAttr.status} compact /> : <span>—</span>}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+            <span style={{ color: '#8A93A3' }}>MSME / Udyam status</span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontWeight: 600 }}>{udyamAttr?.value ?? '—'}</span>
+              {udyamAttr && <StatusBadge status={udyamAttr.status} compact />}
+            </span>
+          </div>
+          <Row label="Udyam registration number" value={vendor.udyam_registration_number} mono />
         </div>
       </div>
 
@@ -133,6 +158,54 @@ export default function VendorProfile() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginBottom: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 6 }}>Change history</div>
+        {vendor.changes.length === 0 ? (
+          <p style={{ color: '#8A93A3', fontSize: 13, margin: 0 }}>No changes recorded for this vendor yet.</p>
+        ) : (
+          <>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1.3fr 1.6fr 1.6fr 1.4fr 1.2fr',
+                gap: 10,
+                padding: '10px 4px',
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#8A93A3',
+                borderBottom: '1px solid #F0F2F5',
+              }}
+            >
+              <div>ATTRIBUTE</div>
+              <div>OLD VALUE</div>
+              <div>NEW VALUE</div>
+              <div>SOURCE</div>
+              <div>DETECTED</div>
+            </div>
+            {vendor.changes.map((c) => (
+              <div
+                key={c.id}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1.3fr 1.6fr 1.6fr 1.4fr 1.2fr',
+                  gap: 10,
+                  padding: '13px 4px',
+                  fontSize: 12.5,
+                  borderBottom: '1px solid #F7F8FA',
+                  alignItems: 'center',
+                }}
+              >
+                <div style={{ fontWeight: 600 }}>{ATTRIBUTE_LABEL[c.attribute_type] ?? c.attribute_type}</div>
+                <div style={{ color: '#3D4552' }}>{c.old_value ?? '—'}</div>
+                <div style={{ color: '#3D4552' }}>{c.new_value ?? '—'}</div>
+                <div style={{ color: '#8A93A3' }}>{c.source ?? '—'}</div>
+                <div style={{ color: '#8A93A3' }}>{fmtRelative(c.detected_at)}</div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
 
       <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginBottom: 16 }}>
