@@ -7,7 +7,7 @@ import StatusBadge, { STATUS_META } from '../components/StatusBadge';
 import Dropdown from '../components/Dropdown';
 import ActionMenu from '../components/ActionMenu';
 import { fmtRelative } from '../format';
-import { colors, radius, shadow, type, transition } from '../theme';
+import { colors, radius, shadow, type, transition, tableHeader } from '../theme';
 
 const PLANTS = ['Pune', 'Nashik', 'Chennai', 'Rajkot'];
 const STATUSES: VendorStatus[] = ['verified', 'changed', 'conflict', 'stale', 'unavailable', 'review_required'];
@@ -150,11 +150,7 @@ export default function Vendors() {
                 gridTemplateColumns: '2fr 1.3fr 0.9fr 1.3fr 1fr 0.3fr',
                 gap: 10,
                 padding: '14px 24px',
-                fontSize: 11.5,
-                fontWeight: 700,
-                color: colors.faint,
-                borderBottom: `1px solid ${colors.border}`,
-                background: colors.surfaceSunk,
+                ...tableHeader,
               }}
             >
               <div>VENDOR</div>

@@ -11,7 +11,7 @@ import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, ShieldCheck, Mail, Bell, Plug, Database, RefreshCw, type LucideIcon } from 'lucide-react';
 import Card from '../components/Card';
-import { colors, radius, type, transition } from '../theme';
+import { colors, radius, type, transition, tableHeader } from '../theme';
 
 type Role = 'plant_finance' | 'group_compliance' | 'group_procurement' | 'cfo' | 'admin';
 
@@ -154,11 +154,7 @@ export default function Settings() {
               gridTemplateColumns: '1.6fr 1.8fr 1.4fr 1fr 0.8fr',
               gap: 10,
               padding: '10px 16px',
-              fontSize: 11,
-              fontWeight: 700,
-              color: colors.faint,
-              borderBottom: `1px solid ${colors.border}`,
-              background: colors.surfaceSunk,
+              ...tableHeader,
             }}
           >
             <div>NAME</div>

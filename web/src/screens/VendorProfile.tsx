@@ -6,7 +6,7 @@ import type { VendorDetail } from '../types';
 import StatusBadge from '../components/StatusBadge';
 import Card from '../components/Card';
 import { fmtRelative } from '../format';
-import { colors, radius, type } from '../theme';
+import { colors, radius, type, tableHeader } from '../theme';
 
 const ATTRIBUTE_LABEL: Record<string, string> = {
   legal_name_match: 'Legal name match',
@@ -150,10 +150,7 @@ export default function VendorProfile() {
               gridTemplateColumns: '1.3fr 2fr 1.4fr 1fr 1.1fr',
               gap: 10,
               padding: '10px 4px',
-              fontSize: 11,
-              fontWeight: 700,
-              color: colors.faint,
-              borderBottom: `1px solid ${colors.borderSubtle}`,
+              ...tableHeader,
             }}
           >
             <div>ATTRIBUTE</div>
@@ -201,10 +198,7 @@ export default function VendorProfile() {
                   gridTemplateColumns: '1.3fr 1.6fr 1.6fr 1.4fr 1.2fr',
                   gap: 10,
                   padding: '10px 4px',
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: colors.faint,
-                  borderBottom: `1px solid ${colors.borderSubtle}`,
+                  ...tableHeader,
                 }}
               >
                 <div>ATTRIBUTE</div>

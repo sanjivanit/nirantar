@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { CircleAlert, CircleCheck, CircleDashed, CircleSlash } from 'lucide-react';
 import Card from '../components/Card';
 import Badge from '../components/Badge';
-import { colors, radius, shadow, type, transition } from '../theme';
+import { colors, radius, shadow, type, transition, tableHeader } from '../theme';
 
 type Classification = 'Micro' | 'Small' | 'Medium' | 'Unknown';
 type RowStatus = 'overdue' | 'upcoming' | 'paid' | 'not_applicable' | 'insufficient_data';
@@ -220,11 +220,7 @@ export default function MsmeDeadlines() {
             gridTemplateColumns: '1.8fr 1fr 1fr 1.1fr 1fr 1.3fr',
             gap: 10,
             padding: '14px 24px',
-            fontSize: 11.5,
-            fontWeight: 700,
-            color: colors.faint,
-            borderBottom: `1px solid ${colors.border}`,
-            background: colors.surfaceSunk,
+            ...tableHeader,
           }}
         >
           <div>VENDOR</div>

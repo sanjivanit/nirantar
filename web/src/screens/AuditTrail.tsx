@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { Building2, Bell, FileBarChart2, UserCircle2, ShieldCheck, type LucideIcon } from 'lucide-react';
 import Dropdown from '../components/Dropdown';
-import { colors, radius, shadow, type } from '../theme';
+import { colors, radius, shadow, type, tableHeader } from '../theme';
 
 type EntityType = 'vendor' | 'alert' | 'export' | 'user';
 
@@ -102,11 +102,7 @@ export default function AuditTrail() {
             gridTemplateColumns: '1.2fr 1.8fr 1fr 1.6fr 2fr',
             gap: 10,
             padding: '14px 24px',
-            fontSize: 11.5,
-            fontWeight: 700,
-            color: colors.faint,
-            borderBottom: `1px solid ${colors.border}`,
-            background: colors.surfaceSunk,
+            ...tableHeader,
           }}
         >
           <div>TIMESTAMP</div>

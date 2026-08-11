@@ -96,3 +96,18 @@ export const transition = {
 export const cardHoverLift = {
   transition: `transform ${transition.base}, box-shadow ${transition.base}`,
 };
+
+// Standard column-label row above every data table's body rows. Spread this
+// into the header row's style, then add `padding` locally — that's the one
+// property with a real reason to vary: full-bleed card-as-table screens
+// (Vendors, MsmeDeadlines, AuditTrail, Reports) use a larger inset; tables
+// nested inside an already-padded Card (VendorProfile, Settings, Dashboard's
+// Plant breakdown) use a smaller one since the Card provides the outer
+// padding already.
+export const tableHeader = {
+  fontSize: 11.5,
+  fontWeight: 700,
+  color: colors.faint,
+  background: colors.surfaceSunk,
+  borderBottom: `1px solid ${colors.border}`,
+} as const;

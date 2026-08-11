@@ -12,7 +12,7 @@ import { useAuth } from '../auth';
 import Card from '../components/Card';
 import Badge from '../components/Badge';
 import { SEVERITY_META } from './Alerts';
-import { colors, radius, type, chart } from '../theme';
+import { colors, radius, type, chart, tableHeader } from '../theme';
 
 // Reuses Alerts' SEVERITY_META rather than keeping a second copy of
 // severity colors/icons — this panel only ever shows critical/high.
@@ -254,11 +254,8 @@ export default function Dashboard() {
               display: 'grid',
               gridTemplateColumns: '1fr 1fr 1fr',
               gap: 10,
-              fontSize: 11.5,
-              fontWeight: 700,
-              color: colors.faint,
-              paddingBottom: 8,
-              borderBottom: `1px solid ${colors.borderSubtle}`,
+              padding: '10px 4px',
+              ...tableHeader,
             }}
           >
             <div>PLANT</div>

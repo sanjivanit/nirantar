@@ -8,7 +8,7 @@
 import { useState } from 'react';
 import { FileText, FileSpreadsheet, Check, Download, type LucideIcon } from 'lucide-react';
 import Card from '../components/Card';
-import { colors, radius, shadow, type } from '../theme';
+import { colors, radius, shadow, type, tableHeader } from '../theme';
 
 interface ReportDef {
   id: 'form_3cd' | 'mca_msme1';
@@ -173,12 +173,8 @@ export default function Reports() {
             display: 'grid',
             gridTemplateColumns: '1.6fr 1.4fr 1.4fr 1.6fr',
             gap: 10,
-            padding: '12px 24px',
-            fontSize: 11.5,
-            fontWeight: 700,
-            color: colors.faint,
-            borderBottom: `1px solid ${colors.borderSubtle}`,
-            background: colors.surfaceSunk,
+            padding: '14px 24px',
+            ...tableHeader,
           }}
         >
           <div>REPORT</div>
