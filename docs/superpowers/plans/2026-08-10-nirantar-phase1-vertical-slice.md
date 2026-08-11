@@ -321,19 +321,21 @@ nirantar/
 
 ### Task 7: Frontend scaffold + auth + login screen
 
+> **Note (2026-08-11):** `types.ts` matches the real server JSON (`Vendor`/`VendorDetail`/`VerificationAttribute` per Task 6's normalized shape, `User` per spec.md's 5 roles + company/plant scoping), not the plan's flat mock-vendor shape. `/vendors` is a placeholder shell this task — the real screen is Task 8.
+
 **Files:**
 - Create: `web/package.json`, `web/vite.config.ts`, `web/tsconfig.json`, `web/index.html`, `web/src/{main,App,api,auth,types}.tsx/.ts`, `web/src/screens/Login.tsx`
 
 **Interfaces:**
 - Consumes: backend `/api/auth/*`. Produces: `AuthProvider`/`useAuth()`, `api` client, a working `/login` route that stores the token and redirects to `/vendors`.
 
-- [ ] **Step 1: Scaffold** Vite React-TS in `web/`; add `react-router-dom`. `vite.config.ts` proxies `/api` → `http://localhost:8787`.
-- [ ] **Step 2: `types.ts`** — `Vendor`, `User`, `VerifyResult` matching server JSON.
-- [ ] **Step 3: `api.ts`** — `apiFetch(path, opts)` attaching `Authorization` from stored token; `login()`, `getVendors()`, `getVendor(id)`, `verifyVendor(id)`.
-- [ ] **Step 4: `auth.tsx`** — context storing token in `localStorage`, `login/logout`, `user` from `/me` on load.
-- [ ] **Step 5: `Login.tsx`** — reproduce the design's login card (navy background, Inter, the exact copy "Welcome back" / "Your Finance & Compliance workspace"); on submit call `login()`, show inline "That password doesn't match." on 401.
-- [ ] **Step 6: Manual check** — `npm run dev`, log in as `rohan@suryodaya-auto.com` / `nirantar123`, land on `/vendors`.
-- [ ] **Step 7: Commit** `feat(web): scaffold, auth context, login screen`.
+- [x] **Step 1: Scaffold** Vite React-TS in `web/`; add `react-router-dom`. `vite.config.ts` proxies `/api` → `http://localhost:8787`.
+- [x] **Step 2: `types.ts`** — `Vendor`, `User`, `VerifyResult` matching server JSON.
+- [x] **Step 3: `api.ts`** — `apiFetch(path, opts)` attaching `Authorization` from stored token; `login()`, `getVendors()`, `getVendor(id)`, `verifyVendor(id)`.
+- [x] **Step 4: `auth.tsx`** — context storing token in `localStorage`, `login/logout`, `user` from `/me` on load.
+- [x] **Step 5: `Login.tsx`** — reproduce the design's login card (navy background, Inter, the exact copy "Welcome back" / "Your Finance & Compliance workspace"); on submit call `login()`, show inline "That password doesn't match." on 401.
+- [x] **Step 6: Manual check** — `npm run dev`, log in as `rohan@suryodaya-auto.com` / `nirantar123`, land on `/vendors`.
+- [x] **Step 7: Commit** `feat(web): scaffold, auth context, login screen`.
 
 ---
 
