@@ -341,6 +341,8 @@ nirantar/
 
 ### Task 8: Frontend Vendors list + Vendor profile with live GST re-verify
 
+> **Note (2026-08-11):** VendorProfile shows a real "Verification" table (attribute/value/source/verified/status per row, driven by `verification_attributes`) rather than a flat compliance list, so re-verify visibly updates a specific row. Finance context is an honest "no invoices imported yet" placeholder — `invoices`/`payments` were never seeded (Task 4), so there's no real data to show. Icons are lucide-react throughout (not the design's unicode glyphs). Manually verified end-to-end: login → 14 real vendors → open a vendor → Re-verify against GST → live Setu round-trip → gstin_status row and toast update, confirmed via curl replaying the frontend's exact request and reading back the DB row.
+
 **Files:**
 - Create: `web/src/components/{Sidebar,StatusBadge}.tsx`, `web/src/screens/{Vendors,VendorProfile,Dashboard}.tsx`; modify `App.tsx` for the authed shell + routes.
 
@@ -348,13 +350,13 @@ nirantar/
 - Consumes: `api.getVendors/getVendor/verifyVendor`, `useAuth`.
 - Produces: authed routes `/vendors`, `/vendors/:id`, `/dashboard` inside the navy `Sidebar` shell; redirect to `/login` when unauthenticated.
 
-- [ ] **Step 1: `StatusBadge.tsx`** — the design's `STATUS_META` (bg/fg/border/icon) as a lookup; renders the pill.
-- [ ] **Step 2: `Sidebar.tsx`** — navy sidebar with the `NAV_DEFS` items (Dashboard/Vendors/Alerts/... — non-slice items render but route to a "coming soon" placeholder this phase), current user footer from `useAuth`.
-- [ ] **Step 3: `Vendors.tsx`** — search + plant + status filters (client-side over fetched rows), the table layout from the design (`VENDOR / PLANT / STATUS / LAST VERIFIED`), rows clickable to profile; pagination (page size 8).
-- [ ] **Step 4: `VendorProfile.tsx`** — Identity + Compliance + Finance-context cards from the design; a **"Re-verify against GST"** button that calls `verifyVendor(id)`, shows a spinner, then updates `last_verified` and surfaces the returned `verification` result via a toast.
-- [ ] **Step 5: `App.tsx`** — router, `RequireAuth` wrapper, the shell; `/dashboard` minimal (KPI tiles reading from `/api/vendors` aggregates or a simple placeholder — full dashboard is Phase 2).
-- [ ] **Step 6: Manual end-to-end check** — log in → see 14 real vendors from Supabase → open `Anand Precision Tools` → click "Re-verify against GST" → observe a live Setu round-trip and a new `audit_log` row (`select * from audit_log order by at desc limit 1;`).
-- [ ] **Step 7: Commit** `feat(web): vendors list and profile with live GST re-verify`.
+- [x] **Step 1: `StatusBadge.tsx`** — the design's `STATUS_META` (bg/fg/border/icon) as a lookup; renders the pill.
+- [x] **Step 2: `Sidebar.tsx`** — navy sidebar with the `NAV_DEFS` items (Dashboard/Vendors/Alerts/... — non-slice items render but route to a "coming soon" placeholder this phase), current user footer from `useAuth`.
+- [x] **Step 3: `Vendors.tsx`** — search + plant + status filters (client-side over fetched rows), the table layout from the design (`VENDOR / PLANT / STATUS / LAST VERIFIED`), rows clickable to profile; pagination (page size 8).
+- [x] **Step 4: `VendorProfile.tsx`** — Identity + Compliance + Finance-context cards from the design; a **"Re-verify against GST"** button that calls `verifyVendor(id)`, shows a spinner, then updates `last_verified` and surfaces the returned `verification` result via a toast.
+- [x] **Step 5: `App.tsx`** — router, `RequireAuth` wrapper, the shell; `/dashboard` minimal (KPI tiles reading from `/api/vendors` aggregates or a simple placeholder — full dashboard is Phase 2).
+- [x] **Step 6: Manual end-to-end check** — log in → see 14 real vendors from Supabase → open `Anand Precision Tools` → click "Re-verify against GST" → observe a live Setu round-trip and a new `audit_log` row (`select * from audit_log order by at desc limit 1;`).
+- [x] **Step 7: Commit** `feat(web): vendors list and profile with live GST re-verify`.
 
 ---
 
