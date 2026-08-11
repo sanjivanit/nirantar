@@ -26,7 +26,7 @@ class ApiError extends Error {
 async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
-    'content-type': 'application/json',
+    ...(opts.body ? { 'content-type': 'application/json' } : {}),
     ...(opts.headers as Record<string, string>),
   };
   if (token) {

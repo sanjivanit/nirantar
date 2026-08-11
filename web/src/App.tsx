@@ -2,6 +2,11 @@ import type { ReactNode } from 'react';
 import { Navigate, Route, BrowserRouter, Routes } from 'react-router-dom';
 import { AuthProvider, useAuth } from './auth';
 import Login from './screens/Login';
+import Dashboard from './screens/Dashboard';
+import Vendors from './screens/Vendors';
+import VendorProfile from './screens/VendorProfile';
+import ComingSoon from './screens/ComingSoon';
+import Sidebar from './components/Sidebar';
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
@@ -10,15 +15,11 @@ function RequireAuth({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-function VendorsPlaceholder() {
-  const { user, logout } = useAuth();
+function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div style={{ padding: 32, fontFamily: "'Inter', system-ui, sans-serif" }}>
-      <p>
-        Signed in as {user?.name} ({user?.role})
-      </p>
-      <p>Vendors list lands in Task 8.</p>
-      <button onClick={logout}>Log out</button>
+    <div style={{ display: 'flex', height: '100vh', width: '100%', overflow: 'hidden', color: '#131B2E', fontSize: 14 }}>
+      <Sidebar />
+      <div style={{ flex: 1, height: '100%', overflowY: 'auto', overflowX: 'hidden', background: '#F6F7F9' }}>{children}</div>
     </div>
   );
 }
@@ -28,14 +29,25 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route
-        path="/vendors"
+        path="/*"
         element={
           <RequireAuth>
-            <VendorsPlaceholder />
+            <AppShell>
+              <Routes>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/vendors" element={<Vendors />} />
+                <Route path="/vendors/:id" element={<VendorProfile />} />
+                <Route path="/alerts" element={<ComingSoon label="Alerts" />} />
+                <Route path="/msme" element={<ComingSoon label="MSME Deadlines" />} />
+                <Route path="/audit" element={<ComingSoon label="Audit Trail" />} />
+                <Route path="/reports" element={<ComingSoon label="Reports" />} />
+                <Route path="/settings" element={<ComingSoon label="Settings" />} />
+                <Route path="*" element={<Navigate to="/vendors" replace />} />
+              </Routes>
+            </AppShell>
           </RequireAuth>
         }
       />
-      <Route path="*" element={<Navigate to="/vendors" replace />} />
     </Routes>
   );
 }
