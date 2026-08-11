@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { MoreVertical } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { colors, radius, shadow, transition } from '../theme';
 
 export interface ActionMenuItem {
   label: string;
@@ -35,10 +36,11 @@ export default function ActionMenu({ items }: { items: ActionMenuItem[] }) {
           width: 28,
           height: 28,
           border: 'none',
-          borderRadius: 6,
-          background: open ? '#F0F2F5' : 'transparent',
-          color: '#8A93A3',
+          borderRadius: radius.sm - 2,
+          background: open ? colors.primary[50] : 'transparent',
+          color: open ? colors.primary[600] : colors.faint,
           cursor: 'pointer',
+          transition: `background ${transition.base}, color ${transition.base}`,
         }}
       >
         <MoreVertical size={16} strokeWidth={2.25} />
@@ -50,10 +52,9 @@ export default function ActionMenu({ items }: { items: ActionMenuItem[] }) {
             top: 'calc(100% + 4px)',
             right: 0,
             minWidth: 200,
-            background: '#fff',
-            border: '1px solid #E4E7EC',
-            borderRadius: 8,
-            boxShadow: '0 8px 20px rgba(16,24,40,0.10)',
+            background: colors.surface,
+            borderRadius: radius.sm,
+            boxShadow: shadow.popover,
             padding: 6,
             zIndex: 30,
           }}
@@ -76,11 +77,12 @@ export default function ActionMenu({ items }: { items: ActionMenuItem[] }) {
                   alignItems: 'center',
                   gap: 8,
                   padding: '8px 10px',
-                  borderRadius: 6,
+                  borderRadius: radius.sm - 2,
                   fontSize: 13,
                   cursor: item.disabled ? 'default' : 'pointer',
-                  color: item.disabled ? '#C7CCD4' : '#3D4552',
-                  background: isHovered ? '#F6F7F9' : 'transparent',
+                  color: item.disabled ? '#C7CCD4' : colors.slate,
+                  background: isHovered ? colors.primary[50] : 'transparent',
+                  transition: `background ${transition.base}`,
                 }}
               >
                 {Icon && <Icon size={14} strokeWidth={2.25} />}
