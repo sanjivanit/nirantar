@@ -7,6 +7,8 @@
 // Real MSME deadline tracking (Piece 5/6) is a later phase.
 import { useState } from 'react';
 import { CircleAlert, CircleCheck, CircleDashed, CircleSlash } from 'lucide-react';
+import Card from '../components/Card';
+import { colors, radius, shadow, type, transition } from '../theme';
 
 type Classification = 'Micro' | 'Small' | 'Medium' | 'Unknown';
 type RowStatus = 'overdue' | 'upcoming' | 'paid' | 'not_applicable' | 'insufficient_data';
@@ -134,12 +136,16 @@ const rows: MsmeRow[] = [
 // Overdue is filled solid (white on red) as the most urgent state — same
 // treatment as "Critical" severity on Alerts/Dashboard. Upcoming stays the
 // lighter amber tint, matching "High" severity's urgency level.
+// insufficient_data previously shared the old review_required purple
+// (#6B5B95) — moved to the same teal used for Alerts' "medium" severity so
+// this app-wide "purple = ambiguous/unclassified" meaning stays consistent
+// without colliding with the new indigo primary.
 const STATUS_META: Record<RowStatus, { label: string; bg: string; fg: string; border: string; icon: typeof CircleAlert }> = {
   overdue: { label: 'Overdue', bg: '#B23A3A', fg: '#fff', border: '#B23A3A', icon: CircleAlert },
   upcoming: { label: 'Upcoming', bg: '#FBF1E1', fg: '#C48A2E', border: '#EBD3A3', icon: CircleDashed },
   paid: { label: 'Paid on time', bg: '#E7F2EF', fg: '#2E7D6B', border: '#B7DBD2', icon: CircleCheck },
   not_applicable: { label: 'Not applicable', bg: '#EEF0F3', fg: '#8A94A6', border: '#D8DCE3', icon: CircleSlash },
-  insufficient_data: { label: 'Insufficient data', bg: '#EEEBF4', fg: '#6B5B95', border: '#D6CEE6', icon: CircleDashed },
+  insufficient_data: { label: 'Insufficient data', bg: '#E3F1F3', fg: '#1E7A8C', border: '#BFE1E6', icon: CircleDashed },
 };
 
 const FILTERS: Array<{ value: 'all' | RowStatus; label: string }> = [
@@ -162,41 +168,42 @@ export default function MsmeDeadlines() {
   const totalExposure = [...overdueRows, ...upcomingRows].reduce((sum, r) => sum + r.amount, 0);
 
   return (
-    <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>MSME Payment Deadlines</h1>
-      <p style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>
+    <div style={{ padding: '36px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <h1 style={{ ...type.h1, margin: '0 0 6px', color: colors.ink }}>MSME Payment Deadlines</h1>
+      <p style={{ color: colors.muted, fontSize: 13.5, marginBottom: 24 }}>
         Micro and Small vendor invoices, tracked against the statutory 15/45-day payment deadline.
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 24, maxWidth: 700 }}>
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
-          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Overdue</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#B23A3A' }}>{overdueRows.length}</div>
-        </div>
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
-          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Upcoming</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#C48A2E' }}>{upcomingRows.length}</div>
-        </div>
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
-          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 8 }}>Amount at risk</div>
-          <div style={{ fontSize: 22, fontWeight: 800, color: '#131B2E' }}>{fmtINR(totalExposure)}</div>
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 20, marginBottom: 28, maxWidth: 700 }}>
+        <Card>
+          <div style={{ ...type.label, color: colors.muted, marginBottom: 8 }}>Overdue</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: colors.danger }}>{overdueRows.length}</div>
+        </Card>
+        <Card>
+          <div style={{ ...type.label, color: colors.muted, marginBottom: 8 }}>Upcoming</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: colors.warning }}>{upcomingRows.length}</div>
+        </Card>
+        <Card>
+          <div style={{ ...type.label, color: colors.muted, marginBottom: 8 }}>Amount at risk</div>
+          <div style={{ fontSize: 24, fontWeight: 800, color: colors.ink }}>{fmtINR(totalExposure)}</div>
+        </Card>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, marginBottom: 14, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         {FILTERS.map((f) => (
           <button
             key={f.value}
             onClick={() => setFilter(f.value)}
             style={{
               padding: '7px 14px',
-              borderRadius: 20,
+              borderRadius: radius.pill,
               fontSize: 12.5,
               fontWeight: 600,
               cursor: 'pointer',
-              border: `1px solid ${filter === f.value ? '#1B3A5C' : '#E4E7EC'}`,
-              background: filter === f.value ? '#1B3A5C' : '#fff',
-              color: filter === f.value ? '#fff' : '#5B6472',
+              border: `1px solid ${filter === f.value ? colors.primary[600] : colors.border}`,
+              background: filter === f.value ? colors.primary.gradient : '#fff',
+              color: filter === f.value ? '#fff' : colors.muted,
+              transition: `background ${transition.base}, border-color ${transition.base}`,
             }}
           >
             {f.label}
@@ -204,18 +211,18 @@ export default function MsmeDeadlines() {
         ))}
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ background: colors.surface, borderRadius: radius.lg, overflow: 'hidden', boxShadow: shadow.card }}>
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: '1.8fr 1fr 1fr 1.1fr 1fr 1.3fr',
             gap: 10,
-            padding: '12px 20px',
+            padding: '14px 24px',
             fontSize: 11.5,
             fontWeight: 700,
-            color: '#8A93A3',
-            borderBottom: '1px solid #E4E7EC',
-            background: '#FAFBFC',
+            color: colors.faint,
+            borderBottom: `1px solid ${colors.border}`,
+            background: colors.surfaceSunk,
           }}
         >
           <div>VENDOR</div>
@@ -230,27 +237,27 @@ export default function MsmeDeadlines() {
           const meta = STATUS_META[r.status];
           const Icon = meta.icon;
           return (
-            <div key={r.id} style={{ borderBottom: '1px solid #F0F2F5' }}>
+            <div key={r.id} style={{ borderBottom: `1px solid ${colors.borderSubtle}` }}>
               <div
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1.8fr 1fr 1fr 1.1fr 1fr 1.3fr',
                   gap: 10,
-                  padding: '14px 20px',
+                  padding: '15px 24px',
                   fontSize: 13,
                   alignItems: 'center',
                 }}
               >
                 <div>
                   <div style={{ fontWeight: 600 }}>{r.vendor_name}</div>
-                  <div style={{ fontSize: 11.5, color: '#8A93A3' }}>
+                  <div style={{ fontSize: 11.5, color: colors.faint }}>
                     {r.plant} · {r.invoice_number}
                   </div>
                 </div>
-                <div style={{ color: '#5B6472' }}>{r.classification}</div>
+                <div style={{ color: colors.muted }}>{r.classification}</div>
                 <div style={{ fontWeight: 600, textAlign: 'right' }}>{fmtINR(r.amount)}</div>
-                <div style={{ color: '#5B6472', fontSize: 12.5 }}>{r.due_date ?? '—'}</div>
-                <div style={{ color: '#8A93A3', fontSize: 12.5 }}>{r.deadline_days ? `${r.deadline_days} days` : '—'}</div>
+                <div style={{ color: colors.muted, fontSize: 12.5 }}>{r.due_date ?? '—'}</div>
+                <div style={{ color: colors.faint, fontSize: 12.5 }}>{r.deadline_days ? `${r.deadline_days} days` : '—'}</div>
                 <div>
                   <span
                     style={{
@@ -258,7 +265,7 @@ export default function MsmeDeadlines() {
                       alignItems: 'center',
                       gap: 5,
                       padding: '3px 9px',
-                      borderRadius: 20,
+                      borderRadius: radius.pill,
                       fontSize: 11.5,
                       fontWeight: 500,
                       background: meta.bg,
@@ -272,15 +279,15 @@ export default function MsmeDeadlines() {
                   </span>
                 </div>
               </div>
-              <div style={{ padding: '0 20px 14px', fontSize: 12, color: '#8A93A3', lineHeight: 1.5 }}>{r.note}</div>
+              <div style={{ padding: '0 24px 15px', fontSize: 12, color: colors.faint, lineHeight: 1.5 }}>{r.note}</div>
             </div>
           );
         })}
 
         {filtered.length === 0 && (
           <div style={{ padding: 48, textAlign: 'center' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6 }}>No invoices match this filter</div>
-            <p style={{ color: '#8A93A3', fontSize: 13, margin: 0 }}>Try a different status.</p>
+            <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 6, color: colors.ink }}>No invoices match this filter</div>
+            <p style={{ color: colors.faint, fontSize: 13, margin: 0 }}>Try a different status.</p>
           </div>
         )}
       </div>
