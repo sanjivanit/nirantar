@@ -5,7 +5,7 @@
 // see the full Alerts and MSME Deadlines screens for their own data.
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, AlertTriangle, CalendarClock, Building2, Bell, TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
+import { ArrowRight, AlertTriangle, Building2, Bell, TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
 import { getVendors } from '../api';
 import type { Vendor } from '../types';
 import { useAuth } from '../auth';
@@ -231,12 +231,9 @@ export default function Dashboard() {
                   borderBottom: `1px solid ${colors.divider}`,
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 9, minWidth: 0 }}>
-                  <CalendarClock size={15} strokeWidth={2.25} color={urgent} style={{ flex: 'none' }} />
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontWeight: 600, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{i.vendor_name}</div>
-                    <div style={{ color: colors.faint, fontSize: 11.5 }}>{i.plant}</div>
-                  </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontWeight: 600, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{i.vendor_name}</div>
+                  <div style={{ color: colors.faint, fontSize: 11.5 }}>{i.plant}</div>
                 </div>
                 <div style={{ fontSize: 12, fontWeight: 700, color: urgent }}>{i.when}</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: colors.ink, textAlign: 'right' }}>{i.amount}</div>
