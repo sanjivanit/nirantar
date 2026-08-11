@@ -186,6 +186,7 @@ export default function Alerts() {
   const [statusFilter, setStatusFilter] = useState<'all' | AlertStatus>('all');
   const [actionTarget, setActionTarget] = useState<{ id: number; action: AlertStatus } | null>(null);
   const [reason, setReason] = useState('');
+  const [hoveredAction, setHoveredAction] = useState<{ id: number; action: AlertStatus } | null>(null);
 
   const filtered = statusFilter === 'all' ? alerts : alerts.filter((a) => a.status === statusFilter);
 
@@ -273,28 +274,34 @@ export default function Alerts() {
                 <div style={{ color: '#8A93A3', fontSize: 11.5 }}>{a.escalation_deadline}</div>
                 {!isFinal && (
                   <div style={{ display: 'flex', gap: 8 }}>
-                    {ACTIONS.map((act) => (
-                      <button
-                        key={act.action}
-                        onClick={() => openActionForm(a.id, act.action)}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 5,
-                          padding: '6px 12px',
-                          borderRadius: 7,
-                          fontSize: 12,
-                          fontWeight: 600,
-                          cursor: 'pointer',
-                          border: '1px solid #E4E7EC',
-                          background: '#fff',
-                          color: '#131B2E',
-                        }}
-                      >
-                        <act.icon size={13} strokeWidth={2.25} />
-                        {act.label}
-                      </button>
-                    ))}
+                    {ACTIONS.map((act) => {
+                      const actMeta = STATUS_META[act.action];
+                      const isHovered = hoveredAction?.id === a.id && hoveredAction.action === act.action;
+                      return (
+                        <button
+                          key={act.action}
+                          onClick={() => openActionForm(a.id, act.action)}
+                          onMouseEnter={() => setHoveredAction({ id: a.id, action: act.action })}
+                          onMouseLeave={() => setHoveredAction(null)}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 5,
+                            padding: '6px 12px',
+                            borderRadius: 7,
+                            fontSize: 12,
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            border: `1px solid ${isHovered ? actMeta.border : '#E4E7EC'}`,
+                            background: isHovered ? actMeta.bg : '#fff',
+                            color: isHovered ? actMeta.fg : '#131B2E',
+                          }}
+                        >
+                          <act.icon size={13} strokeWidth={2.25} />
+                          {act.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>

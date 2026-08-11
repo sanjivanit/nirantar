@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { getVendors } from '../api';
+import { Search, X, ChevronLeft, ChevronRight, Eye, RefreshCw, Check, AlertTriangle } from 'lucide-react';
+import { getVendors, verifyVendor } from '../api';
 import type { Vendor, VendorStatus } from '../types';
 import StatusBadge, { STATUS_META } from '../components/StatusBadge';
 import Dropdown from '../components/Dropdown';
+import ActionMenu from '../components/ActionMenu';
 import { fmtRelative } from '../format';
 
 const PLANTS = ['Pune', 'Nashik', 'Chennai', 'Rajkot'];
@@ -18,10 +19,28 @@ export default function Vendors() {
   const [plantFilter, setPlantFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [page, setPage] = useState(0);
+  const [verifyingId, setVerifyingId] = useState<number | null>(null);
+  const [toast, setToast] = useState<{ variant: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     getVendors().then(setVendors);
   }, []);
+
+  async function handleRowVerify(v: Vendor) {
+    setVerifyingId(v.id);
+    setToast(null);
+    try {
+      await verifyVendor(v.id);
+      const fresh = await getVendors();
+      setVendors(fresh);
+      setToast({ variant: 'success', message: `${v.legal_name} re-verified against GST.` });
+    } catch {
+      setToast({ variant: 'error', message: `Re-verification failed for ${v.legal_name}.` });
+    } finally {
+      setVerifyingId(null);
+      setTimeout(() => setToast(null), 4000);
+    }
+  }
 
   const filtered = useMemo(() => {
     if (!vendors) return [];
@@ -48,7 +67,7 @@ export default function Vendors() {
   }
 
   return (
-    <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
       <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>Vendors</h1>
       <div style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>
         {vendors ? `${filtered.length} shown` : 'Loading…'}
@@ -121,7 +140,7 @@ export default function Vendors() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '2fr 1.3fr 0.9fr 1.3fr 1fr',
+                gridTemplateColumns: '2fr 1.3fr 0.9fr 1.3fr 1fr 0.3fr',
                 gap: 10,
                 padding: '12px 20px',
                 fontSize: 11.5,
@@ -136,6 +155,7 @@ export default function Vendors() {
               <div>PLANT</div>
               <div>STATUS</div>
               <div>LAST VERIFIED</div>
+              <div />
             </div>
             {paged.map((v) => (
               <div
@@ -143,7 +163,7 @@ export default function Vendors() {
                 onClick={() => navigate(`/vendors/${v.id}`)}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '2fr 1.3fr 0.9fr 1.3fr 1fr',
+                  gridTemplateColumns: '2fr 1.3fr 0.9fr 1.3fr 1fr 0.3fr',
                   gap: 10,
                   padding: '14px 20px',
                   fontSize: 13,
@@ -159,6 +179,19 @@ export default function Vendors() {
                   <StatusBadge status={v.status} />
                 </div>
                 <div style={{ color: '#8A93A3', fontSize: 12 }}>{fmtRelative(v.last_verified_at)}</div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <ActionMenu
+                    items={[
+                      { label: 'View profile', icon: Eye, onClick: () => navigate(`/vendors/${v.id}`) },
+                      {
+                        label: verifyingId === v.id ? 'Re-verifying…' : 'Re-verify against GST',
+                        icon: RefreshCw,
+                        disabled: verifyingId === v.id,
+                        onClick: () => handleRowVerify(v),
+                      },
+                    ]}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -183,6 +216,31 @@ export default function Vendors() {
           >
             Clear filters
           </span>
+        </div>
+      )}
+
+      {toast && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            background: toast.variant === 'success' ? '#E7F2EF' : '#F8E9E9',
+            color: toast.variant === 'success' ? '#2E7D6B' : '#B23A3A',
+            border: `1px solid ${toast.variant === 'success' ? '#B7DBD2' : '#E9BFBF'}`,
+            padding: '12px 18px',
+            borderRadius: 9,
+            fontSize: 13,
+            fontWeight: 600,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            maxWidth: 340,
+          }}
+        >
+          {toast.variant === 'success' ? <Check size={16} strokeWidth={2.25} /> : <AlertTriangle size={16} strokeWidth={2.25} />}
+          {toast.message}
         </div>
       )}
     </div>
