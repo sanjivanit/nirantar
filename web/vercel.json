@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://recollect-parting-defiance.ngrok-free.dev/api/:path*"
+      "destination": "https://server-eight-murex-39.vercel.app/api/:path*"
     }
   ]
 }
