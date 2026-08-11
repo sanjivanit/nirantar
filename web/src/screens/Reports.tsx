@@ -7,6 +7,8 @@
 // generation (Piece 9) is a later phase.
 import { useState } from 'react';
 import { FileText, FileSpreadsheet, Check, Download, type LucideIcon } from 'lucide-react';
+import Card from '../components/Card';
+import { colors, radius, shadow, type } from '../theme';
 
 interface ReportDef {
   id: 'form_3cd' | 'mca_msme1';
@@ -72,11 +74,11 @@ export default function Reports() {
   }
 
   return (
-    <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>Export &amp; Reports</h1>
-      <p style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>Statutory filing exports, generated from checked, permanent records.</p>
+    <div style={{ padding: '36px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
+      <h1 style={{ ...type.h1, margin: '0 0 6px', color: colors.ink }}>Export &amp; Reports</h1>
+      <p style={{ color: colors.muted, fontSize: 13.5, marginBottom: 24 }}>Statutory filing exports, generated from checked, permanent records.</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 28 }}>
         {reportDefs.map((r) => {
           const Icon = r.icon;
           const isGenerating = generating === r.id;
@@ -85,34 +87,34 @@ export default function Reports() {
           const lastBy = generated?.by ?? r.last_generated_by;
 
           return (
-            <div key={r.id} style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, display: 'flex', flexDirection: 'column' }}>
+            <Card key={r.id} padding={22} style={{ display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                 <div
                   style={{
                     width: 34,
                     height: 34,
-                    borderRadius: 9,
-                    background: '#EEF1F5',
+                    borderRadius: radius.sm,
+                    background: colors.primary[50],
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flex: 'none',
                   }}
                 >
-                  <Icon size={17} strokeWidth={2.25} color="#1B3A5C" />
+                  <Icon size={17} strokeWidth={2.25} color={colors.primary[600]} />
                 </div>
                 <div style={{ fontWeight: 700, fontSize: 14.5 }}>{r.name}</div>
               </div>
 
-              <p style={{ fontSize: 12.5, color: '#5B6472', lineHeight: 1.5, margin: '0 0 16px', flex: 1 }}>{r.description}</p>
+              <p style={{ fontSize: 12.5, color: colors.muted, lineHeight: 1.5, margin: '0 0 16px', flex: 1 }}>{r.description}</p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12.5, marginBottom: 16, paddingTop: 14, borderTop: '1px solid #F0F2F5' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 12.5, marginBottom: 16, paddingTop: 14, borderTop: `1px solid ${colors.borderSubtle}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#8A93A3' }}>Period</span>
+                  <span style={{ color: colors.faint }}>Period</span>
                   <span style={{ fontWeight: 600 }}>{r.period}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#8A93A3' }}>Last generated</span>
+                  <span style={{ color: colors.faint }}>Last generated</span>
                   <span style={{ fontWeight: 600, textAlign: 'right' }}>{lastAt ? `${lastAt}${lastBy ? ` · ${lastBy}` : ''}` : 'Never'}</span>
                 </div>
               </div>
@@ -125,11 +127,11 @@ export default function Reports() {
                     flex: 1,
                     padding: '10px 16px',
                     border: 'none',
-                    borderRadius: 8,
+                    borderRadius: radius.sm,
                     fontSize: 13,
                     fontWeight: 700,
                     cursor: isGenerating ? 'default' : 'pointer',
-                    background: 'linear-gradient(135deg, #1B3A5C 0%, #2E5C87 100%)',
+                    background: colors.primary.gradient,
                     color: '#fff',
                     opacity: isGenerating ? 0.7 : 1,
                   }}
@@ -145,8 +147,8 @@ export default function Reports() {
                       alignItems: 'center',
                       gap: 6,
                       padding: '10px 14px',
-                      border: '1px solid #E4E7EC',
-                      borderRadius: 8,
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: radius.sm,
                       fontSize: 13,
                       fontWeight: 600,
                       cursor: 'not-allowed',
@@ -159,24 +161,24 @@ export default function Reports() {
                   </button>
                 )}
               </div>
-            </div>
+            </Card>
           );
         })}
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', fontSize: 13, fontWeight: 700, color: '#131B2E', borderBottom: '1px solid #E4E7EC' }}>Export history</div>
+      <div style={{ background: colors.surface, borderRadius: radius.lg, overflow: 'hidden', boxShadow: shadow.card }}>
+        <div style={{ padding: '16px 24px', fontSize: 13.5, fontWeight: 700, color: colors.ink, borderBottom: `1px solid ${colors.border}` }}>Export history</div>
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: '1.6fr 1.4fr 1.4fr 1.6fr',
             gap: 10,
-            padding: '10px 20px',
+            padding: '12px 24px',
             fontSize: 11.5,
             fontWeight: 700,
-            color: '#8A93A3',
-            borderBottom: '1px solid #F0F2F5',
-            background: '#FAFBFC',
+            color: colors.faint,
+            borderBottom: `1px solid ${colors.borderSubtle}`,
+            background: colors.surfaceSunk,
           }}
         >
           <div>REPORT</div>
@@ -191,16 +193,16 @@ export default function Reports() {
               display: 'grid',
               gridTemplateColumns: '1.6fr 1.4fr 1.4fr 1.6fr',
               gap: 10,
-              padding: '13px 20px',
+              padding: '15px 24px',
               fontSize: 12.5,
-              borderBottom: '1px solid #F7F8FA',
+              borderBottom: `1px solid ${colors.divider}`,
               alignItems: 'center',
             }}
           >
             <div style={{ fontWeight: 600 }}>{h.report}</div>
-            <div style={{ color: '#5B6472' }}>{h.period}</div>
-            <div style={{ color: '#8A93A3' }}>{h.generated_at}</div>
-            <div style={{ color: '#3D4552' }}>{h.generated_by}</div>
+            <div style={{ color: colors.muted }}>{h.period}</div>
+            <div style={{ color: colors.faint }}>{h.generated_at}</div>
+            <div style={{ color: colors.slate }}>{h.generated_by}</div>
           </div>
         ))}
       </div>
@@ -215,13 +217,13 @@ export default function Reports() {
             alignItems: 'center',
             gap: 8,
             background: '#E7F2EF',
-            color: '#2E7D6B',
+            color: colors.success,
             border: '1px solid #B7DBD2',
             padding: '12px 18px',
-            borderRadius: 9,
+            borderRadius: radius.sm + 1,
             fontSize: 13,
             fontWeight: 600,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            boxShadow: shadow.popover,
             maxWidth: 340,
           }}
         >
