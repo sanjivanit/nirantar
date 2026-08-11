@@ -153,7 +153,7 @@ export default function Dashboard() {
       </h1>
       <p style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>Suryodaya Autocomponents · Pune, Nashik, Chennai, Rajkot</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, marginBottom: 28, alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 28, alignItems: 'start' }}>
         <Card>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <IconChip icon={AlertTriangle} bg="#FBF1E1" color="#C48A2E" />
@@ -186,32 +186,30 @@ export default function Dashboard() {
           <div style={{ color: '#B23A3A', fontSize: 12, marginTop: 8, fontWeight: 700 }}>{criticalOpenAlertCount} critical</div>
         </Card>
 
-        <div style={{ gridColumn: 'span 2', background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
-          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 12 }}>MSME payments at risk</div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-            <div style={{ fontSize: 22, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.3px' }}>{msmeExposureTotal}</div>
+        <Card>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+            <SemicircleGauge
+              segments={[
+                { fraction: overdueFraction, color: '#B23A3A' },
+                { fraction: upcomingFraction, color: '#C48A2E' },
+              ]}
+              size={72}
+            />
             <TrendPill {...msmeExposureTrend} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 12, marginBottom: 16 }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#B23A3A', fontWeight: 700 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#B23A3A' }} />
+          <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 6 }}>MSME payments at risk</div>
+          <div style={{ fontSize: 22, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.3px' }}>{msmeExposureTotal}</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 11.5, marginTop: 8 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#B23A3A', fontWeight: 700 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#B23A3A' }} />
               {msmeOverdueCount} overdue
             </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#C48A2E', fontWeight: 700 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#C48A2E' }} />
+            <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#C48A2E', fontWeight: 700 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#C48A2E' }} />
               1 upcoming
             </span>
           </div>
-
-          <SemicircleGauge
-            segments={[
-              { fraction: overdueFraction, color: '#B23A3A' },
-              { fraction: upcomingFraction, color: '#C48A2E' },
-            ]}
-            size={100}
-          />
-        </div>
+        </Card>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
