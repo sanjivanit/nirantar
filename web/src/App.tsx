@@ -8,6 +8,7 @@ import VendorProfile from './screens/VendorProfile';
 import Alerts from './screens/Alerts';
 import MsmeDeadlines from './screens/MsmeDeadlines';
 import AuditTrail from './screens/AuditTrail';
+import Reports from './screens/Reports';
 import ComingSoon from './screens/ComingSoon';
 import Sidebar from './components/Sidebar';
 
@@ -43,7 +44,7 @@ function AppRoutes() {
                 <Route path="/alerts" element={<Alerts />} />
                 <Route path="/msme" element={<MsmeDeadlines />} />
                 <Route path="/audit" element={<AuditTrail />} />
-                <Route path="/reports" element={<ComingSoon label="Reports" />} />
+                <Route path="/reports" element={<Reports />} />
                 <Route path="/settings" element={<ComingSoon label="Settings" />} />
                 <Route path="*" element={<Navigate to="/vendors" replace />} />
               </Routes>
