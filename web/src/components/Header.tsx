@@ -38,7 +38,7 @@ export default function Header() {
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: 20,
-        padding: '0 28px',
+        padding: '0 40px',
         background: '#fff',
         borderBottom: '1px solid #E4E7EC',
         fontFamily: "'Inter', system-ui, sans-serif",
@@ -70,27 +70,27 @@ export default function Header() {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 22 }}>
-        <div style={{ position: 'relative', display: 'flex', flex: 'none' }}>
+        <div style={{ position: 'relative', width: 19, height: 19, flex: 'none' }}>
           <Bell size={19} strokeWidth={2.25} color="#5B6472" />
           {openAlertCount > 0 && (
             <span
               style={{
                 position: 'absolute',
-                top: -5,
-                right: -6,
+                top: -6,
+                right: -7,
+                boxSizing: 'border-box',
                 minWidth: 16,
                 height: 16,
-                padding: '0 4px',
+                padding: '0 3px',
                 borderRadius: 20,
                 background: '#B23A3A',
                 color: '#fff',
-                fontSize: 10,
+                fontSize: 9.5,
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: '2px solid #fff',
-                boxSizing: 'content-box',
+                border: '1.5px solid #fff',
               }}
             >
               {openAlertCount}

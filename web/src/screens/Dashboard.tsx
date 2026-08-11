@@ -147,15 +147,16 @@ export default function Dashboard() {
   const verifiedClean = vendors ? vendors.length - needsAttention : 0;
   const overdueFraction = msmeOverdueAmount / msmeExposureAmount;
   const upcomingFraction = msmeUpcomingAmount / msmeExposureAmount;
+  const firstName = user?.name?.split(' ')[0] ?? '';
 
   return (
     <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
       <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>
-        Welcome back{user?.name ? `, ${user.name}` : ''}
+        Welcome back{firstName ? `, ${firstName}` : ''}
       </h1>
       <p style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>Suryodaya Autocomponents · Pune, Nashik, Chennai, Rajkot</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 16, marginBottom: 28, alignItems: 'start' }}>
         <Card>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
             <IconChip icon={AlertTriangle} bg="#FBF1E1" color="#C48A2E" />
@@ -190,39 +191,38 @@ export default function Dashboard() {
 
         <div style={{ gridColumn: 'span 2', background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 20 }}>
           <div style={{ color: '#5B6472', fontSize: 12, fontWeight: 600, marginBottom: 12 }}>MSME payments at risk</div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.3px' }}>{msmeExposureTotal}</div>
+            <TrendPill {...msmeExposureTrend} />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, fontSize: 12, marginBottom: 16 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#B23A3A', fontWeight: 700 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#B23A3A' }} />
+              {msmeOverdueCount} overdue
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#C48A2E', fontWeight: 700 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#C48A2E' }} />
+              1 upcoming
+            </span>
+          </div>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
             <SemicircleGauge
               segments={[
                 { fraction: overdueFraction, color: '#B23A3A' },
                 { fraction: upcomingFraction, color: '#C48A2E' },
               ]}
-              size={104}
+              size={100}
             />
-            <div style={{ flex: 'none' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div style={{ fontSize: 22, fontWeight: 800, color: '#131B2E', letterSpacing: '-0.3px' }}>{msmeExposureTotal}</div>
-                <TrendPill {...msmeExposureTrend} />
-              </div>
-              <div style={{ fontSize: 11, color: '#8A93A3', fontWeight: 600, marginTop: 2 }}>at risk</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 12, marginTop: 10 }}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#B23A3A', fontWeight: 700 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#B23A3A' }} />
-                  {msmeOverdueCount} overdue
-                </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: 5, color: '#C48A2E', fontWeight: 700 }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#C48A2E' }} />
-                  1 upcoming
-                </span>
-              </div>
-            </div>
             <div style={{ flex: 1, minWidth: 0, borderLeft: '1px solid #F0F2F5', paddingLeft: 20 }}>
               <div style={{ fontSize: 11, fontWeight: 700, color: '#8A93A3', marginBottom: 8 }}>VENDOR STATUS</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {BREAKDOWN_STATUSES.map((s) => {
                   const meta = STATUS_META[s];
                   const count = vendors ? vendors.filter((v) => v.status === s).length : 0;
                   return (
-                    <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12 }}>
+                    <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 12, whiteSpace: 'nowrap' }}>
                       <span style={{ width: 7, height: 7, borderRadius: '50%', background: meta.fg, flex: 'none' }} />
                       <span style={{ color: '#5B6472' }}>{meta.label}</span>
                       <span style={{ color: meta.fg, fontWeight: 700, marginLeft: 'auto' }}>{vendors ? count : '—'}</span>
