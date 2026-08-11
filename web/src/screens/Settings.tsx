@@ -10,6 +10,8 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, ShieldCheck, Mail, Bell, Plug, Database, RefreshCw, type LucideIcon } from 'lucide-react';
+import Card from '../components/Card';
+import { colors, radius, type, transition } from '../theme';
 
 type Role = 'plant_finance' | 'group_compliance' | 'group_procurement' | 'cfo' | 'admin';
 
@@ -21,9 +23,13 @@ const ROLE_LABEL: Record<Role, string> = {
   admin: 'Admin',
 };
 
+// group_compliance previously shared the old review_required purple
+// (#6B5B95) — moved to teal, same reasoning as the other former users of
+// that color: it's too close to the new indigo primary to stay
+// distinguishable at a glance.
 const ROLE_BADGE: Record<Role, { bg: string; fg: string; border: string }> = {
   plant_finance: { bg: '#EEF1F5', fg: '#3D5A80', border: '#CBD8E8' },
-  group_compliance: { bg: '#EEEBF4', fg: '#6B5B95', border: '#D6CEE6' },
+  group_compliance: { bg: '#E3F1F3', fg: '#1E7A8C', border: '#BFE1E6' },
   group_procurement: { bg: '#FBF1E1', fg: '#C48A2E', border: '#EBD3A3' },
   cfo: { bg: '#E7F2EF', fg: '#2E7D6B', border: '#B7DBD2' },
   admin: { bg: '#F8E9E9', fg: '#B23A3A', border: '#E9BFBF' },
@@ -65,10 +71,10 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
         borderRadius: 20,
         border: 'none',
         cursor: 'pointer',
-        background: checked ? '#1B3A5C' : '#D8DCE3',
+        background: checked ? colors.primary[600] : '#D8DCE3',
         position: 'relative',
         flex: 'none',
-        transition: 'background 0.15s',
+        transition: `background ${transition.base}`,
       }}
     >
       <span
@@ -90,12 +96,14 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
 
 function SectionCard({ icon: Icon, title, children }: { icon: LucideIcon; title: string; children: ReactNode }) {
   return (
-    <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginBottom: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
-        <Icon size={16} strokeWidth={2.25} color="#1B3A5C" />
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E' }}>{title}</div>
-      </div>
-      {children}
+    <div style={{ marginBottom: 20 }}>
+      <Card padding={22}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, paddingBottom: 10, borderBottom: `1px solid ${colors.borderSubtle}` }}>
+          <Icon size={16} strokeWidth={2.25} color={colors.primary[600]} />
+          <div style={{ ...type.cardTitle, color: colors.ink }}>{title}</div>
+        </div>
+        {children}
+      </Card>
     </div>
   );
 }
@@ -107,39 +115,39 @@ export default function Settings() {
   const [notifMsme, setNotifMsme] = useState(false);
 
   return (
-    <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
-      <h1 style={{ fontSize: 22, fontWeight: 700, margin: '0 0 4px', letterSpacing: '-0.3px' }}>Settings</h1>
-      <p style={{ color: '#5B6472', fontSize: 13, marginBottom: 20 }}>Company profile, users, notifications, and integrations.</p>
+    <div style={{ padding: '36px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <h1 style={{ ...type.h1, margin: '0 0 6px', color: colors.ink }}>Settings</h1>
+      <p style={{ color: colors.muted, fontSize: 13.5, marginBottom: 24 }}>Company profile, users, notifications, and integrations.</p>
 
       <SectionCard icon={Building2} title="Company profile">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13, maxWidth: 480, marginBottom: 18 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#8A93A3' }}>Company name</span>
+            <span style={{ color: colors.faint }}>Company name</span>
             <span style={{ fontWeight: 600 }}>Suryodaya Autocomponents Pvt Ltd</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#8A93A3' }}>CIN</span>
+            <span style={{ color: colors.faint }}>CIN</span>
             <span style={{ fontWeight: 600, fontFamily: 'ui-monospace,monospace' }}>U29100MH2014PTC256789</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: '#8A93A3' }}>PAN</span>
+            <span style={{ color: colors.faint }}>PAN</span>
             <span style={{ fontWeight: 600, fontFamily: 'ui-monospace,monospace' }}>AABCS1234C</span>
           </div>
         </div>
 
-        <div style={{ fontSize: 12, fontWeight: 700, color: '#8A93A3', marginBottom: 10 }}>PLANTS</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: colors.faint, marginBottom: 10 }}>PLANTS</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 10 }}>
           {PLANTS.map((p) => (
-            <div key={p.name} style={{ background: '#FAFBFC', border: '1px solid #F0F2F5', borderRadius: 9, padding: '12px 14px' }}>
+            <div key={p.name} style={{ background: colors.surfaceSunk, border: `1px solid ${colors.borderSubtle}`, borderRadius: radius.sm, padding: '12px 14px' }}>
               <div style={{ fontWeight: 700, fontSize: 13.5 }}>{p.name}</div>
-              <div style={{ color: '#8A93A3', fontSize: 11.5, marginTop: 2 }}>{p.state}</div>
+              <div style={{ color: colors.faint, fontSize: 11.5, marginTop: 2 }}>{p.state}</div>
             </div>
           ))}
         </div>
       </SectionCard>
 
       <SectionCard icon={ShieldCheck} title="Users &amp; roles">
-        <div style={{ border: '1px solid #E4E7EC', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ border: `1px solid ${colors.border}`, borderRadius: radius.md, overflow: 'hidden' }}>
           <div
             style={{
               display: 'grid',
@@ -148,9 +156,9 @@ export default function Settings() {
               padding: '10px 16px',
               fontSize: 11,
               fontWeight: 700,
-              color: '#8A93A3',
-              borderBottom: '1px solid #E4E7EC',
-              background: '#FAFBFC',
+              color: colors.faint,
+              borderBottom: `1px solid ${colors.border}`,
+              background: colors.surfaceSunk,
             }}
           >
             <div>NAME</div>
@@ -170,18 +178,18 @@ export default function Settings() {
                   gap: 10,
                   padding: '12px 16px',
                   fontSize: 12.5,
-                  borderBottom: '1px solid #F7F8FA',
+                  borderBottom: `1px solid ${colors.divider}`,
                   alignItems: 'center',
                 }}
               >
                 <div style={{ fontWeight: 600 }}>{u.name}</div>
-                <div style={{ color: '#8A93A3' }}>{u.email}</div>
+                <div style={{ color: colors.faint }}>{u.email}</div>
                 <div>
                   <span
                     style={{
                       display: 'inline-block',
                       padding: '3px 9px',
-                      borderRadius: 20,
+                      borderRadius: radius.pill,
                       fontSize: 11,
                       fontWeight: 600,
                       background: badge.bg,
@@ -192,8 +200,8 @@ export default function Settings() {
                     {ROLE_LABEL[u.role]}
                   </span>
                 </div>
-                <div style={{ color: '#5B6472' }}>{u.plant ?? 'Group'}</div>
-                <div style={{ color: u.status === 'active' ? '#2E7D6B' : '#8A93A3', fontWeight: 600 }}>
+                <div style={{ color: colors.muted }}>{u.plant ?? 'Group'}</div>
+                <div style={{ color: u.status === 'active' ? colors.success : colors.faint, fontWeight: 600 }}>
                   {u.status === 'active' ? 'Active' : 'Invited'}
                 </div>
               </div>
@@ -207,13 +215,13 @@ export default function Settings() {
             alignItems: 'center',
             gap: 6,
             padding: '9px 16px',
-            border: '1px solid #E4E7EC',
-            borderRadius: 8,
+            border: `1px solid ${colors.border}`,
+            borderRadius: radius.sm,
             fontSize: 12.5,
             fontWeight: 600,
             cursor: 'pointer',
             background: '#fff',
-            color: '#1B3A5C',
+            color: colors.primary[600],
           }}
         >
           <Mail size={13} strokeWidth={2.25} />
@@ -226,21 +234,21 @@ export default function Settings() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 600 }}>Critical alerts</div>
-              <div style={{ fontSize: 12, color: '#8A93A3' }}>Email me immediately when a critical-severity alert is created.</div>
+              <div style={{ fontSize: 12, color: colors.faint }}>Email me immediately when a critical-severity alert is created.</div>
             </div>
             <Toggle checked={notifCritical} onChange={() => setNotifCritical((v) => !v)} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 600 }}>Weekly compliance digest</div>
-              <div style={{ fontSize: 12, color: '#8A93A3' }}>A summary of open alerts and vendor status changes, every Monday.</div>
+              <div style={{ fontSize: 12, color: colors.faint }}>A summary of open alerts and vendor status changes, every Monday.</div>
             </div>
             <Toggle checked={notifDigest} onChange={() => setNotifDigest((v) => !v)} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
             <div>
               <div style={{ fontSize: 13, fontWeight: 600 }}>MSME deadline reminders</div>
-              <div style={{ fontSize: 12, color: '#8A93A3' }}>Notify 3 days before a Micro/Small vendor payment deadline.</div>
+              <div style={{ fontSize: 12, color: colors.faint }}>Notify 3 days before a Micro/Small vendor payment deadline.</div>
             </div>
             <Toggle checked={notifMsme} onChange={() => setNotifMsme((v) => !v)} />
           </div>
@@ -251,7 +259,7 @@ export default function Settings() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600 }}>Setu Data Gateway</div>
-            <div style={{ fontSize: 12, color: '#8A93A3' }}>GSTIN, PAN, and bank-account verification (sandbox environment).</div>
+            <div style={{ fontSize: 12, color: colors.faint }}>GSTIN, PAN, and bank-account verification (sandbox environment).</div>
           </div>
           <span
             style={{
@@ -259,11 +267,11 @@ export default function Settings() {
               alignItems: 'center',
               gap: 6,
               padding: '4px 10px',
-              borderRadius: 20,
+              borderRadius: radius.pill,
               fontSize: 12,
               fontWeight: 600,
               background: '#E7F2EF',
-              color: '#2E7D6B',
+              color: colors.success,
               border: '1px solid #B7DBD2',
             }}
           >
@@ -276,7 +284,7 @@ export default function Settings() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600 }}>Vendor master sync</div>
-            <div style={{ fontSize: 12, color: '#8A93A3' }}>
+            <div style={{ fontSize: 12, color: colors.faint }}>
               Re-checks every vendor against GST and Udyam, and re-runs cross-plant duplicate matching. Last run: 5 hours ago.
             </div>
           </div>
@@ -288,11 +296,11 @@ export default function Settings() {
               gap: 6,
               padding: '10px 16px',
               border: 'none',
-              borderRadius: 8,
+              borderRadius: radius.sm,
               fontSize: 12.5,
               fontWeight: 700,
               cursor: 'pointer',
-              background: 'linear-gradient(135deg, #1B3A5C 0%, #2E5C87 100%)',
+              background: colors.primary.gradient,
               color: '#fff',
               flex: 'none',
               whiteSpace: 'nowrap',
