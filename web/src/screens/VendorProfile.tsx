@@ -4,7 +4,9 @@ import { ArrowLeft, Check, ArrowLeftRight, AlertTriangle, type LucideIcon } from
 import { getVendor, verifyVendor } from '../api';
 import type { VendorDetail } from '../types';
 import StatusBadge from '../components/StatusBadge';
+import Card from '../components/Card';
 import { fmtRelative } from '../format';
+import { colors, radius, type } from '../theme';
 
 const ATTRIBUTE_LABEL: Record<string, string> = {
   legal_name_match: 'Legal name match',
@@ -18,9 +20,9 @@ const ATTRIBUTE_LABEL: Record<string, string> = {
 type ToastVariant = 'success' | 'attention' | 'error';
 
 const TOAST_META: Record<ToastVariant, { bg: string; fg: string; border: string; icon: LucideIcon }> = {
-  success: { bg: '#E7F2EF', fg: '#2E7D6B', border: '#B7DBD2', icon: Check },
-  attention: { bg: '#FBF1E1', fg: '#C48A2E', border: '#EBD3A3', icon: ArrowLeftRight },
-  error: { bg: '#F8E9E9', fg: '#B23A3A', border: '#E9BFBF', icon: AlertTriangle },
+  success: { bg: '#E7F2EF', fg: colors.success, border: '#B7DBD2', icon: Check },
+  attention: { bg: '#FBF1E1', fg: colors.warning, border: '#EBD3A3', icon: ArrowLeftRight },
+  error: { bg: '#F8E9E9', fg: colors.danger, border: '#E9BFBF', icon: AlertTriangle },
 };
 
 export default function VendorProfile() {
@@ -63,22 +65,22 @@ export default function VendorProfile() {
   const udyamAttr = vendor.verification_attributes.find((a) => a.attribute_type === 'udyam_status');
 
   return (
-    <div style={{ padding: '32px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
+    <div style={{ padding: '36px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
       <Link
         to="/vendors"
-        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#5B6472', fontSize: 13, fontWeight: 600, textDecoration: 'none', marginBottom: 16 }}
+        style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: colors.muted, fontSize: 13, fontWeight: 600, textDecoration: 'none', marginBottom: 16 }}
       >
         <ArrowLeft size={15} strokeWidth={2.25} />
         Back to Vendors
       </Link>
 
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 24, gap: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 28, gap: 16 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-            <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, letterSpacing: '-0.3px' }}>{vendor.legal_name}</h1>
+            <h1 style={{ ...type.h1, fontSize: 24, margin: 0, color: colors.ink }}>{vendor.legal_name}</h1>
             <StatusBadge status={vendor.status} />
           </div>
-          <div style={{ color: '#5B6472', fontSize: 13.5 }}>{vendor.plant}</div>
+          <div style={{ color: colors.muted, fontSize: 13.5 }}>{vendor.plant}</div>
         </div>
         <button
           onClick={handleVerify}
@@ -86,11 +88,11 @@ export default function VendorProfile() {
           style={{
             padding: '11px 18px',
             border: 'none',
-            borderRadius: 9,
+            borderRadius: radius.sm + 1,
             fontSize: 13.5,
             fontWeight: 700,
             cursor: verifying ? 'default' : 'pointer',
-            background: 'linear-gradient(135deg, #1B3A5C 0%, #2E5C87 100%)',
+            background: colors.primary.gradient,
             color: '#fff',
             opacity: verifying ? 0.7 : 1,
             flex: 'none',
@@ -101,9 +103,9 @@ export default function VendorProfile() {
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+        <Card padding={22}>
+          <div style={{ ...type.cardTitle, color: colors.ink, marginBottom: 14, paddingBottom: 10, borderBottom: `1px solid ${colors.borderSubtle}` }}>
             Identity
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13 }}>
@@ -113,19 +115,19 @@ export default function VendorProfile() {
             <Row label="Entity status" value={vendor.entity_status} />
             <Row label="Registered address" value={vendor.registered_address} />
           </div>
-        </div>
+        </Card>
 
-        <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
+        <Card padding={22}>
+          <div style={{ ...type.cardTitle, color: colors.ink, marginBottom: 14, paddingBottom: 10, borderBottom: `1px solid ${colors.borderSubtle}` }}>
             Compliance
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 13 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-              <span style={{ color: '#8A93A3' }}>GST status</span>
+              <span style={{ color: colors.faint }}>GST status</span>
               {gstinAttr ? <StatusBadge status={gstinAttr.status} compact /> : <span>—</span>}
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-              <span style={{ color: '#8A93A3' }}>MSME / Udyam status</span>
+              <span style={{ color: colors.faint }}>MSME / Udyam status</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontWeight: 600 }}>{udyamAttr?.value ?? '—'}</span>
                 {udyamAttr && <StatusBadge status={udyamAttr.status} compact />}
@@ -133,109 +135,115 @@ export default function VendorProfile() {
             </div>
             <Row label="Udyam registration number" value={vendor.udyam_registration_number} mono />
           </div>
-        </div>
+        </Card>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginBottom: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 6 }}>Verification</div>
-        <div style={{ color: '#8A93A3', fontSize: 12, marginBottom: 14 }}>
-          Each attribute below is checked independently against its own source of record.
-        </div>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1.3fr 2fr 1.4fr 1fr 1.1fr',
-            gap: 10,
-            padding: '10px 4px',
-            fontSize: 11,
-            fontWeight: 700,
-            color: '#8A93A3',
-            borderBottom: '1px solid #F0F2F5',
-          }}
-        >
-          <div>ATTRIBUTE</div>
-          <div>VALUE</div>
-          <div>SOURCE</div>
-          <div>VERIFIED</div>
-          <div>STATUS</div>
-        </div>
-        {vendor.verification_attributes.map((a) => (
+      <div style={{ marginBottom: 20 }}>
+        <Card padding={22}>
+          <div style={{ ...type.cardTitle, color: colors.ink, marginBottom: 6 }}>Verification</div>
+          <div style={{ color: colors.faint, fontSize: 12, marginBottom: 14 }}>
+            Each attribute below is checked independently against its own source of record.
+          </div>
           <div
-            key={a.attribute_type}
             style={{
               display: 'grid',
               gridTemplateColumns: '1.3fr 2fr 1.4fr 1fr 1.1fr',
               gap: 10,
-              padding: '13px 4px',
-              fontSize: 12.5,
-              borderBottom: '1px solid #F7F8FA',
-              alignItems: 'center',
+              padding: '10px 4px',
+              fontSize: 11,
+              fontWeight: 700,
+              color: colors.faint,
+              borderBottom: `1px solid ${colors.borderSubtle}`,
             }}
           >
-            <div style={{ fontWeight: 600 }}>{ATTRIBUTE_LABEL[a.attribute_type] ?? a.attribute_type}</div>
-            <div style={{ color: '#3D4552' }}>{a.value ?? '—'}</div>
-            <div style={{ color: '#8A93A3' }}>{a.source ?? '—'}</div>
-            <div style={{ color: '#8A93A3' }}>{fmtRelative(a.last_verified_at)}</div>
-            <div>
-              <StatusBadge status={a.status} compact />
-            </div>
+            <div>ATTRIBUTE</div>
+            <div>VALUE</div>
+            <div>SOURCE</div>
+            <div>VERIFIED</div>
+            <div>STATUS</div>
           </div>
-        ))}
-      </div>
-
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginBottom: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 6 }}>Change history</div>
-        {vendor.changes.length === 0 ? (
-          <p style={{ color: '#8A93A3', fontSize: 13, margin: 0 }}>No changes recorded for this vendor yet.</p>
-        ) : (
-          <>
+          {vendor.verification_attributes.map((a) => (
             <div
+              key={a.attribute_type}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '1.3fr 1.6fr 1.6fr 1.4fr 1.2fr',
+                gridTemplateColumns: '1.3fr 2fr 1.4fr 1fr 1.1fr',
                 gap: 10,
-                padding: '10px 4px',
-                fontSize: 11,
-                fontWeight: 700,
-                color: '#8A93A3',
-                borderBottom: '1px solid #F0F2F5',
+                padding: '13px 4px',
+                fontSize: 12.5,
+                borderBottom: `1px solid ${colors.divider}`,
+                alignItems: 'center',
               }}
             >
-              <div>ATTRIBUTE</div>
-              <div>OLD VALUE</div>
-              <div>NEW VALUE</div>
-              <div>SOURCE</div>
-              <div>DETECTED</div>
+              <div style={{ fontWeight: 600 }}>{ATTRIBUTE_LABEL[a.attribute_type] ?? a.attribute_type}</div>
+              <div style={{ color: colors.slate }}>{a.value ?? '—'}</div>
+              <div style={{ color: colors.faint }}>{a.source ?? '—'}</div>
+              <div style={{ color: colors.faint }}>{fmtRelative(a.last_verified_at)}</div>
+              <div>
+                <StatusBadge status={a.status} compact />
+              </div>
             </div>
-            {vendor.changes.map((c) => (
+          ))}
+        </Card>
+      </div>
+
+      <div style={{ marginBottom: 20 }}>
+        <Card padding={22}>
+          <div style={{ ...type.cardTitle, color: colors.ink, marginBottom: 6 }}>Change history</div>
+          {vendor.changes.length === 0 ? (
+            <p style={{ color: colors.faint, fontSize: 13, margin: 0 }}>No changes recorded for this vendor yet.</p>
+          ) : (
+            <>
               <div
-                key={c.id}
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '1.3fr 1.6fr 1.6fr 1.4fr 1.2fr',
                   gap: 10,
-                  padding: '13px 4px',
-                  fontSize: 12.5,
-                  borderBottom: '1px solid #F7F8FA',
-                  alignItems: 'center',
+                  padding: '10px 4px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: colors.faint,
+                  borderBottom: `1px solid ${colors.borderSubtle}`,
                 }}
               >
-                <div style={{ fontWeight: 600 }}>{ATTRIBUTE_LABEL[c.attribute_type] ?? c.attribute_type}</div>
-                <div style={{ color: '#3D4552' }}>{c.old_value ?? '—'}</div>
-                <div style={{ color: '#3D4552' }}>{c.new_value ?? '—'}</div>
-                <div style={{ color: '#8A93A3' }}>{c.source ?? '—'}</div>
-                <div style={{ color: '#8A93A3' }}>{fmtRelative(c.detected_at)}</div>
+                <div>ATTRIBUTE</div>
+                <div>OLD VALUE</div>
+                <div>NEW VALUE</div>
+                <div>SOURCE</div>
+                <div>DETECTED</div>
               </div>
-            ))}
-          </>
-        )}
+              {vendor.changes.map((c) => (
+                <div
+                  key={c.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1.3fr 1.6fr 1.6fr 1.4fr 1.2fr',
+                    gap: 10,
+                    padding: '13px 4px',
+                    fontSize: 12.5,
+                    borderBottom: `1px solid ${colors.divider}`,
+                    alignItems: 'center',
+                  }}
+                >
+                  <div style={{ fontWeight: 600 }}>{ATTRIBUTE_LABEL[c.attribute_type] ?? c.attribute_type}</div>
+                  <div style={{ color: colors.slate }}>{c.old_value ?? '—'}</div>
+                  <div style={{ color: colors.slate }}>{c.new_value ?? '—'}</div>
+                  <div style={{ color: colors.faint }}>{c.source ?? '—'}</div>
+                  <div style={{ color: colors.faint }}>{fmtRelative(c.detected_at)}</div>
+                </div>
+              ))}
+            </>
+          )}
+        </Card>
       </div>
 
-      <div style={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: 12, padding: 22, marginBottom: 16 }}>
-        <div style={{ fontSize: 13, fontWeight: 700, color: '#131B2E', marginBottom: 14, paddingBottom: 10, borderBottom: '1px solid #F0F2F5' }}>
-          Finance context
-        </div>
-        <p style={{ color: '#8A93A3', fontSize: 13, margin: 0 }}>No invoices imported for this vendor yet.</p>
+      <div style={{ marginBottom: 20 }}>
+        <Card padding={22}>
+          <div style={{ ...type.cardTitle, color: colors.ink, marginBottom: 14, paddingBottom: 10, borderBottom: `1px solid ${colors.borderSubtle}` }}>
+            Finance context
+          </div>
+          <p style={{ color: colors.faint, fontSize: 13, margin: 0 }}>No invoices imported for this vendor yet.</p>
+        </Card>
       </div>
 
       {toast && (
@@ -251,7 +259,7 @@ export default function VendorProfile() {
             color: TOAST_META[toast.variant].fg,
             border: `1px solid ${TOAST_META[toast.variant].border}`,
             padding: '12px 18px',
-            borderRadius: 9,
+            borderRadius: radius.sm + 1,
             fontSize: 13,
             fontWeight: 600,
             boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
@@ -269,7 +277,7 @@ export default function VendorProfile() {
 function Row({ label, value, mono }: { label: string; value: string | null; mono?: boolean }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
-      <span style={{ color: '#8A93A3' }}>{label}</span>
+      <span style={{ color: colors.faint }}>{label}</span>
       <span style={{ fontWeight: 600, textAlign: 'right', fontFamily: mono ? 'ui-monospace,monospace' : 'inherit' }}>
         {value ?? '—'}
       </span>
