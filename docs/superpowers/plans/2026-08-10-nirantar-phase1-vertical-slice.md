@@ -290,6 +290,8 @@ nirantar/
 
 ### Task 6: Vendors API — list, detail, verify (with tests)
 
+> **Note (2026-08-11):** Built against the real schema — `vendors` + `vendor_records` + `verification_attributes`, not a flat `vendors` table. Status is derived per attribute severity (never stored), list/detail are scoped by `company_id` from the JWT, and the query params follow `docs/spec.md` (`q`, `plant_id`, `status`) rather than the plan's `?q=&plant=&status=`.
+
 **Files:**
 - Create: `server/src/routes/vendors.routes.ts`, `server/test/vendors.test.ts`
 
@@ -300,8 +302,8 @@ nirantar/
   - `GET /api/vendors/:id -> Vendor` (404 if absent).
   - `POST /api/vendors/:id/verify -> { verification, vendor }` — calls `verifyGst(vendor.gstin)`, on success sets `last_verified = now()`, and writes an `audit_log` row `('You','Re-verified GST', ...)`.
 
-- [ ] **Step 1: `vendors.routes.ts`** — parameterized SQL for list/filter; detail by id; verify handler as above (wrap Setu failure → return `{verification:'failed'}` with 200, do not 500 on a clean "not verified").
-- [ ] **Step 2: Write failing `vendors.test.ts`** — auth required (401 without token); list returns 14 with token; detail returns known vendor name.
+- [x] **Step 1: `vendors.routes.ts`** — parameterized SQL for list/filter; detail by id; verify handler as above (wrap Setu failure → return `{verification:'failed'}` with 200, do not 500 on a clean "not verified").
+- [x] **Step 2: Write failing `vendors.test.ts`** — auth required (401 without token); list returns 14 with token; detail returns known vendor name.
     ```ts
     it('lists vendors when authed', async () => {
       const token = await loginToken(app); // helper logs in rohan
@@ -311,9 +313,9 @@ nirantar/
       expect(r.json().length).toBe(14);
     });
     ```
-- [ ] **Step 3: Run** `npm test --workspace server` → PASS.
-- [ ] **Step 4: Live verify check** (guarded `RUN_LIVE=1`): POST verify for vendor id 1 (`Shree Balaji Fasteners`), expect `verification` present and an audit row inserted.
-- [ ] **Step 5: Commit** `feat(server): vendors list/detail/verify endpoints`.
+- [x] **Step 3: Run** `npm test --workspace server` → PASS.
+- [x] **Step 4: Live verify check** (guarded `RUN_LIVE=1`): POST verify for vendor id 1 (`Shree Balaji Fasteners`), expect `verification` present and an audit row inserted.
+- [x] **Step 5: Commit** `feat(server): vendors list/detail/verify endpoints`.
 
 ---
 
