@@ -6,7 +6,7 @@ export const STATUS_META: Record<VendorStatus, { bg: string; fg: string; border:
   changed: { bg: '#FBF1E1', fg: '#C48A2E', border: '#EBD3A3', icon: ArrowLeftRight, label: 'Changed' },
   conflict: { bg: '#F8E9E9', fg: '#B23A3A', border: '#E9BFBF', icon: AlertTriangle, label: 'Conflict' },
   stale: { bg: '#EEF0F3', fg: '#8A94A6', border: '#D8DCE3', icon: Clock, label: 'Stale' },
-  unavailable: { bg: '#EEF0F3', fg: '#8A94A6', border: '#D8DCE3', icon: Ban, label: 'Unavailable' },
+  unavailable: { bg: '#E9EBEF', fg: '#5B6472', border: '#C3CAD6', icon: Ban, label: 'Unavailable' },
   review_required: { bg: '#EEEBF4', fg: '#6B5B95', border: '#D6CEE6', icon: Flag, label: 'Review required' },
 };
 

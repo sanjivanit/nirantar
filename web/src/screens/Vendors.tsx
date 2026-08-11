@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getVendors } from '../api';
 import type { Vendor, VendorStatus } from '../types';
 import StatusBadge, { STATUS_META } from '../components/StatusBadge';
+import Dropdown from '../components/Dropdown';
 import { fmtRelative } from '../format';
 
 const PLANTS = ['Pune', 'Nashik', 'Chennai', 'Rajkot'];
 const STATUSES: VendorStatus[] = ['verified', 'changed', 'conflict', 'stale', 'unavailable', 'review_required'];
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 10;
 
 export default function Vendors() {
   const navigate = useNavigate();
@@ -97,30 +98,21 @@ export default function Vendors() {
             />
           )}
         </div>
-        <select
+        <Dropdown
           value={plantFilter}
-          onChange={(e) => updateFilter(setPlantFilter, e.target.value)}
-          style={{ padding: '10px 12px', border: '1px solid #E4E7EC', borderRadius: 8, fontSize: 13, fontFamily: 'inherit', background: '#fff', color: '#131B2E' }}
-        >
-          <option value="All">All plants</option>
-          {PLANTS.map((p) => (
-            <option key={p} value={p}>
-              {p}
-            </option>
-          ))}
-        </select>
-        <select
+          onChange={(v) => updateFilter(setPlantFilter, v)}
+          minWidth={150}
+          options={[{ value: 'All', label: 'All plants' }, ...PLANTS.map((p) => ({ value: p, label: p }))]}
+        />
+        <Dropdown
           value={statusFilter}
-          onChange={(e) => updateFilter(setStatusFilter, e.target.value)}
-          style={{ padding: '10px 12px', border: '1px solid #E4E7EC', borderRadius: 8, fontSize: 13, fontFamily: 'inherit', background: '#fff', color: '#131B2E' }}
-        >
-          <option value="All">All statuses</option>
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {STATUS_META[s].label}
-            </option>
-          ))}
-        </select>
+          onChange={(v) => updateFilter(setStatusFilter, v)}
+          minWidth={170}
+          options={[
+            { value: 'All', label: 'All statuses' },
+            ...STATUSES.map((s) => ({ value: s, label: STATUS_META[s].label })),
+          ]}
+        />
       </div>
 
       {vendors && filtered.length > 0 && (
@@ -129,7 +121,7 @@ export default function Vendors() {
             <div
               style={{
                 display: 'grid',
-                gridTemplateColumns: '2.2fr 1fr 1.4fr 1fr',
+                gridTemplateColumns: '2fr 1.3fr 0.9fr 1.3fr 1fr',
                 gap: 10,
                 padding: '12px 20px',
                 fontSize: 11.5,
@@ -140,6 +132,7 @@ export default function Vendors() {
               }}
             >
               <div>VENDOR</div>
+              <div>GSTIN</div>
               <div>PLANT</div>
               <div>STATUS</div>
               <div>LAST VERIFIED</div>
@@ -150,7 +143,7 @@ export default function Vendors() {
                 onClick={() => navigate(`/vendors/${v.id}`)}
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: '2.2fr 1fr 1.4fr 1fr',
+                  gridTemplateColumns: '2fr 1.3fr 0.9fr 1.3fr 1fr',
                   gap: 10,
                   padding: '14px 20px',
                   fontSize: 13,
@@ -159,10 +152,8 @@ export default function Vendors() {
                   alignItems: 'center',
                 }}
               >
-                <div>
-                  <div style={{ fontWeight: 600 }}>{v.legal_name}</div>
-                  <div style={{ fontSize: 11.5, color: '#8A93A3', fontFamily: 'ui-monospace,monospace' }}>{v.primary_gstin}</div>
-                </div>
+                <div style={{ fontWeight: 600 }}>{v.legal_name}</div>
+                <div style={{ fontSize: 12, color: '#5B6472' }}>{v.primary_gstin ?? '—'}</div>
                 <div style={{ color: '#5B6472' }}>{v.plant}</div>
                 <div>
                   <StatusBadge status={v.status} />
@@ -171,27 +162,9 @@ export default function Vendors() {
               </div>
             ))}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 16 }}>
-            <div style={{ color: '#8A93A3', fontSize: 12.5 }}>
-              Page {currentPage + 1} of {pageCount}
-            </div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                disabled={currentPage === 0}
-                style={{ padding: '7px 14px', border: '1px solid #E4E7EC', borderRadius: 8, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', background: '#fff', color: '#131B2E' }}
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-                disabled={currentPage >= pageCount - 1}
-                style={{ padding: '7px 14px', border: '1px solid #E4E7EC', borderRadius: 8, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', background: '#fff', color: '#131B2E' }}
-              >
-                Next
-              </button>
-            </div>
-          </div>
+          {pageCount > 1 && (
+            <Pagination currentPage={currentPage} pageCount={pageCount} onChange={setPage} />
+          )}
         </>
       )}
 
@@ -212,6 +185,103 @@ export default function Vendors() {
           </span>
         </div>
       )}
+    </div>
+  );
+}
+
+function getPageNumbers(currentPage: number, pageCount: number): Array<number | 'ellipsis'> {
+  if (pageCount <= 7) return Array.from({ length: pageCount }, (_, i) => i);
+  const pages = new Set<number>([0, pageCount - 1, currentPage, currentPage - 1, currentPage + 1]);
+  const sorted = [...pages].filter((p) => p >= 0 && p < pageCount).sort((a, b) => a - b);
+  const result: Array<number | 'ellipsis'> = [];
+  sorted.forEach((p, i) => {
+    if (i > 0 && p - sorted[i - 1] > 1) result.push('ellipsis');
+    result.push(p);
+  });
+  return result;
+}
+
+function Pagination({ currentPage, pageCount, onChange }: { currentPage: number; pageCount: number; onChange: (p: number) => void }) {
+  const [hovered, setHovered] = useState<number | 'prev' | 'next' | null>(null);
+  const pages = getPageNumbers(currentPage, pageCount);
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 2, marginTop: 20 }}>
+      <button
+        onClick={() => onChange(Math.max(0, currentPage - 1))}
+        disabled={currentPage === 0}
+        onMouseEnter={() => setHovered('prev')}
+        onMouseLeave={() => setHovered(null)}
+        aria-label="Previous page"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 30,
+          height: 30,
+          border: 'none',
+          borderRadius: 6,
+          background: hovered === 'prev' && currentPage !== 0 ? '#F0F2F5' : 'transparent',
+          color: currentPage === 0 ? '#C7CCD4' : '#5B6472',
+          cursor: currentPage === 0 ? 'default' : 'pointer',
+        }}
+      >
+        <ChevronLeft size={16} strokeWidth={2.25} />
+      </button>
+
+      {pages.map((p, i) =>
+        p === 'ellipsis' ? (
+          <span key={`e${i}`} style={{ padding: '0 6px', color: '#8A93A3', fontSize: 13 }}>
+            …
+          </span>
+        ) : (
+          <button
+            key={p}
+            onClick={() => onChange(p)}
+            onMouseEnter={() => setHovered(p)}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              minWidth: 30,
+              height: 30,
+              padding: '0 4px',
+              border: 'none',
+              borderRadius: 6,
+              background: hovered === p && p !== currentPage ? '#F0F2F5' : 'transparent',
+              color: p === currentPage ? '#131B2E' : '#5B6472',
+              fontWeight: p === currentPage ? 700 : 400,
+              textDecoration: p === currentPage ? 'underline' : 'none',
+              textUnderlineOffset: 3,
+              fontSize: 13,
+              cursor: 'pointer',
+              fontFamily: 'inherit',
+            }}
+          >
+            {p + 1}
+          </button>
+        ),
+      )}
+
+      <button
+        onClick={() => onChange(Math.min(pageCount - 1, currentPage + 1))}
+        disabled={currentPage >= pageCount - 1}
+        onMouseEnter={() => setHovered('next')}
+        onMouseLeave={() => setHovered(null)}
+        aria-label="Next page"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 30,
+          height: 30,
+          border: 'none',
+          borderRadius: 6,
+          background: hovered === 'next' && currentPage < pageCount - 1 ? '#F0F2F5' : 'transparent',
+          color: currentPage >= pageCount - 1 ? '#C7CCD4' : '#5B6472',
+          cursor: currentPage >= pageCount - 1 ? 'default' : 'pointer',
+        }}
+      >
+        <ChevronRight size={16} strokeWidth={2.25} />
+      </button>
     </div>
   );
 }
