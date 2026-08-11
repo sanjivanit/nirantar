@@ -9,7 +9,7 @@ import Alerts from './screens/Alerts';
 import MsmeDeadlines from './screens/MsmeDeadlines';
 import AuditTrail from './screens/AuditTrail';
 import Reports from './screens/Reports';
-import ComingSoon from './screens/ComingSoon';
+import Settings from './screens/Settings';
 import Sidebar from './components/Sidebar';
 
 function RequireAuth({ children }: { children: ReactNode }) {
@@ -45,7 +45,7 @@ function AppRoutes() {
                 <Route path="/msme" element={<MsmeDeadlines />} />
                 <Route path="/audit" element={<AuditTrail />} />
                 <Route path="/reports" element={<Reports />} />
-                <Route path="/settings" element={<ComingSoon label="Settings" />} />
+                <Route path="/settings" element={<Settings />} />
                 <Route path="*" element={<Navigate to="/vendors" replace />} />
               </Routes>
             </AppShell>
