@@ -1,0 +1,8 @@
+# Local-dev-only entry point (app.listen()) — not used by the deployed
+# serverless function (api/index.ts imports src/app.js directly, never
+# src/index.ts). Vercel's zero-config builder was auto-detecting this file
+# as a second function purely because it's named index.ts, producing an
+# extra unreachable build target. Excluding it from the deploy avoids that
+# without affecting local dev, which reads straight from disk (tsx watch
+# src/index.ts), not through this ignore file.
+src/index.ts
