@@ -16,6 +16,7 @@ function required(key: string): string {
 
 export const env = {
   DATABASE_URL: required('DATABASE_URL'),
+  SETU_API_BASE_URL: required('SETU_API_BASE_URL'),
   SETU_CLIENT_ID: required('SETU_CLIENT_ID'),
   SETU_CLIENT_SECRET: required('SETU_CLIENT_SECRET'),
   SETU_GSTIN_PRODUCT_ID: required('SETU_GSTIN_PRODUCT_ID'),
