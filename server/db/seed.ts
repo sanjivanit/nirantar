@@ -170,6 +170,13 @@ try {
     ['Rival Autoparts Industries Pvt Ltd'],
   )).rows[0].id;
 
+  // Also a plant, so cross-tenant tests can prove Company A can't import
+  // vendor records into Company B's plant either, not just read its data.
+  await client.query(
+    `insert into public.plants (company_id, name, state) values ($1,$2,$3)`,
+    [companyBId, 'Company B Fixture Plant', 'Karnataka'],
+  );
+
   await client.query(
     `insert into public.vendors (company_id, legal_name, primary_gstin, pan, entity_status)
      values ($1, $2, $3, $4, $5)`,
