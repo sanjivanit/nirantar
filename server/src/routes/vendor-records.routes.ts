@@ -119,6 +119,33 @@ export async function vendorRecordsRoutes(app: FastifyInstance) {
       });
     },
   );
+
+  // Read-only visibility into vendor_records counts, grouped by
+  // import_status, scoped to the caller's own company via the same
+  // plant -> company_id join used for tenant isolation everywhere else on
+  // this route. This is deliberately just a count — no listing, no
+  // matching, no way to act on an individual row. That's Piece 4.
+  app.get('/api/vendor-records/summary', async (req, reply) => {
+    const { company_id } = req.user!;
+
+    const result = await pool.query(
+      `select vr.import_status, count(*) as count
+       from public.vendor_records vr
+       join public.plants p on p.id = vr.plant_id
+       where p.company_id = $1
+       group by vr.import_status`,
+      [company_id],
+    );
+
+    const counts = { pending_match: 0, matched: 0, insufficient_data: 0 };
+    for (const row of result.rows) {
+      if (row.import_status in counts) {
+        counts[row.import_status as keyof typeof counts] = Number(row.count);
+      }
+    }
+
+    return reply.send(counts);
+  });
 }
 
 // A row with neither identifier can't be checked or matched at all (spec.md

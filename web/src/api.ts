@@ -1,4 +1,4 @@
-import type { User, Vendor, VendorDetail, VerifyResult, VendorImportResult } from './types';
+import type { User, Vendor, VendorDetail, VerifyResult, VendorImportResult, VendorRecordsSummary } from './types';
 
 const TOKEN_KEY = 'nirantar_token';
 
@@ -76,4 +76,8 @@ export function importVendorRecords(plantId: number, file: File): Promise<Vendor
   const body = new FormData();
   body.append('file', file);
   return apiFetch(`/api/plants/${plantId}/vendor-records/import`, { method: 'POST', body });
+}
+
+export function getVendorRecordsSummary(): Promise<VendorRecordsSummary> {
+  return apiFetch('/api/vendor-records/summary');
 }

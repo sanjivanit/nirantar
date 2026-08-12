@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, X, ChevronLeft, ChevronRight, Eye, RefreshCw, Check, AlertTriangle, Upload } from 'lucide-react';
-import { getVendors, verifyVendor } from '../api';
-import type { Vendor, VendorStatus } from '../types';
+import { getVendors, verifyVendor, getVendorRecordsSummary } from '../api';
+import type { Vendor, VendorStatus, VendorRecordsSummary } from '../types';
 import StatusBadge, { STATUS_META } from '../components/StatusBadge';
 import Dropdown from '../components/Dropdown';
 import ActionMenu from '../components/ActionMenu';
@@ -26,6 +26,7 @@ export default function Vendors() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
   const [importOpen, setImportOpen] = useState(false);
+  const [recordsSummary, setRecordsSummary] = useState<VendorRecordsSummary | null>(null);
 
   // Derived from already-loaded vendors rather than a dedicated plants
   // endpoint (none exists yet) — every vendor already carries its plant id
@@ -40,6 +41,7 @@ export default function Vendors() {
 
   useEffect(() => {
     getVendors().then(setVendors);
+    getVendorRecordsSummary().then(setRecordsSummary);
   }, []);
 
   async function handleRowVerify(v: Vendor) {
@@ -113,6 +115,24 @@ export default function Vendors() {
       <div style={{ color: colors.muted, fontSize: 13.5, marginBottom: 24 }}>
         {vendors ? `${filtered.length} shown` : 'Loading…'}
       </div>
+
+      {recordsSummary && recordsSummary.pending_match + recordsSummary.insufficient_data > 0 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20, flexWrap: 'wrap' }}>
+          {recordsSummary.pending_match > 0 && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: colors.muted, fontWeight: 700, fontSize: 12.5 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: colors.muted }} />
+              {recordsSummary.pending_match} pending review
+            </span>
+          )}
+          {recordsSummary.insufficient_data > 0 && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#1E7A8C', fontWeight: 700, fontSize: 12.5 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#1E7A8C' }} />
+              {recordsSummary.insufficient_data} need more information
+            </span>
+          )}
+          <span style={{ color: colors.faint, fontSize: 11.5 }}>from imported files, awaiting vendor matching — not yet confirmed vendors</span>
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
         <div style={{ position: 'relative', flex: 1, minWidth: 260 }}>
@@ -297,10 +317,14 @@ export default function Vendors() {
           // Matches the existing refresh-after-mutation pattern used by
           // handleRowVerify above. Note: imported rows land in
           // vendor_records (raw, unmatched) — they won't actually appear
-          // here until duplicate-matching (Piece 4) links them to a
-          // canonical vendor, which doesn't exist yet. Refetching is still
-          // correct/harmless and will start working the moment that ships.
+          // in the vendors list until duplicate-matching (Piece 4) links
+          // them to a canonical vendor, which doesn't exist yet. This
+          // refetch is still correct/harmless and will start showing
+          // results once that ships. The summary count below, unlike the
+          // vendors list, DOES update immediately — that's the whole point
+          // of this stopgap.
           getVendors().then(setVendors);
+          getVendorRecordsSummary().then(setRecordsSummary);
         }}
       />
     </div>

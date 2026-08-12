@@ -71,3 +71,9 @@ export interface VendorImportResult {
   insufficient_data_count: number;
   parse_errors: VendorImportParseError[];
 }
+
+export interface VendorRecordsSummary {
+  pending_match: number;
+  matched: number;
+  insufficient_data: number;
+}
