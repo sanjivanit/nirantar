@@ -9,6 +9,12 @@ export const MAX_ROWS = 5000;
 
 const REQUIRED_COLUMNS = ['name'];
 
+// Structural GSTIN format only (state code + 10-char PAN + entity code +
+// literal 'Z' + checksum char) — not full checksum verification, which is a
+// separate, more involved algorithm the spec doesn't ask for. This is the
+// standard structural pattern used for basic format validation.
+const GSTIN_FORMAT = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+
 export interface ParsedRow {
   raw_name: string;
   raw_gstin: string | null;
@@ -101,9 +107,15 @@ export function parseVendorCsv(buffer: Buffer): ParseResult {
       return;
     }
 
+    const gstin = normalize(fields[gstinIdx]);
+    if (gstin && !GSTIN_FORMAT.test(gstin)) {
+      errors.push({ row: rowNum, reason: 'invalid GSTIN format' });
+      return;
+    }
+
     rows.push({
       raw_name: name,
-      raw_gstin: normalize(fields[gstinIdx]),
+      raw_gstin: gstin,
       raw_pan: normalize(fields[panIdx]),
       raw_bank_account: normalize(fields[bankIdx]),
       raw_ifsc: normalize(fields[ifscIdx]),

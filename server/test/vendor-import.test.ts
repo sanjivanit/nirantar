@@ -76,6 +76,22 @@ describe('vendor-records import', () => {
     expect(body.parse_errors[0]).toEqual({ row: 1, reason: 'missing required field: name' });
   });
 
+  it('reports a row with a malformed GSTIN as a parse error, not an insert', async () => {
+    const app = buildApp();
+    const token = await loginToken(app);
+    const csv = [
+      HEADER,
+      'Bad Gstin Vendor,NOT-A-REAL-GSTIN,,,',
+      'Valid Row,,BBBBB1111B,,',
+    ].join('\n');
+
+    const r = await upload(app, token, plantAId, csv);
+    expect(r.statusCode).toBe(200);
+    const body = r.json();
+    expect(body.imported_count).toBe(1);
+    expect(body.parse_errors).toEqual([{ row: 1, reason: 'invalid GSTIN format' }]);
+  });
+
   it('400s the whole file when the name column is missing entirely', async () => {
     const app = buildApp();
     const token = await loginToken(app);
@@ -114,10 +130,13 @@ describe('vendor-records import', () => {
   it('imports both rows when the same GSTIN appears twice in one file (no in-file dedup — that is Piece 4 duplicate-matching, not ingestion)', async () => {
     const app = buildApp();
     const token = await loginToken(app);
-    // Unique per test run — the DB persists across runs (this isn't a
-    // reset-per-invocation test DB), so a fixed literal here would let
-    // the count assertion below accumulate across repeated runs.
-    const dupGstin = `27DUP${Date.now() % 100000}0A1Z1`;
+    // Unique per test run (varying the 4-digit segment) but still a
+    // well-formed GSTIN — the DB persists across runs (this isn't a
+    // reset-per-invocation test DB), so a fixed literal here would let the
+    // count assertion below accumulate across repeated runs, and it must
+    // pass GSTIN_FORMAT or it'd be rejected as a parse error instead.
+    const digits = String(Date.now() % 10000).padStart(4, '0');
+    const dupGstin = `27ABCDE${digits}F1Z5`;
     const csv = [HEADER, `Duplicate A,${dupGstin},,,`, `Duplicate B,${dupGstin},,,`].join('\n');
 
     const r = await upload(app, token, plantAId, csv);
