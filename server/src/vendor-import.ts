@@ -62,7 +62,13 @@ export function parseVendorCsv(buffer: Buffer): ParseResult {
   try {
     raw = parse(buffer, { columns: false, skip_empty_lines: true, trim: true });
   } catch (err) {
-    throw new CsvFileError(`Could not parse file as CSV: ${(err as Error).message}`);
+    // The raw csv-parse message (e.g. "Invalid Record Length: expect 1,
+    // got 5 on line 2") is a useful debugging detail, not something a
+    // user uploading a vendor spreadsheet can act on — logged here for
+    // whoever's debugging a failed import, kept out of the client-facing
+    // message.
+    console.error('CSV parse failure:', (err as Error).message);
+    throw new CsvFileError("This file doesn't look like a valid CSV. Please check the format and try again.");
   }
 
   if (raw.length === 0) {
