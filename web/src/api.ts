@@ -1,4 +1,4 @@
-import type { User, Vendor, VendorDetail, VerifyResult } from './types';
+import type { User, Vendor, VendorDetail, VerifyResult, VendorImportResult } from './types';
 
 const TOKEN_KEY = 'nirantar_token';
 
@@ -25,8 +25,12 @@ class ApiError extends Error {
 
 async function apiFetch<T>(path: string, opts: RequestInit = {}): Promise<T> {
   const token = getToken();
+  // FormData (file uploads) must NOT get a manual content-type — the
+  // browser sets its own multipart/form-data boundary, which we'd break
+  // by forcing application/json here.
+  const isFormData = opts.body instanceof FormData;
   const headers: Record<string, string> = {
-    ...(opts.body ? { 'content-type': 'application/json' } : {}),
+    ...(opts.body && !isFormData ? { 'content-type': 'application/json' } : {}),
     ...(opts.headers as Record<string, string>),
   };
   if (token) {
@@ -66,4 +70,10 @@ export function getVendor(id: number): Promise<VendorDetail> {
 
 export function verifyVendor(id: number): Promise<VerifyResult> {
   return apiFetch(`/api/vendors/${id}/verify`, { method: 'POST' });
+}
+
+export function importVendorRecords(plantId: number, file: File): Promise<VendorImportResult> {
+  const body = new FormData();
+  body.append('file', file);
+  return apiFetch(`/api/plants/${plantId}/vendor-records/import`, { method: 'POST', body });
 }

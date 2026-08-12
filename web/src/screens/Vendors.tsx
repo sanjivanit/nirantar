@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X, ChevronLeft, ChevronRight, Eye, RefreshCw, Check, AlertTriangle } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Eye, RefreshCw, Check, AlertTriangle, Upload } from 'lucide-react';
 import { getVendors, verifyVendor } from '../api';
 import type { Vendor, VendorStatus } from '../types';
 import StatusBadge, { STATUS_META } from '../components/StatusBadge';
 import Dropdown from '../components/Dropdown';
 import ActionMenu from '../components/ActionMenu';
+import VendorImportModal from '../components/VendorImportModal';
 import { fmtRelative } from '../format';
 import { colors, radius, shadow, type, transition, tableHeader } from '../theme';
 
@@ -24,6 +25,18 @@ export default function Vendors() {
   const [toast, setToast] = useState<{ variant: 'success' | 'error'; message: string } | null>(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [hoveredRow, setHoveredRow] = useState<number | null>(null);
+  const [importOpen, setImportOpen] = useState(false);
+
+  // Derived from already-loaded vendors rather than a dedicated plants
+  // endpoint (none exists yet) — every vendor already carries its plant id
+  // and name.
+  const plantOptions = useMemo(() => {
+    const seen = new Map<number, string>();
+    for (const v of vendors ?? []) {
+      if (v.plant_id != null && v.plant && !seen.has(v.plant_id)) seen.set(v.plant_id, v.plant);
+    }
+    return [...seen.entries()].map(([id, name]) => ({ id, name })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [vendors]);
 
   useEffect(() => {
     getVendors().then(setVendors);
@@ -71,7 +84,32 @@ export default function Vendors() {
 
   return (
     <div style={{ padding: '36px 40px 60px', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
-      <h1 style={{ ...type.h1, margin: '0 0 6px', color: colors.ink }}>Vendors</h1>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16 }}>
+        <h1 style={{ ...type.h1, margin: '0 0 6px', color: colors.ink }}>Vendors</h1>
+        <button
+          type="button"
+          onClick={() => setImportOpen(true)}
+          disabled={!vendors}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '9px 16px',
+            border: `1px solid ${colors.border}`,
+            borderRadius: radius.sm,
+            fontSize: 12.5,
+            fontWeight: 600,
+            cursor: vendors ? 'pointer' : 'default',
+            background: '#fff',
+            color: colors.primary[600],
+            opacity: vendors ? 1 : 0.5,
+            flex: 'none',
+          }}
+        >
+          <Upload size={14} strokeWidth={2.25} />
+          Import vendors
+        </button>
+      </div>
       <div style={{ color: colors.muted, fontSize: 13.5, marginBottom: 24 }}>
         {vendors ? `${filtered.length} shown` : 'Loading…'}
       </div>
@@ -250,6 +288,21 @@ export default function Vendors() {
           {toast.message}
         </div>
       )}
+
+      <VendorImportModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        plantOptions={plantOptions}
+        onImported={() => {
+          // Matches the existing refresh-after-mutation pattern used by
+          // handleRowVerify above. Note: imported rows land in
+          // vendor_records (raw, unmatched) — they won't actually appear
+          // here until duplicate-matching (Piece 4) links them to a
+          // canonical vendor, which doesn't exist yet. Refetching is still
+          // correct/harmless and will start working the moment that ships.
+          getVendors().then(setVendors);
+        }}
+      />
     </div>
   );
 }

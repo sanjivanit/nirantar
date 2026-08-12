@@ -58,3 +58,16 @@ export interface VerifyResult {
   verification: string;
   vendor: Pick<Vendor, 'id' | 'legal_name' | 'primary_gstin'>;
 }
+
+export interface VendorImportParseError {
+  row: number;
+  reason: string;
+}
+
+export interface VendorImportResult {
+  imported_count: number;
+  matched_count: number;
+  pending_review_count: number;
+  insufficient_data_count: number;
+  parse_errors: VendorImportParseError[];
+}
