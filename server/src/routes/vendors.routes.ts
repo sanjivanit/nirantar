@@ -21,6 +21,15 @@ interface ListQuery {
   status?: string;
 }
 
+// Route params/query values arrive as strings. Number('abc') is NaN, but
+// Number('') is 0 and Number('Infinity') is a real (unusable) number — a
+// bare isNaN(Number(x)) check lets those slip through and reach a SQL
+// parameter as garbage. Requiring the whole string to be digits catches
+// all of that and matches what a real bigserial id ever looks like.
+function isValidId(value: string): boolean {
+  return /^\d+$/.test(value);
+}
+
 // pg returns bigint/bigserial columns as strings; coerce id-ish fields to number.
 function normalizeIds<T extends Record<string, unknown>>(row: T): T {
   const out: Record<string, unknown> = { ...row };
@@ -45,6 +54,9 @@ export async function vendorsRoutes(app: FastifyInstance) {
       conditions.push(`v.legal_name ilike $${params.length}`);
     }
     if (plant_id) {
+      if (!isValidId(plant_id)) {
+        return reply.code(400).send({ error: 'plant_id must be a positive integer' });
+      }
       params.push(Number(plant_id));
       conditions.push(`p.id = $${params.length}`);
     }
@@ -94,6 +106,9 @@ export async function vendorsRoutes(app: FastifyInstance) {
 
   app.get<{ Params: { id: string } }>('/api/vendors/:id', async (req, reply) => {
     const { company_id } = req.user!;
+    if (!isValidId(req.params.id)) {
+      return reply.code(400).send({ error: 'id must be a positive integer' });
+    }
     const id = Number(req.params.id);
 
     const vendorResult = await pool.query(
@@ -147,6 +162,9 @@ export async function vendorsRoutes(app: FastifyInstance) {
 
   app.post<{ Params: { id: string } }>('/api/vendors/:id/verify', async (req, reply) => {
     const { company_id, sub: userId } = req.user!;
+    if (!isValidId(req.params.id)) {
+      return reply.code(400).send({ error: 'id must be a positive integer' });
+    }
     const id = Number(req.params.id);
 
     const vendorResult = await pool.query(

@@ -46,6 +46,31 @@ describe('vendors', () => {
     expect(r.statusCode).toBe(404);
   });
 
+  it.each(['abc', '12.5', '-1', '1e5'])(
+    '400s instead of erroring for a non-numeric id (%s)',
+    async (badId) => {
+      const app = buildApp();
+      const token = await loginToken(app);
+      const r = await app.inject({
+        method: 'GET',
+        url: `/api/vendors/${encodeURIComponent(badId)}`,
+        headers: { authorization: `Bearer ${token}` },
+      });
+      expect(r.statusCode).toBe(400);
+    },
+  );
+
+  it('400s for a non-numeric plant_id instead of letting NaN reach SQL', async () => {
+    const app = buildApp();
+    const token = await loginToken(app);
+    const r = await app.inject({
+      method: 'GET',
+      url: '/api/vendors?plant_id=abc',
+      headers: { authorization: `Bearer ${token}` },
+    });
+    expect(r.statusCode).toBe(400);
+  });
+
   it('returns all six verification attributes and a changes array', async () => {
     const app = buildApp();
     const token = await loginToken(app);
