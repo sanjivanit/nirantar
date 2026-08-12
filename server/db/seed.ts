@@ -159,8 +159,25 @@ try {
     );
   }
 
+  // Second, unrelated company — exists solely so tests can prove tenant
+  // isolation actually works (PRD/spec.md §3: "every single request only
+  // ever sees the one company it belongs to... checked on the server, not
+  // just hidden on the screen"). Inserted after company A's full loop
+  // above so it never shifts any of company A's ids that other tests
+  // already hardcode (e.g. vendor 1 = "Shree Balaji Fasteners").
+  const companyBId: number = (await client.query(
+    `insert into public.companies (name) values ($1) returning id`,
+    ['Rival Autoparts Industries Pvt Ltd'],
+  )).rows[0].id;
+
+  await client.query(
+    `insert into public.vendors (company_id, legal_name, primary_gstin, pan, entity_status)
+     values ($1, $2, $3, $4, $5)`,
+    [companyBId, 'Rival Test Vendor (Company B fixture)', '27ZZZZZ0000Z1Z9', 'ZZZZZ0000Z', 'Active'],
+  );
+
   await client.query('commit');
-  console.log(`seed complete: 1 company, 4 plants, ${users.length} users, ${vendors.length} vendors`);
+  console.log(`seed complete: 1 company, 4 plants, ${users.length} users, ${vendors.length} vendors (+ 1 tenant-isolation fixture company)`);
 } catch (e) {
   await client.query('rollback');
   throw e;
